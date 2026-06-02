@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{{PROJECT_NAME}} — Overview</title>
+<style>
+  :root {
+    /* ── BRAND PALETTE — replace with the project's real colors ── */
+    --accent: #2563EB;        /* primary brand color */
+    --accent-deep: #1E40AF;   /* darker shade for gradients/text */
+    --accent-soft: #DBEAFE;   /* tint for icon chips */
+    --ink: #0F172A;           /* near-black text / dark slide bg */
+    --ink-2: #1E293B;
+    --muted: #64748B;
+    --line: #E7EBF0;
+    --bg: #F6F8FB;
+    --white: #FFFFFF;
+    --green: #16A34A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--ink);
+    color: var(--ink);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  .deck { height: 100vh; width: 100vw; position: relative; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    padding: 7vh 8vw 11vh;
+    background:
+      radial-gradient(1200px 600px at 88% -10%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 60%),
+      linear-gradient(180deg, var(--white) 0%, var(--bg) 100%);
+  }
+  .slide.active { display: flex; }
+  .slide::after {
+    content: attr(data-n);
+    position: absolute; right: 4vw; bottom: -2vh;
+    font-size: 34vh; font-weight: 800; line-height: 1;
+    color: rgba(15,23,42,0.035); z-index: 0; pointer-events: none;
+  }
+  .slide > * { position: relative; z-index: 1; }
+
+  .kicker {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-size: 0.92rem; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--accent-deep); margin-bottom: 1.2rem;
+  }
+  .kicker::before { content: ""; width: 1.8rem; height: 3px; background: var(--accent); border-radius: 2px; }
+
+  h1 { font-size: 4.4rem; line-height: 1.04; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 1.2rem; }
+  h2 { font-size: 2.5rem; line-height: 1.1; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 1.8rem; }
+  .lead { font-size: 1.4rem; color: var(--muted); max-width: 62ch; line-height: 1.5; }
+
+  ul { list-style: none; }
+  li { font-size: 1.18rem; line-height: 1.5; margin-bottom: 0.9rem; padding-left: 1.7rem; position: relative; max-width: 70ch; }
+  li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 0.6rem; height: 0.6rem; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); border-radius: 3px; transform: rotate(45deg); }
+  li b { color: var(--ink); }
+  li .m { color: var(--muted); }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.3rem 1.6rem; margin-top: 0.4rem; }
+  .card {
+    background: var(--white); border: 1px solid var(--line); border-radius: 14px;
+    padding: 1.4rem 1.5rem; position: relative; overflow: hidden;
+    box-shadow: 0 14px 34px -18px rgba(15,23,42,0.28), 0 2px 6px -2px rgba(15,23,42,0.06);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, var(--accent), var(--accent-deep)); }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 22px 44px -20px rgba(15,23,42,0.34); }
+  .card .ic { width: 2.5rem; height: 2.5rem; border-radius: 10px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem; }
+  .card .ic svg { width: 1.4rem; height: 1.4rem; stroke: var(--accent-deep); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .card h3 { font-size: 1.2rem; color: var(--ink); margin-bottom: 0.4rem; }
+  .card p { font-size: 1.02rem; color: var(--muted); line-height: 1.45; }
+
+  .pipeline { display: flex; align-items: stretch; gap: 0; margin-top: 0.6rem; flex-wrap: wrap; }
+  .step {
+    background: var(--white); border: 1px solid var(--line); border-radius: 12px;
+    padding: 1rem 1.2rem; min-width: 158px;
+    box-shadow: 0 10px 26px -16px rgba(15,23,42,0.30);
+  }
+  .step .t { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-deep); }
+  .step .d { font-size: 1.04rem; color: var(--ink); margin-top: 0.3rem; line-height: 1.35; }
+  .arrow { display: flex; align-items: center; color: var(--accent); font-size: 1.5rem; padding: 0 0.65rem; font-weight: 700; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 2.8rem; }
+  .note { margin-top: auto; padding-top: 1.4rem; font-size: 0.95rem; color: var(--muted); border-top: 1px solid var(--line); }
+  .tag { display: inline-block; font-size: 0.8rem; font-weight: 800; color: var(--green); background: rgba(22,163,74,0.10); border: 1.5px solid rgba(22,163,74,0.5); border-radius: 14px; padding: 2px 11px; margin-left: 0.4rem; vertical-align: middle; }
+
+  .feature {
+    background: linear-gradient(155deg, var(--ink) 0%, var(--ink-2) 100%);
+    color: var(--white); border-radius: 16px; padding: 1.7rem 1.8rem; position: relative; overflow: hidden;
+    box-shadow: 0 26px 50px -22px rgba(15,23,42,0.6);
+  }
+  .feature::after { content: ""; position: absolute; right: -30px; top: -30px; width: 150px; height: 150px; background: radial-gradient(circle, color-mix(in srgb, var(--accent) 35%, transparent), transparent 70%); }
+  .feature h3 { font-size: 1.3rem; margin-bottom: 0.6rem; color: var(--accent); }
+  .feature p { font-size: 1.08rem; line-height: 1.5; color: #CBD5E1; }
+
+  /* cover */
+  .cover {
+    color: var(--white); justify-content: center;
+    background:
+      radial-gradient(900px 500px at 12% 12%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
+      linear-gradient(160deg, #0B1120 0%, var(--ink) 55%, var(--ink-2) 100%);
+  }
+  .cover::after { color: rgba(255,255,255,0.03); }
+  .cover .kicker { color: var(--accent); }
+  .cover h1 { color: var(--white); font-size: 5rem; }
+  .cover .lead { color: #CBD5E1; font-size: 1.5rem; }
+  .cover .band { width: 5rem; height: 5px; background: linear-gradient(90deg, var(--accent), var(--accent-deep)); margin: 1.7rem 0; border-radius: 3px; }
+  .cover .sub { margin-top: 1.6rem; font-size: 1.2rem; color: rgba(255,255,255,0.55); }
+
+  /* entrance stagger */
+  .slide.active .anim { animation: rise .5s cubic-bezier(.2,.7,.3,1) backwards; }
+  .slide.active .anim:nth-child(2){animation-delay:.05s}
+  .slide.active .anim:nth-child(3){animation-delay:.11s}
+  .slide.active .anim:nth-child(4){animation-delay:.17s}
+  .slide.active .anim:nth-child(5){animation-delay:.23s}
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  /* chrome */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; height: 5px; background: rgba(0,0,0,0.10); z-index: 20; }
+  .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-deep)); transition: width .3s ease; }
+  .dots { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.6rem; z-index: 20; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(100,116,139,0.4); border: none; cursor: pointer; padding: 0; transition: all .2s ease; }
+  .dot.on { background: var(--accent); width: 26px; border-radius: 5px; }
+  .counter { position: fixed; bottom: 1.25rem; right: 1.5rem; font-size: 0.9rem; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; z-index: 20; }
+  .counter b { color: var(--accent-deep); }
+  .hint { position: fixed; bottom: 1.25rem; left: 1.5rem; font-size: 0.82rem; color: var(--muted); z-index: 20; }
+  .footer { position: fixed; top: 1.2rem; right: 1.6rem; font-size: 0.76rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-deep); z-index: 20; }
+  .cover-on .footer, .cover-on .counter b { color: var(--accent); }
+  .cover-on .counter { color: rgba(255,255,255,0.6); }
+  .cover-on .hint { color: rgba(255,255,255,0.45); }
+</style>
+</head>
+<body class="cover-on">
+<div class="deck" id="deck">
+
+  <!-- 1 — Cover -->
+  <section class="slide cover active" data-n="">
+    <div class="kicker anim">{{ORG_OR_CONTEXT}}</div>
+    <h1 class="anim">{{PROJECT_NAME}}</h1>
+    <div class="band anim"></div>
+    <p class="lead anim">{{ONE_SENTENCE_PITCH}}</p>
+    <div class="sub anim">{{OPTIONAL_TAGLINE}}</div>
+  </section>
+
+  <!-- 2 — What it delivers (cards) -->
+  <section class="slide" data-n="02">
+    <div class="kicker anim">What it delivers</div>
+    <h2 class="anim">{{VALUE_HEADLINE}}</h2>
+    <div class="grid anim">
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
+        <h3>{{FEATURE_1}}</h3><p>{{FEATURE_1_DESC}}</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <h3>{{FEATURE_2}}</h3><p>{{FEATURE_2_DESC}}</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></div>
+        <h3>{{FEATURE_3}}</h3><p>{{FEATURE_3_DESC}}</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3z"/></svg></div>
+        <h3>{{FEATURE_4}}</h3><p>{{FEATURE_4_DESC}}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 — How it works (pipeline + bullets) -->
+  <section class="slide" data-n="03">
+    <div class="kicker anim">How it works</div>
+    <h2 class="anim">{{ARCHITECTURE_HEADLINE}}</h2>
+    <div class="pipeline anim">
+      <div class="step"><div class="t">{{STAGE_1}}</div><div class="d">{{STAGE_1_DESC}}</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">{{STAGE_2}}</div><div class="d">{{STAGE_2_DESC}}</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">{{STAGE_3}}</div><div class="d">{{STAGE_3_DESC}}</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">{{STAGE_4}}</div><div class="d">{{STAGE_4_DESC}}</div></div>
+    </div>
+    <ul class="anim" style="margin-top:2.2rem">
+      <li><b>{{POINT_1}}</b> <span class="m">— {{POINT_1_DESC}}</span></li>
+      <li><b>{{POINT_2}}</b> <span class="m">— {{POINT_2_DESC}}</span></li>
+      <li><b>{{POINT_3}}</b> <span class="m">— {{POINT_3_DESC}}</span></li>
+    </ul>
+  </section>
+
+  <!-- 4 — Headline feature (two-column + feature box) -->
+  <section class="slide" data-n="04">
+    <div class="kicker anim">The headline feature</div>
+    <h2 class="anim">{{HEADLINE_FEATURE}}</h2>
+    <div class="two anim">
+      <div>
+        <ul>
+          <li><b>{{HF_POINT_1}}</b> <span class="m">— {{HF_POINT_1_DESC}}</span></li>
+          <li><b>{{HF_POINT_2}}</b> <span class="m">— {{HF_POINT_2_DESC}}</span></li>
+          <li><b>{{HF_POINT_3}}</b> <span class="m">— {{HF_POINT_3_DESC}}</span></li>
+          <li><b>{{HF_POINT_4}}</b> <span class="m">— {{HF_POINT_4_DESC}}</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="feature">
+          <h3>Why this matters</h3>
+          <p>{{WHY_IT_MATTERS}}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 — Status & design (two-column + status) -->
+  <section class="slide" data-n="05">
+    <div class="kicker anim">Status &amp; design</div>
+    <h2 class="anim">{{STATUS_HEADLINE}}</h2>
+    <div class="two anim">
+      <div>
+        <ul>
+          <li><b>{{DESIGN_1}}</b> <span class="m">— {{DESIGN_1_DESC}}</span></li>
+          <li><b>{{DESIGN_2}}</b> <span class="m">— {{DESIGN_2_DESC}}</span></li>
+          <li><b>{{DESIGN_3}}</b> <span class="m">— {{DESIGN_3_DESC}}</span></li>
+          <li><b>{{DESIGN_4}}</b> <span class="m">— {{DESIGN_4_DESC}}</span></li>
+        </ul>
+      </div>
+      <div>
+        <ul>
+          <li><b>Working today</b> <span class="tag">live</span><br><span class="m">{{WORKING_TODAY}}</span></li>
+          <li style="margin-top:1.3rem"><b>Next</b><br><span class="m">{{ROADMAP_NEXT}}</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="note anim">{{FOOTER_NOTE}}</div>
+  </section>
+
+</div>
+
+<div class="footer">{{PROJECT_NAME}}</div>
+<div class="counter"><b id="cur">01</b> / <span id="total">05</span></div>
+<div class="hint">← → to navigate</div>
+<div class="dots" id="dots"></div>
+<div class="bar"><i id="prog"></i></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const body = document.body;
+  const dotsWrap = document.getElementById('dots');
+  let i = 0;
+  const pad = (n) => String(n).padStart(2, '0');
+  document.getElementById('total').textContent = pad(slides.length);
+
+  slides.forEach((_, k) => {
+    const b = document.createElement('button');
+    b.className = 'dot';
+    b.setAttribute('aria-label', 'Go to slide ' + (k + 1));
+    b.addEventListener('click', (e) => { e.stopPropagation(); show(k); });
+    dotsWrap.appendChild(b);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    dots.forEach((d, k) => d.classList.toggle('on', k === i));
+    document.getElementById('cur').textContent = pad(i + 1);
+    document.getElementById('prog').style.width = ((i + 1) / slides.length * 100) + '%';
+    body.classList.toggle('cover-on', i === 0);
+  }
+  const next = () => show(i + 1);
+  const prev = () => show(i - 1);
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+  });
+  document.getElementById('deck').addEventListener('click', (e) => {
+    (e.clientX > window.innerWidth / 2) ? next() : prev();
+  });
+  show(0);
+</script>
+</body>
+</html>
