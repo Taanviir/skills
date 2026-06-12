@@ -9,6 +9,7 @@ the agent how to perform a specific task well.
 | Skill | What it does |
 |-------|--------------|
 | [`project-presentation`](./project-presentation) | Turns a software repository into a single, self-contained HTML slide deck — an interactive project overview for stakeholders, using the repo's own content and brand colors. |
+| [`git-rescue`](./git-rescue) | Diagnoses and safely resolves a specific git problem you're stuck on (e.g. "can't pull because of local changes", merge conflicts, wrong-branch commits, lost work) — inspects the real repo state first and never discards work without confirmation. |
 
 ## Layout
 
