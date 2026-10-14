@@ -52,7 +52,6 @@ Apply every rule to every screen you touch. Each rule says what to do; the audit
 - If it is a single-color mark, use SVG with `fill="currentColor"` so it takes the text color. For a PNG, use a CSS mask over `--gr-fg-primary`.
 - If it is multi-color artwork, ship a light and a dark file and switch between them with `<picture><source media="(prefers-color-scheme: dark)" srcset="logo-dark.png">`.
 - `filter: invert()` is a last resort. It turns brand colors into their opposites.
-- A partner or "powered by" mark sits at `--gr-fg-tertiary` weight. It never competes with the product's own logo.
 
 ## Copy that comes with the visual change
 Leave the app's wording alone, except in these three places, where layout and wording are the same thing:
