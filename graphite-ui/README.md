@@ -15,6 +15,7 @@ graphite-ui/
 │   ├── components.css    recipes: button, input, table, dialog, shell, ...
 │   ├── tailwind.css      Tailwind v4 bridge (clears the default palette)
 │   ├── shadcn.css        shadcn/ui role mapping
+│   ├── bootstrap.css     Bootstrap 5.3 variable mapping
 │   └── preview.html      every recipe on one page, with theme and hue controls
 ├── references/           token guide, design rules, component name map, per-stack install
 └── scripts/              Node, no dependencies

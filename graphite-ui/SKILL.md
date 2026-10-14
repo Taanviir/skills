@@ -76,5 +76,5 @@ Done when the audit exits 0.
 - `references/tokens.md`: which token to use, the knobs, building the token map.
 - `references/rules.md`: the design rules every reworked screen follows.
 - `references/components.md`: port or adopt, the name map from common class names, notes on each recipe.
-- `references/stacks.md`: install steps for plain CSS, Sass, Tailwind v3/v4, shadcn and CSS-in-JS, plus dark mode.
+- `references/stacks.md`: install steps for plain CSS, Bootstrap 5, Sass, Tailwind v3/v4, shadcn and CSS-in-JS, plus dark mode.
 - `assets/preview.html`: every recipe with real markup, plus a theme switch and a hue slider.

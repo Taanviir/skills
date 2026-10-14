@@ -4,6 +4,7 @@ Detect the stack before installing. Signals:
 - `tailwindcss` in package.json. Version 4 has `@import "tailwindcss"` in CSS; version 3 has `tailwind.config.*`.
 - `components.json` means shadcn.
 - `.php`, `.erb`, `.twig`, `.blade.php` or `.html` templates with a linked stylesheet means server-rendered with plain CSS.
+- `bootstrap` in package.json, or a Bootstrap CDN `<link>` in the layout, means Bootstrap. Apply its branch on top of the one for how the app ships CSS.
 - `.scss` means Sass.
 - `styled-components` or `@emotion` means CSS-in-JS.
 
@@ -23,6 +24,21 @@ Load order is always tokens, base, then the app's CSS, with components where the
    In a bundled app, use `@import` lines at the top of the entry CSS instead.
 3. Linking `components.css` is optional when every component is ported. Leave it out if no markup uses its class names, so two definitions of `.btn` never fight.
 4. Fonts: add the Google Fonts link for Instrument Sans (see `preview.html`), or self-host with `@fontsource-variable/instrument-sans`. Without either, the stack falls back to the system UI font, which is acceptable.
+
+## Bootstrap 5
+Bootstrap 5.3 reads `--bs-*` variables, so most of it can follow Graphite UI tokens without overriding its components one by one.
+1. Copy `bootstrap.css` too. Load it after Bootstrap and `tokens.css`, before the app's CSS:
+   ```html
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+   <link rel="stylesheet" href="/assets/graphite-ui/tokens.css">
+   <link rel="stylesheet" href="/assets/graphite-ui/base.css">
+   <link rel="stylesheet" href="/assets/graphite-ui/bootstrap.css">
+   <link rel="stylesheet" href="/assets/style.css">
+   ```
+2. Port recipes onto Bootstrap's own selectors (`.btn-primary`, `.form-control`, `.card`, `.modal-content`), using the name map in `references/components.md`. Bootstrap draws edges with `border`; the ported rules swap those for `box-shadow: var(--gr-shadow-border)` and set `border: 0`.
+3. Color utilities (`.text-primary`, `.bg-success`, `.border-danger`, `.text-bg-*`) read `--bs-*-rgb` triplets, which can't hold a token. Grep the templates for them. Give each a rule in the app CSS that uses the matching token (`.text-primary { color: var(--gr-accent-text) !important; }`), or swap it for a Graphite UI class. The `!important` matches Bootstrap's and needs a `gr-allow` comment.
+4. Delete `data-bs-theme` attributes and any Bootstrap dark-mode toggle. Graphite UI tokens switch theme themselves.
+5. Bootstrap 4 compatibility shims (heading sizes, `.btn-block`, old paddings) go in the token map like any legacy value. Replace them with tokens or delete them.
 
 ## Sass
 Same as plain CSS. Import the `.css` files from the entry `.scss` with `@use "graphite-ui/tokens.css"`, or plain `@import` for older Sass. Sass color variables (`$primary: #4f46e5`) go in the token map like custom properties. Point each one at its CSS variable (`$primary: var(--gr-accent-solid)`) only while you rewrite their uses, then delete it. Sass color functions (`darken($primary, 10%)`) can't run on CSS variables. Replace each with the `-hover` or `-subtle` token it was approximating.
