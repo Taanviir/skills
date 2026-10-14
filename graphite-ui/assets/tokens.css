@@ -1,0 +1,178 @@
+/*
+ * Graphite UI tokens.
+ *
+ * Two tiers. Primitives (--gr-gray-*, --gr-accent-*-raw, status ramps) exist so the semantic tier
+ * has something to point at. Components use only the semantic tier.
+ *
+ * Every color is light-dark(light, dark). The OS picks the theme; data-theme="light" or
+ * data-theme="dark" on <html> forces one.
+ *
+ * Rebrand by setting --gr-accent-h (OKLCH hue, 0-360) and, for hues that go out of gamut,
+ * lowering --gr-accent-c. Run scripts/contrast.mjs with the same values afterwards.
+ */
+:root {
+  color-scheme: light dark;
+
+  /* ---- knobs ---- */
+  --gr-accent-h: 256;  /* blue. 150 green, 25 red, 290 violet, 70 amber, 195 teal */
+  --gr-accent-c: 1;    /* chroma multiplier. Amber, yellow and teal hues need 0.55-0.65 */
+  --gr-tint: 1;        /* how much the grays lean toward the accent hue. 0 = neutral */
+
+  /* ---- primitives: grays ---- */
+  --gr-gray-1:  light-dark(oklch(99.4% calc(0.002 * var(--gr-tint)) var(--gr-accent-h)), oklch(17.0% calc(0.004 * var(--gr-tint)) var(--gr-accent-h)));
+  --gr-gray-2:  light-dark(oklch(98.2% calc(0.003 * var(--gr-tint)) var(--gr-accent-h)), oklch(19.6% calc(0.005 * var(--gr-tint)) var(--gr-accent-h)));
+  --gr-gray-3:  light-dark(oklch(96.3% calc(0.004 * var(--gr-tint)) var(--gr-accent-h)), oklch(23.0% calc(0.006 * var(--gr-tint)) var(--gr-accent-h)));
+  --gr-gray-4:  light-dark(oklch(94.3% calc(0.005 * var(--gr-tint)) var(--gr-accent-h)), oklch(25.8% calc(0.007 * var(--gr-tint)) var(--gr-accent-h)));
+  --gr-gray-6:  light-dark(oklch(90.2% calc(0.007 * var(--gr-tint)) var(--gr-accent-h)), oklch(31.5% calc(0.009 * var(--gr-tint)) var(--gr-accent-h)));
+  --gr-gray-7:  light-dark(oklch(86.6% calc(0.008 * var(--gr-tint)) var(--gr-accent-h)), oklch(38.0% calc(0.010 * var(--gr-tint)) var(--gr-accent-h)));
+  --gr-gray-8:  light-dark(oklch(78.5% calc(0.010 * var(--gr-tint)) var(--gr-accent-h)), oklch(48.0% calc(0.011 * var(--gr-tint)) var(--gr-accent-h)));
+  --gr-gray-9:  light-dark(oklch(62.0% calc(0.012 * var(--gr-tint)) var(--gr-accent-h)), oklch(64.0% calc(0.012 * var(--gr-tint)) var(--gr-accent-h)));
+  --gr-gray-11: light-dark(oklch(50.5% calc(0.012 * var(--gr-tint)) var(--gr-accent-h)), oklch(81.0% calc(0.010 * var(--gr-tint)) var(--gr-accent-h)));
+  --gr-gray-12: light-dark(oklch(23.5% calc(0.012 * var(--gr-tint)) var(--gr-accent-h)), oklch(95.0% calc(0.004 * var(--gr-tint)) var(--gr-accent-h)));
+  --gr-white: oklch(100% 0 0);
+
+  /* ---- semantic: backgrounds ---- */
+  --gr-bg-page:     light-dark(var(--gr-gray-2), var(--gr-gray-1));
+  --gr-bg-surface:  light-dark(var(--gr-white), var(--gr-gray-2));
+  --gr-bg-raised:   light-dark(var(--gr-white), var(--gr-gray-3));  /* menus, popovers, dialogs */
+  --gr-bg-sunken:   light-dark(var(--gr-gray-3), var(--gr-gray-1)); /* wells, segmented tracks, code */
+  --gr-bg-hover:    light-dark(var(--gr-gray-3), var(--gr-gray-4));
+  --gr-bg-selected: var(--gr-accent-bg-subtle);
+  --gr-bg-inverse:  var(--gr-gray-12);                               /* toasts, tooltips */
+  --gr-scrim:       light-dark(oklch(23.5% 0.012 var(--gr-accent-h) / 0.32), oklch(0% 0 0 / 0.6));
+
+  /* ---- semantic: text ---- */
+  --gr-fg-primary:   var(--gr-gray-12);
+  --gr-fg-secondary: var(--gr-gray-11);
+  --gr-fg-tertiary:  var(--gr-gray-9);  /* placeholders, icons, meta. 3:1, never body copy */
+  --gr-fg-inverse:   var(--gr-gray-1);
+  --gr-fg-on-accent: var(--gr-white);
+
+  /* ---- semantic: borders ---- */
+  --gr-border-separator: var(--gr-gray-6);  /* rows, dividers */
+  --gr-border-default:   var(--gr-gray-7);  /* cards that need a real border */
+  --gr-border-strong:    var(--gr-gray-8);  /* hover on bordered things */
+  --gr-border-control:   var(--gr-gray-9);  /* input edges. 3:1 against the surface */
+  --gr-border-focus:     var(--gr-accent-solid);
+
+  /* ---- semantic: accent (brand, primary action, selection, links) ---- */
+  --gr-accent-bg-subtle:  light-dark(oklch(94.0% calc(0.030 * var(--gr-accent-c)) var(--gr-accent-h)), oklch(29.0% calc(0.055 * var(--gr-accent-c)) var(--gr-accent-h)));
+  --gr-accent-solid:      light-dark(oklch(53.0% calc(0.170 * var(--gr-accent-c)) var(--gr-accent-h)), oklch(55.0% calc(0.155 * var(--gr-accent-c)) var(--gr-accent-h)));
+  --gr-accent-solid-hover: light-dark(oklch(48.5% calc(0.158 * var(--gr-accent-c)) var(--gr-accent-h)), oklch(50.0% calc(0.150 * var(--gr-accent-c)) var(--gr-accent-h)));
+  --gr-accent-text:       light-dark(oklch(48.5% calc(0.135 * var(--gr-accent-c)) var(--gr-accent-h)), oklch(80.0% calc(0.075 * var(--gr-accent-c)) var(--gr-accent-h)));
+
+  /* ---- semantic: status. Each has text (on surface or subtle), bg-subtle, solid (dots, bars) ---- */
+  --gr-success-text:      light-dark(oklch(48.5% 0.110 150), oklch(80.0% 0.140 150));
+  --gr-success-bg-subtle: light-dark(oklch(95.5% 0.028 150), oklch(27.0% 0.045 150));
+  --gr-success-solid:     light-dark(oklch(60.0% 0.150 150), oklch(70.0% 0.160 150));
+  --gr-warning-text:      light-dark(oklch(49.5% 0.095 70),  oklch(82.0% 0.120 70));
+  --gr-warning-bg-subtle: light-dark(oklch(95.5% 0.035 80),  oklch(27.0% 0.040 70));
+  --gr-warning-solid:     light-dark(oklch(66.0% 0.150 65),  oklch(78.0% 0.150 70));
+  --gr-danger-text:       light-dark(oklch(50.0% 0.170 25),  oklch(78.0% 0.110 25));
+  --gr-danger-bg-subtle:  light-dark(oklch(95.5% 0.022 25),  oklch(27.0% 0.055 25));
+  --gr-danger-solid:      light-dark(oklch(57.0% 0.200 25),  oklch(65.0% 0.190 25));
+  --gr-info-text:         light-dark(oklch(49.0% 0.150 290), oklch(80.0% 0.090 290));
+  --gr-info-bg-subtle:    light-dark(oklch(95.5% 0.025 290), oklch(27.0% 0.055 290));
+  --gr-info-solid:        light-dark(oklch(57.0% 0.170 290), oklch(68.0% 0.150 290));
+
+  /* ---- data series: ordered for adjacent contrast. Pair with a second cue (dash, marker, label) ---- */
+  --gr-series-1: var(--gr-accent-solid);
+  --gr-series-2: light-dark(oklch(68.0% 0.140 50),  oklch(72.0% 0.140 50));
+  --gr-series-3: light-dark(oklch(55.0% 0.100 185), oklch(70.0% 0.110 185));
+  --gr-series-4: light-dark(oklch(58.0% 0.150 330), oklch(70.0% 0.140 330));
+  --gr-series-5: var(--gr-gray-9);
+
+  /* ---- elevation. Shadow doubles as the border, so surfaces need no border declaration ---- */
+  --gr-shadow-border:
+    0 0 0 1px light-dark(oklch(0% 0 0 / 0.07), oklch(100% 0 0 / 0.08)),
+    0 1px 2px -1px light-dark(oklch(0% 0 0 / 0.06), transparent),
+    0 2px 4px 0 light-dark(oklch(0% 0 0 / 0.04), transparent);
+  --gr-shadow-border-hover:
+    0 0 0 1px light-dark(oklch(0% 0 0 / 0.10), oklch(100% 0 0 / 0.14)),
+    0 1px 2px -1px light-dark(oklch(0% 0 0 / 0.08), transparent),
+    0 2px 4px 0 light-dark(oklch(0% 0 0 / 0.06), transparent);
+  --gr-shadow-raised:
+    0 0 0 1px light-dark(oklch(0% 0 0 / 0.07), oklch(100% 0 0 / 0.10)),
+    0 8px 24px -4px light-dark(oklch(0% 0 0 / 0.12), oklch(0% 0 0 / 0.5));
+  --gr-shadow-overlay:
+    0 0 0 1px light-dark(oklch(0% 0 0 / 0.07), oklch(100% 0 0 / 0.10)),
+    0 4px 12px light-dark(oklch(0% 0 0 / 0.08), oklch(0% 0 0 / 0.35)),
+    0 24px 56px -8px light-dark(oklch(0% 0 0 / 0.18), oklch(0% 0 0 / 0.55));
+  --gr-shadow-inset: inset 0 0 0 1px var(--gr-border-separator);  /* wells, kbd, avatar edge */
+  --gr-shadow-knob: 0 1px 2px light-dark(oklch(0% 0 0 / 0.2), oklch(0% 0 0 / 0.5));
+  --gr-shadow-focus: 0 0 0 2px var(--gr-bg-surface), 0 0 0 4px var(--gr-border-focus);
+
+  /* ---- type. Roles, not sizes. UI text is body; caption is the floor for anything people read ---- */
+  --gr-font-sans: "Instrument Sans Variable", "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --gr-font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, monospace;
+  --gr-font-arabic: "IBM Plex Sans Arabic", "Noto Sans Arabic", var(--gr-font-sans);
+  --gr-text-label:   0.75rem;    /* 12px. overlines, kbd, tiny counts */
+  --gr-text-caption: 0.8125rem;  /* 13px. hints, meta, table headers, small buttons */
+  --gr-text-body:    0.875rem;   /* 14px. all UI and body copy */
+  --gr-text-heading: 1rem;       /* 16px. card and section headings */
+  --gr-text-title:   1.25rem;    /* 20px. dialog titles, sub-page titles */
+  --gr-text-page:    1.5rem;     /* 24px. one per page */
+  --gr-text-display: 2rem;       /* 32px. stat values, empty marketing heroes */
+  --gr-leading-tight: 1.2;
+  --gr-leading-snug:  1.35;
+  --gr-leading-body:  1.5;
+  --gr-weight-regular: 400;
+  --gr-weight-medium:  500;
+  --gr-weight-strong:  600;
+  --gr-tracking-tight: -0.015em;  /* title and up */
+  --gr-tracking-caps:  0.05em;    /* uppercase overlines */
+
+  /* ---- space: 4px grid, Tailwind step names ---- */
+  --gr-space-0-5: 2px;
+  --gr-space-1:   4px;
+  --gr-space-1-5: 6px;
+  --gr-space-2:   8px;
+  --gr-space-2-5: 10px;
+  --gr-space-3:   12px;
+  --gr-space-4:   16px;
+  --gr-space-5:   20px;
+  --gr-space-6:   24px;
+  --gr-space-8:   32px;
+  --gr-space-10:  40px;
+  --gr-space-12:  48px;
+  --gr-space-16:  64px;
+
+  /* ---- radius ---- */
+  --gr-radius-sm:      4px;    /* kbd, checkbox, tag */
+  --gr-radius-control: 8px;    /* buttons, inputs, menu items */
+  --gr-radius-group:   10px;   /* things that hold controls: segmented track, menu, toast */
+  --gr-radius-surface: 12px;   /* cards, dialogs, popovers */
+  --gr-radius-pill:    999px;
+
+  /* ---- sizes ---- */
+  --gr-control-sm: 32px;
+  --gr-control-md: 36px;
+  --gr-control-lg: 44px;       /* touch, primary CTA */
+  --gr-icon-sm: 14px;
+  --gr-icon-md: 16px;
+  --gr-icon-lg: 20px;
+  --gr-sidebar-w: 248px;
+  --gr-sidebar-w-collapsed: 60px;
+  --gr-topbar-h: 52px;
+  --gr-content-max: 1200px;
+  --gr-prose-max: 68ch;
+
+  /* ---- motion ---- */
+  --gr-ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+  --gr-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --gr-dur-fast: 120ms;  /* hover, press, color */
+  --gr-dur:      180ms;  /* menus, popovers, toggles */
+  --gr-dur-slow: 240ms;  /* dialogs, sheets, toasts */
+  --gr-press-scale: 0.97;
+
+  /* ---- layers ---- */
+  --gr-z-sticky:   10;
+  --gr-z-dropdown: 30;
+  --gr-z-overlay:  40;
+  --gr-z-modal:    50;
+  --gr-z-toast:    60;
+  --gr-z-tooltip:  70;
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"]  { color-scheme: dark; }

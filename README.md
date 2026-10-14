@@ -9,6 +9,7 @@ the agent how to perform a specific task well.
 | Skill | What it does |
 |-------|--------------|
 | [`project-presentation`](./project-presentation) | Turns a software repository into a single, self-contained HTML slide deck — an interactive project overview for stakeholders, using the repo's own content and brand colors. |
+| [`graphite-ui`](./graphite-ui) | A design system shipped as a skill. Reworks an existing app's UI onto Graphite UI tokens and component recipes, with an audit script that proves nothing hardcoded is left. |
 
 ## Layout
 

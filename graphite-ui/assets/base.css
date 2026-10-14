@@ -1,0 +1,61 @@
+/* Graphite UI base. Element defaults only; load after tokens.css and before any component CSS. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  background: var(--gr-bg-page);
+  color: var(--gr-fg-primary);
+  font-family: var(--gr-font-sans);
+  font-size: var(--gr-text-body);
+  line-height: var(--gr-leading-body);
+}
+:lang(ar), [dir="rtl"] { font-family: var(--gr-font-arabic); }
+
+h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd { margin: 0; }
+h1, h2, h3, h4, h5, h6 { font-weight: var(--gr-weight-strong); line-height: var(--gr-leading-snug); text-wrap: balance; }
+h1 { font-size: var(--gr-text-page); line-height: var(--gr-leading-tight); letter-spacing: var(--gr-tracking-tight); }
+h2 { font-size: var(--gr-text-title); letter-spacing: var(--gr-tracking-tight); }
+h3 { font-size: var(--gr-text-heading); }
+h4, h5, h6 { font-size: var(--gr-text-body); }
+p { text-wrap: pretty; }
+
+a { color: var(--gr-accent-text); text-decoration-thickness: from-font; text-underline-offset: 0.18em; }
+@media (hover: hover) { a:hover { text-decoration-color: currentColor; } }
+
+img, svg, video, canvas { display: block; max-width: 100%; }
+svg { flex: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+table { border-collapse: collapse; }
+hr { border: 0; border-top: 1px solid var(--gr-border-separator); margin: var(--gr-space-4) 0; }
+code, kbd, samp, pre { font-family: var(--gr-font-mono); font-size: 0.92em; } /* gr-allow: mono runs large */
+
+::selection { background: var(--gr-accent-bg-subtle); color: var(--gr-fg-primary); }
+::placeholder { color: var(--gr-fg-tertiary); opacity: 1; }
+
+:focus-visible { outline: 2px solid var(--gr-border-focus); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+
+[hidden] { display: none !important; } /* gr-allow */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.nums { font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;   /* gr-allow */
+    animation-iteration-count: 1 !important; /* gr-allow */
+    transition-duration: 0.01ms !important;  /* gr-allow */
+    scroll-behavior: auto !important;        /* gr-allow */
+  }
+}
