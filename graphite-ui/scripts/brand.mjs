@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 // Turns an app's existing brand color into Graphite UI knobs.
-// Usage: node brand.mjs "#4f46e5"
+// Usage: node brand.mjs "#4f46e5" [path/to/tokens.css]
 // Prints --gr-accent-h and an --gr-accent-c (0.05 steps) that matches the brand's saturation
 // without pushing the accent ramp outside sRGB. Run contrast.mjs with the printed values afterwards.
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 const hex = (process.argv[2] ?? '').replace('#', '');
 if (!/^[0-9a-f]{6}$|^[0-9a-f]{3}$/i.test(hex)) {
   console.error('usage: node brand.mjs "#rrggbb"');
@@ -36,8 +40,14 @@ function inGamut(L, C, H) {
   ].every((x) => x >= -0.0005 && x <= 1.0005);
 }
 
-// [lightness, base chroma] of the accent steps in tokens.css, both themes.
-const STEPS = [[0.94, 0.03], [0.53, 0.17], [0.485, 0.158], [0.485, 0.135], [0.29, 0.055], [0.55, 0.155], [0.5, 0.15], [0.8, 0.075]];
+// [lightness, base chroma] of every color in tokens.css that scales with --gr-accent-c, both themes.
+const file = process.argv[3] ?? join(dirname(fileURLToPath(import.meta.url)), '../assets/tokens.css');
+const tokens = readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+const STEPS = [...tokens.matchAll(/oklch\(\s*([\d.]+)%\s+calc\(\s*([\d.]+)\s*\*\s*var\(--gr-accent-c\)/g)].map((m) => [m[1] / 100, +m[2]]);
+if (STEPS.length === 0) {
+  console.error(`no accent colors found in ${file}`);
+  process.exit(2);
+}
 let k = Math.max(0.3, Math.min(1, Math.floor((C / 0.17) * 20) / 20));
 while (k > 0.3 && !STEPS.every(([sl, sc]) => inGamut(sl, sc * k, H))) k = Math.round((k - 0.05) * 100) / 100;
 
