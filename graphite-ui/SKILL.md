@@ -5,7 +5,7 @@ description: Graphite UI design system. Tokens, component recipes and an audit s
 
 # Graphite UI
 
-Graphite UI is a design system that ships inside this skill. `assets/` has the CSS. `scripts/` has three Node scripts with no dependencies:
+Graphite UI is a design system that ships inside this skill. `assets/` has the CSS. `scripts/` has three scripts that need Node 21 or newer and no dependencies:
 - `audit.mjs` lists styling that bypasses the tokens.
 - `contrast.mjs` checks color pairs.
 - `brand.mjs` turns a brand color into token knobs.

@@ -18,7 +18,7 @@ graphite-ui/
 │   ├── bootstrap.css     Bootstrap 5.3 variable mapping
 │   └── preview.html      every recipe on one page, with theme and hue controls
 ├── references/           token guide, design rules, component name map, per-stack install
-└── scripts/              Node, no dependencies
+└── scripts/              Node 21 or newer, no dependencies
     ├── audit.mjs         finds styling that bypasses the tokens; exits 1 if any
     ├── contrast.mjs      WCAG check of every color pair, both themes
     └── brand.mjs         brand hex → hue and chroma knobs

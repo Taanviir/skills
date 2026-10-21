@@ -47,7 +47,7 @@ function walk(p, out) {
   try { st = statSync(p); } catch { return; }
   if (st.isDirectory()) {
     const base = p.split(/[\\/]/).pop();
-    if (SKIP_DIRS.has(base) && p !== roots[0]) return;
+    if (SKIP_DIRS.has(base) && !roots.includes(p)) return;
     for (const e of readdirSync(p)) walk(join(p, e), out);
   } else if (st.size < 2_000_000) {
     const ext = extname(p).toLowerCase();
@@ -73,16 +73,28 @@ const COLOR_PROP_RE = /^(?:color|background(?:-color)?|border(?:-(?:top|right|bo
 const SPACE_PROP_RE = /^(?:margin|padding|gap|row-gap|column-gap|inset|top|right|bottom|left)(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?$/;
 const stripVars = (v) => v.replace(/var\([^()]*(?:\([^()]*\)[^()]*)*\)/g, ' ');
 
-// Yields [lineNumber, declarations[]] for CSS text with comments removed.
+// Yields [lineNumber, text, declarations[]] for each declaration, including values that span
+// several lines. Comments and selectors are skipped. A gr-allow comment anywhere in the
+// declaration, or later on its last line, skips it.
 function* cssDeclarations(src, offsetLine = 0) {
-  const clean = src.replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, ' '));
-  const lines = clean.split('\n');
-  const raw = src.split('\n');
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (/^\s*\/\//.test(line) || /gr-allow/.test(raw[i])) continue;
-    const decls = [...line.matchAll(/(--[\w-]+|[a-zA-Z-]+)\s*:\s*([^;{}]+)/g)].map((m) => [m[1].toLowerCase(), m[2].replace(/url\([^)]*\)/g, '')]);
-    yield [i + 1 + offsetLine, line, decls];
+  const blank = (c) => c.replace(/[^\n]/g, ' ');
+  const clean = src.replace(/\/\*[\s\S]*?\*\//g, blank).replace(/^\s*\/\/.*$/gm, blank);
+  let start = 0;
+  for (let i = 0; i <= clean.length; i++) {
+    const ch = clean[i];
+    if (i < clean.length && ch !== ';' && ch !== '{' && ch !== '}') continue;
+    const seg = clean.slice(start, i);
+    const from = start;
+    start = i + 1;
+    if (ch === '{') continue;
+    const m = seg.match(/^\s*(--[\w-]+|[a-zA-Z-]+)\s*:\s*([\s\S]+?)\s*$/);
+    if (!m) continue;
+    const lineEnd = src.indexOf('\n', i);
+    if (/gr-allow/.test(src.slice(from, lineEnd === -1 ? src.length : lineEnd))) continue;
+    const at = from + seg.search(/\S/);
+    const line = clean.slice(0, at).split('\n').length + offsetLine;
+    const text = seg.replace(/\s+/g, ' ').trim();
+    yield [line, text, [[m[1].toLowerCase(), m[2].replace(/url\([^)]*\)/g, '')]]];
   }
 }
 
