@@ -1,0 +1,145 @@
+/*
+ * Graphite UI for Tailwind v4. Import after tailwindcss and tokens.css:
+ *   @import "tailwindcss";
+ *   @import "./graphite-ui/tokens.css";
+ *   @import "./graphite-ui/base.css";
+ *   @import "./graphite-ui/tailwind.css";
+ *
+ * Tailwind's palette, type, radius and shadow scales are cleared, so bg-blue-500, text-lg and
+ * shadow-md stop compiling. Off-system values fail at build time instead of in review.
+ * The Tailwind aliases (radius-md, shadow-sm and friends) exist so shadcn and other generated
+ * components keep working; new code uses the semantic names.
+ */
+
+@theme {
+  --color-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --font-*: initial;
+  --ease-*: initial;
+}
+
+@theme inline {
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: var(--gr-white);
+
+  --color-page: var(--gr-bg-page);
+  --color-surface: var(--gr-bg-surface);
+  --color-raised: var(--gr-bg-raised);
+  --color-sunken: var(--gr-bg-sunken);
+  --color-hover: var(--gr-bg-hover);
+  --color-selected: var(--gr-bg-selected);
+  --color-inverse: var(--gr-bg-inverse);
+  --color-scrim: var(--gr-scrim);
+
+  --color-fg: var(--gr-fg-primary);
+  --color-fg-secondary: var(--gr-fg-secondary);
+  --color-fg-tertiary: var(--gr-fg-tertiary);
+  --color-fg-inverse: var(--gr-fg-inverse);
+  --color-on-accent: var(--gr-fg-on-accent);
+
+  --color-separator: var(--gr-border-separator);
+  --color-line: var(--gr-border-default);
+  --color-line-strong: var(--gr-border-strong);
+  --color-control: var(--gr-border-control);
+  --color-focus: var(--gr-border-focus);
+
+  --color-accent: var(--gr-accent-solid);
+  --color-accent-hover: var(--gr-accent-solid-hover);
+  --color-accent-text: var(--gr-accent-text);
+  --color-accent-subtle: var(--gr-accent-bg-subtle);
+
+  --color-success: var(--gr-success-solid);
+  --color-success-text: var(--gr-success-text);
+  --color-success-subtle: var(--gr-success-bg-subtle);
+  --color-warning: var(--gr-warning-solid);
+  --color-warning-text: var(--gr-warning-text);
+  --color-warning-subtle: var(--gr-warning-bg-subtle);
+  --color-danger: var(--gr-danger-solid);
+  --color-danger-text: var(--gr-danger-text);
+  --color-danger-subtle: var(--gr-danger-bg-subtle);
+  --color-info: var(--gr-info-solid);
+  --color-info-text: var(--gr-info-text);
+  --color-info-subtle: var(--gr-info-bg-subtle);
+
+  --color-series-1: var(--gr-series-1);
+  --color-series-2: var(--gr-series-2);
+  --color-series-3: var(--gr-series-3);
+  --color-series-4: var(--gr-series-4);
+  --color-series-5: var(--gr-series-5);
+
+  --font-sans: var(--gr-font-sans);
+  --font-mono: var(--gr-font-mono);
+  --font-arabic: var(--gr-font-arabic);
+
+  --text-label: var(--gr-text-label);
+  --text-label--line-height: var(--gr-leading-snug);
+  --text-caption: var(--gr-text-caption);
+  --text-caption--line-height: var(--gr-leading-snug);
+  --text-body: var(--gr-text-body);
+  --text-body--line-height: var(--gr-leading-body);
+  --text-heading: var(--gr-text-heading);
+  --text-heading--line-height: var(--gr-leading-snug);
+  --text-title: var(--gr-text-title);
+  --text-title--line-height: var(--gr-leading-tight);
+  --text-page: var(--gr-text-page);
+  --text-page--line-height: var(--gr-leading-tight);
+  --text-display: var(--gr-text-display);
+  --text-display--line-height: var(--gr-leading-tight);
+  /* aliases for generated components */
+  --text-xs: var(--gr-text-label);
+  --text-xs--line-height: var(--gr-leading-snug);
+  --text-sm: var(--gr-text-body);
+  --text-sm--line-height: var(--gr-leading-body);
+  --text-base: var(--gr-text-body);
+  --text-base--line-height: var(--gr-leading-body);
+  --text-lg: var(--gr-text-heading);
+  --text-lg--line-height: var(--gr-leading-snug);
+  --text-xl: var(--gr-text-title);
+  --text-xl--line-height: var(--gr-leading-tight);
+  --text-2xl: var(--gr-text-page);
+  --text-2xl--line-height: var(--gr-leading-tight);
+
+  --radius-sm: var(--gr-radius-sm);
+  --radius-control: var(--gr-radius-control);
+  --radius-surface: var(--gr-radius-surface);
+  --radius-pill: var(--gr-radius-pill);
+  /* aliases for generated components */
+  --radius-xs: var(--gr-radius-sm);
+  --radius-md: var(--gr-radius-control);
+  --radius-lg: var(--gr-radius-control);
+  --radius-xl: var(--gr-radius-surface);
+  --radius-2xl: var(--gr-radius-surface);
+
+  --shadow-border: var(--gr-shadow-border);
+  --shadow-border-hover: var(--gr-shadow-border-hover);
+  --shadow-raised: var(--gr-shadow-raised);
+  --shadow-overlay: var(--gr-shadow-overlay);
+  /* aliases for generated components */
+  --shadow-xs: var(--gr-shadow-border);
+  --shadow-sm: var(--gr-shadow-border);
+  --shadow-md: var(--gr-shadow-raised);
+  --shadow-lg: var(--gr-shadow-raised);
+  --shadow-xl: var(--gr-shadow-overlay);
+
+  --ease-out: var(--gr-ease-out);
+  --ease-in-out: var(--gr-ease-in-out);
+  --default-transition-duration: var(--gr-dur-fast);
+  --default-transition-timing-function: var(--gr-ease-out);
+
+  --container-content: var(--gr-content-max);
+  --container-prose: var(--gr-prose-max);
+}
+
+/* Tokens switch themselves, so dark: is only for the rare value with no token. It follows the
+   same rule as tokens.css: OS setting, overridden by data-theme on <html>. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @slot; }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) { @slot; }
+  }
+}
