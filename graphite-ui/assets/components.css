@@ -49,7 +49,13 @@
   transition-timing-function: var(--gr-ease-out);
 }
 .btn svg { width: var(--gr-icon-md); height: var(--gr-icon-md); }
-.btn:active:not(:disabled, [aria-disabled="true"]) { scale: var(--gr-press-scale); }
+/* Every press shows on touch, where hover never fires. [data-pressed] comes from press.js: on a quick tap in a
+   scroller Chrome on Android often never paints :active. A press comes on at once and fades out on release. */
+.btn:is(:active, [data-pressed]):not(:disabled, [aria-disabled="true"]) { scale: var(--gr-press-scale); }
+.btn:is(.ghost, .icon):is(:active, [data-pressed]):not(:disabled) { background: var(--gr-bg-hover); color: var(--gr-fg-primary); transition: none; }
+.btn.danger:not(.solid):is(:active, [data-pressed]):not(:disabled) { background: var(--gr-danger-bg-subtle); transition: none; }
+/* The -hover shade of a solid fill is too close to see under a thumb. */
+.btn:is(.primary, .danger.solid):is(:active, [data-pressed]):not(:disabled) { filter: brightness(0.88); }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; cursor: default; }
 
 .btn.primary { background: var(--gr-accent-solid); color: var(--gr-fg-on-accent); box-shadow: none; }
@@ -183,6 +189,7 @@ input[type="range"] { width: 100%; margin: 0; accent-color: var(--gr-accent-soli
 .seg label:has(input:checked) { background: var(--gr-bg-surface); color: var(--gr-fg-primary); box-shadow: var(--gr-shadow-border); }
 .seg label:has(input:focus-visible) { outline: 2px solid var(--gr-border-focus); outline-offset: 1px; }
 @media (hover: hover) { .seg label:hover:not(:has(input:checked)) { color: var(--gr-fg-primary); } }
+.seg label:is(:active, [data-pressed]):not(:has(input:checked)) { background: var(--gr-bg-hover); color: var(--gr-fg-primary); transition: none; }
 
 /* ================================================================ tabs (underline) */
 .tabs { display: flex; gap: var(--gr-space-1); border-bottom: 1px solid var(--gr-border-separator); overflow-x: auto; scrollbar-width: none; }
@@ -190,10 +197,11 @@ input[type="range"] { width: 100%; margin: 0; accent-color: var(--gr-accent-soli
   position: relative;
   display: inline-flex; align-items: center; gap: var(--gr-space-1-5);
   min-height: var(--gr-control-lg); padding: 0 var(--gr-space-2-5);
-  border: 0; background: none;
+  border: 0; border-radius: var(--gr-radius-control) var(--gr-radius-control) 0 0; background: none;
   color: var(--gr-fg-secondary);
   font: var(--gr-weight-medium) var(--gr-text-body) / 1 var(--gr-font-sans);
   text-decoration: none; white-space: nowrap; cursor: pointer;
+  transition: background-color var(--gr-dur) var(--gr-ease-out), color var(--gr-dur-fast) var(--gr-ease-out);
 }
 .tab::after {
   content: ""; position: absolute; inset-inline: var(--gr-space-2-5); bottom: -1px; height: 2px;
@@ -204,6 +212,7 @@ input[type="range"] { width: 100%; margin: 0; accent-color: var(--gr-accent-soli
 .tab:focus-visible { outline-offset: -4px; border-radius: var(--gr-radius-control); }
 .tab .count { color: var(--gr-fg-tertiary); font-size: var(--gr-text-label); font-variant-numeric: tabular-nums; }
 @media (hover: hover) { .tab:hover { color: var(--gr-fg-primary); } }
+.tab:is(:active, [data-pressed]) { background: var(--gr-bg-hover); color: var(--gr-fg-primary); transition: none; }
 
 /* ================================================================ card */
 .card {
@@ -215,8 +224,9 @@ input[type="range"] { width: 100%; margin: 0; accent-color: var(--gr-accent-soli
 .card-head h2, .card-head h3 { font-size: var(--gr-text-heading); }
 .card-body { padding: var(--gr-space-4); display: grid; gap: var(--gr-space-3); }
 .card-foot { display: flex; justify-content: flex-end; gap: var(--gr-space-2); padding: var(--gr-space-3) var(--gr-space-4); border-top: 1px solid var(--gr-border-separator); }
-a.card, .card.interactive { color: inherit; text-decoration: none; transition: box-shadow var(--gr-dur-fast) var(--gr-ease-out); }
+a.card, .card.interactive { color: inherit; text-decoration: none; transition: box-shadow var(--gr-dur-fast) var(--gr-ease-out), background-color var(--gr-dur) var(--gr-ease-out); }
 @media (hover: hover) { a.card:hover, .card.interactive:hover { box-shadow: var(--gr-shadow-border-hover); } }
+:is(a.card, .card.interactive):is(:active, [data-pressed]) { background: var(--gr-bg-hover); transition: none; }
 
 /* ================================================================ list rows */
 .list { margin: 0; padding: 0; list-style: none; }
@@ -229,8 +239,9 @@ a.card, .card.interactive { color: inherit; text-decoration: none; transition: b
 .list-row .meta { display: grid; gap: var(--gr-space-0-5); min-width: 0; }
 .list-row .meta > :first-child { font-weight: var(--gr-weight-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .list-row .meta > :not(:first-child) { color: var(--gr-fg-secondary); font-size: var(--gr-text-caption); }
-a.list-row, button.list-row { width: 100%; border: 0; background: none; text-align: start; font: inherit; cursor: pointer; }
+a.list-row, button.list-row { width: 100%; border: 0; background: none; text-align: start; font: inherit; cursor: pointer; transition: background-color var(--gr-dur) var(--gr-ease-out); }
 @media (hover: hover) { a.list-row:hover, button.list-row:hover { background: var(--gr-bg-hover); } }
+:is(a.list-row, button.list-row):is(:active, [data-pressed]) { background: var(--gr-bg-hover); transition: none; }
 .list-row[aria-selected="true"], .list-row[aria-current="true"] { background: var(--gr-bg-selected); }
 
 /* ================================================================ table */
@@ -317,8 +328,15 @@ a.list-row, button.list-row { width: 100%; border: 0; background: none; text-ali
 }
 .toast:not(:has(button)) { padding-inline-end: var(--gr-space-4); }
 .toast button { min-height: var(--gr-control-sm); padding: 0 var(--gr-space-2-5); border: 0; border-radius: var(--gr-radius-control); background: transparent; color: inherit; font-weight: var(--gr-weight-medium); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--gr-fg-inverse) 35%, transparent); } /* gr-allow: ring on inverse */
+.toast button { transition: background-color var(--gr-dur) var(--gr-ease-out); }
 @media (hover: hover) { .toast button:hover { background: color-mix(in oklab, var(--gr-fg-inverse) 12%, transparent); } }
+.toast button:is(:active, [data-pressed]) { background: color-mix(in oklab, var(--gr-fg-inverse) 18%, transparent); transition: none; }
 @keyframes gr-rise { from { opacity: 0; translate: 0 6px; } }
+
+/* ================================================================ nudge (a tap that cannot go through yet) */
+/* Shakes the field a tap still needs. Remove the class on animationend so it can play again. base.css stills it under reduced motion. */
+.nudge { animation: gr-nudge var(--gr-dur-slow) var(--gr-ease-in-out) 2; }
+@keyframes gr-nudge { 25% { translate: -4px 0; } 75% { translate: 4px 0; } }
 
 /* ================================================================ dialog (native <dialog>) */
 .dialog {
@@ -371,12 +389,14 @@ a.list-row, button.list-row { width: 100%; border: 0; background: none; text-ali
   border: 0; border-radius: var(--gr-radius-control);
   background: none; color: inherit;
   font: inherit; text-align: start; text-decoration: none; cursor: pointer;
+  transition: background-color var(--gr-dur) var(--gr-ease-out);
 }
 .menu-item svg { width: var(--gr-icon-md); height: var(--gr-icon-md); color: var(--gr-fg-secondary); }
 .menu-item .kbd { margin-inline-start: auto; }
 .menu-item.danger, .menu-item.danger svg { color: var(--gr-danger-text); }
 .menu-item:focus-visible { outline: none; background: var(--gr-bg-hover); }
 @media (hover: hover) { .menu-item:hover { background: var(--gr-bg-hover); } }
+.menu-item:is(:active, [data-pressed]) { background: var(--gr-bg-hover); transition: none; }
 .menu-sep { height: 1px; margin: var(--gr-space-1) calc(var(--gr-space-1) * -1); background: var(--gr-border-separator); }
 .menu-label { padding: var(--gr-space-1-5) var(--gr-space-2) var(--gr-space-1); color: var(--gr-fg-tertiary); font-size: var(--gr-text-label); font-weight: var(--gr-weight-medium); }
 
@@ -466,6 +486,7 @@ a.list-row, button.list-row { width: 100%; border: 0; background: none; text-ali
 .nav-item .count { margin-inline-start: auto; color: var(--gr-fg-tertiary); font-size: var(--gr-text-label); font-variant-numeric: tabular-nums; }
 .nav-item[aria-current="page"] { background: var(--gr-bg-surface); color: var(--gr-fg-primary); box-shadow: var(--gr-shadow-border); }
 @media (hover: hover) { .nav-item:not([aria-current="page"]):hover { background: var(--gr-bg-hover); color: var(--gr-fg-primary); } }
+.nav-item:not([aria-current="page"]):is(:active, [data-pressed]) { background: var(--gr-bg-hover); color: var(--gr-fg-primary); transition: none; }
 .sidebar .foot { margin-top: auto; }
 
 .topbar {

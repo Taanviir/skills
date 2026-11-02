@@ -13,15 +13,16 @@ Wherever the app keeps styles, copy the files to a directory named `graphite-ui`
 Load order is always tokens, base, then the app's CSS, with components where the branch says.
 
 ## Plain CSS (server-rendered, static, Vite without Tailwind)
-1. Copy `tokens.css`, `base.css` and `components.css` into `graphite-ui/`.
+1. Copy `tokens.css`, `base.css`, `components.css` and `press.js` into `graphite-ui/`.
 2. Link them in the layout `<head>` before the app stylesheet:
    ```html
    <link rel="stylesheet" href="/assets/graphite-ui/tokens.css">
    <link rel="stylesheet" href="/assets/graphite-ui/base.css">
    <link rel="stylesheet" href="/assets/graphite-ui/components.css">
    <link rel="stylesheet" href="/assets/style.css">
+   <script src="/assets/graphite-ui/press.js"></script>
    ```
-   In a bundled app, use `@import` lines at the top of the entry CSS instead.
+   In a bundled app, use `@import` lines at the top of the entry CSS instead, and import `press.js` from the entry script.
 3. Linking `components.css` is optional when every component is ported. Leave it out if no markup uses its class names, so two definitions of `.btn` never fight.
 4. Fonts: add the Google Fonts link for Instrument Sans (see `preview.html`), or self-host with `@fontsource-variable/instrument-sans`. Without either, the stack falls back to the system UI font, which is acceptable.
 
@@ -44,7 +45,7 @@ Bootstrap 5.3 reads `--bs-*` variables, so most of it can follow Graphite UI tok
 Same as plain CSS. Import the `.css` files from the entry `.scss` with `@use "graphite-ui/tokens.css"`, or plain `@import` for older Sass. Sass color variables (`$primary: #4f46e5`) go in the token map like custom properties. Point each one at its CSS variable (`$primary: var(--gr-accent-solid)`) only while you rewrite their uses, then delete it. Sass color functions (`darken($primary, 10%)`) can't run on CSS variables. Replace each with the `-hover` or `-subtle` token it was approximating.
 
 ## Tailwind v4
-1. Copy `tokens.css`, `base.css` and `tailwind.css`.
+1. Copy `tokens.css`, `base.css`, `tailwind.css` and `press.js`, and import `press.js` once from the app entry.
 2. Entry CSS:
    ```css
    @import "tailwindcss";

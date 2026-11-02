@@ -143,3 +143,24 @@
     &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) { @slot; }
   }
 }
+
+/* Press states for touch, the same as the recipes in components.css. Pair them with press.js, which sets
+   [data-pressed] on quick taps that never paint :active. Each comes on at once and fades out on release.
+   tap: tints a control with no fill of its own (rows, tabs, ghost and icon buttons). tap-accent and
+   tap-danger change the tint. press: scales a control that has a fill (chips, tiles, segments).
+   press-solid: also darkens a solid accent button. nudge: shakes a field a tap still needs. */
+@utility tap {
+  transition: background-color var(--gr-dur) var(--gr-ease-out);
+  &:is(:active, [data-pressed]) { background-color: var(--tap-tint, var(--gr-bg-hover)); transition: none; }
+}
+@utility tap-accent { --tap-tint: var(--gr-accent-bg-subtle); }
+@utility tap-danger { --tap-tint: var(--gr-danger-bg-subtle); }
+@utility press {
+  transition: scale var(--gr-dur) var(--gr-ease-out);
+  &:is(:active, [data-pressed]) { scale: var(--gr-press-scale); transition-duration: var(--gr-dur-fast); }
+}
+@utility press-solid {
+  &:is(:active, [data-pressed]) { filter: brightness(0.88); }
+}
+@utility nudge { animation: gr-nudge var(--gr-dur-slow) var(--gr-ease-in-out) 2; }
+@keyframes gr-nudge { 25% { translate: -4px 0; } 75% { translate: 4px 0; } }
