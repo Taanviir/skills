@@ -81,7 +81,7 @@ test('audit: gr-allow skips a value, also when the comment trails the line', () 
 });
 
 test('audit: selectors, media queries and SCSS line comments are not read as declarations', () => {
-  const r = audit({ 'a.scss': '// color: #fff\n.a:hover { color: var(--gr-accent-text); }\n@media (max-width: 600px) { .b { display: none; } }\n' });
+  const r = audit({ 'a.scss': '// color: #fff\n.a:hover { color: var(--gr-accent-text); }\n.a:is(:active, [data-pressed]) { color: var(--gr-accent-text); }\n@media (max-width: 600px) { .b { display: none; } }\n' });
   assert.equal(r.json.total, 0);
 });
 
@@ -110,7 +110,7 @@ test('audit: Tailwind palette and arbitrary classes are flagged, token arbitrari
   const r = audit({
     'App.tsx': [
       'const a = <div className="bg-blue-500" />;',
-      'const b = <div className="hover:text-white" />;',
+      'const b = <div className="hover:text-white tap" />;',
       'const c = <div className="p-[13px]" />;',
       'const d = <div className="bg-[var(--gr-bg-surface)] bg-surface" />;',
     ].join('\n'),
