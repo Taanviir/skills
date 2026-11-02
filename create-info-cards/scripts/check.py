@@ -37,6 +37,7 @@ setTimeout(() => {
 EXPORT_JS = """
 setTimeout(async () => {
   try {
+    for (let i = 0; i < 100 && typeof htmlToImage === 'undefined'; i++) await new Promise(r => setTimeout(r, 200));
     await document.fonts.ready;
     const u = await htmlToImage.toPng(document.querySelector('.card'),
       { width: 1080, height: 1350, pixelRatio: 1, style: { transform: 'none' } });
