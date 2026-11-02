@@ -1,0 +1,261 @@
+[
+  {
+    "name": "graphite-audit-only",
+    "fixture": "fixtures/plain-app",
+    "turns": [
+      "Audit this app against graphite-ui. I only want the report, don't change anything."
+    ],
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "app unchanged",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/rework.py",
+          "unchanged",
+          "{ws}",
+          "{evals}/fixtures/plain-app"
+        ]
+      },
+      {
+        "name": "report groups findings by rule",
+        "type": "regex",
+        "pattern": "color-literal.*legacy-token|legacy-token.*color-literal"
+      },
+      {
+        "name": "report names the worst file",
+        "type": "regex",
+        "pattern": "style\\.css"
+      }
+    ]
+  },
+  {
+    "name": "graphite-plan-waits",
+    "fixture": "fixtures/plain-app",
+    "turns": [
+      "Rework this app's design with graphite-ui."
+    ],
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "nothing changed before approval",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/rework.py",
+          "unchanged",
+          "{ws}",
+          "{evals}/fixtures/plain-app"
+        ]
+      },
+      {
+        "name": "token map covers every old token",
+        "type": "judge",
+        "criteria": "The reply is a rework plan for a web app. PASS only if it contains a token map with a row for each of these old custom properties: --primary, --primary-dark, --text, --text-muted, --border, --bg, --danger, and also mentions the JS chart color constants (CHART_COLORS), and it asks the user to approve the plan before changing files. FAIL if any of those tokens is missing or if it says files were already changed."
+      },
+      {
+        "name": "brand knobs from brand.mjs",
+        "type": "regex",
+        "pattern": "--gr-accent-h"
+      }
+    ]
+  },
+  {
+    "name": "graphite-rework-plain",
+    "fixture": "fixtures/plain-app",
+    "turns": [
+      "Rework this app's design with graphite-ui.",
+      "The plan is approved. Go ahead and do the full rework, then verify."
+    ],
+    "timeout": 3000,
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "first turn waited",
+        "type": "regex",
+        "turn": 0,
+        "pattern": "approv"
+      },
+      {
+        "name": "rework is complete and safe",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/rework.py",
+          "reworked",
+          "{ws}",
+          "{evals}/fixtures/plain-app"
+        ]
+      },
+      {
+        "name": "final report has counts and allowances",
+        "type": "judge",
+        "criteria": "The reply is the final report of a design rework. PASS if it gives the baseline and final audit counts, lists the files or tokens deleted, lists every gr-allow exception with its reason or says there are none, and names what was left unchecked."
+      }
+    ]
+  },
+  {
+    "name": "graphite-rework-bootstrap",
+    "fixture": "fixtures/bootstrap-app",
+    "turns": [
+      "Rework this Bootstrap app's design with graphite-ui.",
+      "Approved. Do the rework and verify it."
+    ],
+    "timeout": 3000,
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "rework is complete and safe",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/rework.py",
+          "reworked",
+          "{ws}",
+          "{evals}/fixtures/bootstrap-app"
+        ]
+      },
+      {
+        "name": "bootstrap bridge is loaded",
+        "type": "judge",
+        "file": "index.html",
+        "criteria": "This is the reworked index.html of a Bootstrap 5 app. PASS if it still loads Bootstrap's CSS and also loads graphite-ui's tokens.css and bootstrap.css bridge files, with the bridge after Bootstrap. FAIL otherwise."
+      }
+    ]
+  },
+  {
+    "name": "graphite-not-for-a-copy-fix",
+    "fixture": "fixtures/plain-app",
+    "turns": [
+      "In index.html, change the button text 'Keep it' to 'Keep order'. Nothing else."
+    ],
+    "graders": [
+      {
+        "name": "skill did not fire",
+        "type": "skill_used",
+        "expect": false
+      },
+      {
+        "name": "only the label changed",
+        "type": "judge",
+        "file": "index.html",
+        "criteria": "This is index.html after a requested edit. PASS if a button reads 'Keep order' and there is no button that reads 'Keep it'. FAIL otherwise."
+      }
+    ]
+  },
+  {
+    "name": "graphite-brand-kept",
+    "fixture": "fixtures/plain-app",
+    "turns": [
+      "Rework this app with graphite-ui, but keep our brand blue #2563eb as the accent.",
+      "Plan approved, go ahead and verify when done."
+    ],
+    "timeout": 3000,
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "accent hue follows the brand",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/rework.py",
+          "knobs",
+          "{ws}",
+          "263",
+          "6"
+        ]
+      },
+      {
+        "name": "rework is complete and safe",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/rework.py",
+          "reworked",
+          "{ws}",
+          "{evals}/fixtures/plain-app"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "graphite-audit-bootstrap",
+    "fixture": "fixtures/bootstrap-app",
+    "turns": [
+      "Audit this Bootstrap app against graphite-ui. Report only, no edits."
+    ],
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "app unchanged",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/rework.py",
+          "unchanged",
+          "{ws}",
+          "{evals}/fixtures/bootstrap-app"
+        ]
+      },
+      {
+        "name": "flags the !important overrides",
+        "type": "regex",
+        "pattern": "important"
+      }
+    ]
+  },
+  {
+    "name": "graphite-new-page",
+    "turns": [
+      "Using graphite-ui, build a simple settings page in this folder: index.html with a name field, an email notifications switch and a Save button. Plain HTML and CSS, no framework."
+    ],
+    "timeout": 2400,
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "page uses the tokens and passes the audit",
+        "type": "cmd",
+        "argv": [
+          "bash",
+          "-c",
+          "cd {ws} && ls index.html && grep -rl 'tokens.css' --include=*.html --include=*.css . | grep -v '/.claude/' && node {skill_dir}/scripts/audit.mjs . --ignore .claude"
+        ]
+      },
+      {
+        "name": "uses the recipes",
+        "type": "judge",
+        "file": "index.html",
+        "criteria": "This is a settings page built with the Graphite UI design system. PASS if it has a visible label for the name input, uses a switch control for email notifications (a checkbox styled as a switch, e.g. class 'switch' or role='switch'), and has a Save button with a primary style. FAIL otherwise."
+      }
+    ]
+  }
+]
