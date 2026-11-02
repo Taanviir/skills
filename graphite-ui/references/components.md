@@ -26,7 +26,12 @@ Common names in existing apps and the recipe that replaces them:
 | `.card`, `.panel`, `.box`, `.widget` | `.card` + `.card-head` / `.card-body` / `.card-foot` |
 | `.list-group`, `.list-item` | `.list` + `.list-row` |
 | `.table`, `.data-table`, `.datatable` | `.table-wrap` + `.table` |
-| `.badge`, `.label`, `.tag`, `.chip`, `.pill` | `.badge` + tone |
+| `.badge`, `.label`, `.tag`, `.pill` | `.badge` + tone |
+| `.chip`, `.filter-chip`, a toggle in a row of filters | `.chip` with `aria-pressed` |
+| `.bottom-nav`, `.tab-bar`, `.mobile-nav` | `.tabbar` + `.tabbar-item`, `.tabbar-add` |
+| `.carousel`, `.swiper`, `.slider` of pages | `.pager` + `.dots` |
+| a sideways scrolling strip of chips or cards | `.scroll-row` |
+| `.highlight`, `.just-saved`, a yellow-fade | `.flash` |
 | a colored word or dot showing state | `.status` + tone |
 | `.alert`, `.callout`, `.banner`, `.flash` | `.notice` + tone |
 | `.modal`, `.popup`, SweetAlert, `confirm()` | native `<dialog class="dialog">` |
@@ -49,8 +54,12 @@ Anything not in the table is built from tokens using the nearest recipe as the p
 - **Segmented.** Native radios inside labels, so arrow keys and forms work for free.
 - **Table.** The header is sticky inside `.table-wrap`. Numeric columns get `.num` (end-aligned, tabular). Row actions go in a last column of `.btn.icon` buttons that open a `.menu`. A sortable header uses a `<button>` inside the `th`, plus `aria-sort` on the `th`.
 - **Status vs badge.** `.status` (dot plus word) is for a state in a table cell or row. `.badge` is for a label or category. Neither uses color alone.
-- **Dialog.** `<dialog class="dialog">` opened with `showModal()`. Add `closedby="any"` for light dismiss. On narrow screens it becomes a bottom sheet. Destructive confirms name the action in the title and the button.
+- **Dialog.** `<dialog class="dialog">` opened with `showModal()`. Add `closedby="any"` for light dismiss. On narrow screens it becomes a bottom sheet. Destructive confirms name the action in the title and the button. Under 640px it is a bottom sheet that slides up and back down; keep its content rendered while it closes (render the form always, not only while open), or an empty sheet slides away.
 - **Menu.** `<div class="menu" popover id="m">` opened by `<button popovertarget="m">`. Position it with CSS anchor positioning where supported, or with the app's existing positioning library.
-- **Toast.** One persistent `.toast-region` with `aria-live="polite"` in the layout; swap the text in. Toasts confirm; errors that need action go in a `.notice` where the problem is.
+- **Toast.** One persistent `.toast-region` with `aria-live="polite"` in the layout; swap the text in. Toasts confirm; errors that need action go in a `.notice` where the problem is. One toast at a time: a new one replaces the old. About 3s for a message, 5s when it carries an action such as Undo; the action closes it. Above a `.tabbar` the region lifts on its own.
 - **Shell.** `.app` > `.sidebar` + `.main` > `.topbar` + `.content`. Under 960px the sidebar becomes a drawer toggled by `data-open="true"`. The app's existing toggle script only needs to set that attribute.
+- **Tab bar.** `<nav class="tabbar">` as the last child of the shell, with `.tabbar-item` links carrying `aria-current="page"` and at most one `.tabbar-add` button (`<span>` around its icon) in the middle. Up to five destinations, every one with a visible label.
+- **Chip.** A `<button class="chip" aria-pressed>` for a filter that is on or off. A row of them goes in `.scroll-row`.
+- **Pager.** `.pager` holds full-width pages that snap; `.dots` under it has one button per page, `aria-current="true"` on the one in view, and a tap scrolls to its page.
+- **Flash.** Add `.flash` to a row for about 3s after it is saved, added or restored. It is an animation, so remove and re-add it to replay.
 - **Charts.** Series colors come from `--gr-series-*` in order. Gridlines use `--gr-border-separator`, axis text `--gr-fg-secondary` at `caption` size. Each series also gets a second cue: a direct label, a dash pattern or a marker.

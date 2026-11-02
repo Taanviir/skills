@@ -162,5 +162,12 @@
 @utility press-solid {
   &:is(:active, [data-pressed]) { filter: brightness(0.88); }
 }
+/* Row tint after a change, mixed in OKLab (see components.css). */
+@utility flash { animation: gr-flash calc(var(--gr-dur-slow) * 6) var(--gr-ease-out); }
+@keyframes gr-flash { 0%, 35% { background-color: color-mix(in oklab, var(--gr-accent-solid) 16%, var(--gr-bg-surface)); } }
+/* A sideways row: fade-end says there is more, scrollbar-none hides the bar. pb-safe clears the gesture bar. */
+@utility fade-end { mask-image: linear-gradient(to right, black calc(100% - var(--gr-space-10)), transparent); }
+@utility scrollbar-none { scrollbar-width: none; }
+@utility pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 @utility nudge { animation: gr-nudge var(--gr-dur-slow) var(--gr-ease-in-out) 2; }
 @keyframes gr-nudge { 25% { translate: -4px 0; } 75% { translate: 4px 0; } }
