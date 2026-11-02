@@ -1,0 +1,102 @@
+[
+  {
+    "name": "deck-tidepool",
+    "fixture": "fixtures/tidepool",
+    "turns": [
+      "Make a presentation of this project I can show my manager."
+    ],
+    "timeout": 2400,
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "deck built, self-contained, on brand",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/deck.py",
+          "built",
+          "{ws}",
+          "tidepool",
+          "#0f766e"
+        ]
+      },
+      {
+        "name": "status is honest",
+        "type": "judge",
+        "file": "*presentation*.html",
+        "criteria": "This slide deck presents a project called Tidepool. In the project's README, gauge sync, prediction and the dashboard work today. Low-water SMS alerts are in progress (alerts only go to a log file because the SMS contract is not signed). Storm surge adjustment and a mobile app are planned. PASS only if the deck never presents SMS alerts, storm surge adjustment or the mobile app as live or working today. FAIL if any of them is tagged live or listed as working."
+      },
+      {
+        "name": "content is specific",
+        "type": "judge",
+        "file": "*presentation*.html",
+        "criteria": "This slide deck presents a project called Tidepool. PASS if it uses specific facts from the project, such as 6-minute gauge readings, up to 40 gauges, the 0.5 m margin, the 8 cm accuracy, or the pilot ports Port Calloway and Westhaven, rather than generic claims. It needs at least three such specifics. FAIL otherwise."
+      }
+    ]
+  },
+  {
+    "name": "deck-not-for-docs",
+    "fixture": "fixtures/tidepool",
+    "turns": [
+      "Add a short 'Running tests' section to the README saying tests are not set up yet."
+    ],
+    "graders": [
+      {
+        "name": "skill did not fire",
+        "type": "skill_used",
+        "expect": false
+      },
+      {
+        "name": "no deck built",
+        "type": "cmd",
+        "argv": [
+          "bash",
+          "-c",
+          "! ls {ws}/*presentation*.html >/dev/null 2>&1"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "deck-no-brand",
+    "fixture": "fixtures/ledgerline",
+    "turns": [
+      "Create a presentation for this project to pitch it to a new bookkeeping firm."
+    ],
+    "timeout": 2400,
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "deck built and self-contained",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/deck.py",
+          "built",
+          "{ws}",
+          "ledgerline",
+          "-"
+        ]
+      },
+      {
+        "name": "says which palette it picked",
+        "type": "judge",
+        "criteria": "The reply hands over a slide deck for a project that has no brand colors of its own. PASS if the reply tells the user which colors or palette it chose. FAIL otherwise."
+      },
+      {
+        "name": "uses the real numbers",
+        "type": "judge",
+        "file": "*presentation*.html",
+        "criteria": "This deck presents ledgerline, a bank reconciliation tool. PASS if it uses at least two of these facts: 1,240 payments in a test month, 1,198 matched automatically, 42 left, 25 minutes versus about 6 hours by hand, three bookkeeping firms since August 2025. FAIL otherwise."
+      }
+    ]
+  }
+]
