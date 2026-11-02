@@ -154,8 +154,8 @@
   --gr-sidebar-w: 248px;
   --gr-sidebar-w-collapsed: 60px;
   --gr-topbar-h: 52px;
+  --gr-tabbar-h: 64px;         /* bottom tab bar, before the safe area */
   --gr-content-max: 1200px;
-  --gr-prose-max: 68ch;
 
   /* ---- motion ---- */
   --gr-ease-out:    cubic-bezier(0.22, 1, 0.36, 1);

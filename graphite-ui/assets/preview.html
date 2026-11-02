@@ -18,6 +18,10 @@
   .knobs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gr-space-4); }
   .knobs label { display: inline-flex; align-items: center; gap: var(--gr-space-2); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
   .knobs input[type="range"] { width: 140px; }
+  .phone { display: grid; gap: var(--gr-space-3); max-width: 375px; padding-top: var(--gr-space-3); overflow: hidden; }
+  .phone > .scroll-row, .phone > .actions { padding-inline: var(--gr-space-4); }
+  .phone .actions { display: flex; gap: var(--gr-space-2); }
+  .phone .pager > div { display: grid; place-items: center; min-height: 96px; color: var(--gr-fg-secondary); }
 </style>
 </head>
 <body>
@@ -172,6 +176,29 @@
       </section>
 
       <section class="section">
+        <div class="section-head"><h2>Phone</h2><span class="text-caption">Turn on touch emulation and press things</span></div>
+        <div class="phone card">
+          <div class="scroll-row" id="chips">
+            <button class="chip" aria-pressed="true">All</button><button class="chip" aria-pressed="false">Workshops</button><button class="chip" aria-pressed="false">Talks</button><button class="chip" aria-pressed="false">Socials</button><button class="chip" aria-pressed="false">Online</button><button class="chip" aria-pressed="false">Archived</button>
+          </div>
+          <ul class="list">
+            <li><button class="list-row" data-flash><svg><use href="#i-calendar"/></svg><span class="meta"><span>Design review</span><span>Tap to save and see the row flash</span></span><span class="nums">14:00</span></button></li>
+            <li><button class="list-row" data-flash><svg><use href="#i-users"/></svg><span class="meta"><span>Team social</span><span>Tap to save and see the row flash</span></span><span class="nums">18:30</span></button></li>
+          </ul>
+          <div class="pager" id="pager"><div>Page one</div><div>Page two</div><div>Page three</div></div>
+          <div class="dots" id="dots"><button aria-current="true" aria-label="Page 1"></button><button aria-current="false" aria-label="Page 2"></button><button aria-current="false" aria-label="Page 3"></button></div>
+          <div class="actions"><button class="btn" onclick="dlg.showModal()">Open sheet</button><button class="btn danger" id="del">Delete event</button></div>
+          <nav class="tabbar" aria-label="Phone">
+            <a class="tabbar-item" href="#" aria-current="page"><svg><use href="#i-home"/></svg>Home</a>
+            <a class="tabbar-item" href="#"><svg><use href="#i-calendar"/></svg>Events</a>
+            <button class="tabbar-add" aria-label="Add event"><span><svg><use href="#i-plus"/></svg></span></button>
+            <a class="tabbar-item" href="#"><svg><use href="#i-chart"/></svg>Reports</a>
+            <a class="tabbar-item" href="#"><svg><use href="#i-settings"/></svg>Settings</a>
+          </nav>
+        </div>
+      </section>
+
+      <section class="section">
         <div class="section-head"><h2>Semantic colors</h2></div>
         <div class="swatches" id="swatches"></div>
       </section>
@@ -193,6 +220,24 @@
 
 <script>
   const root = document.documentElement;
+  document.getElementById('chips').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if (chip) chip.setAttribute('aria-pressed', String(chip.getAttribute('aria-pressed') !== 'true'));
+  });
+  document.querySelectorAll('[data-flash]').forEach((row) => row.addEventListener('click', () => {
+    row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
+  }));
+  const pager = document.getElementById('pager'), dots = [...document.querySelectorAll('#dots button')];
+  pager.addEventListener('scroll', () => {
+    const i = Math.round(pager.scrollLeft / pager.clientWidth);
+    dots.forEach((d, j) => d.setAttribute('aria-current', String(i === j)));
+  });
+  dots.forEach((d, i) => d.addEventListener('click', () => pager.scrollTo({ left: i * pager.clientWidth, behavior: 'smooth' })));
+  const region = document.querySelector('.toast-region');
+  document.getElementById('del').addEventListener('click', () => {
+    region.innerHTML = '<div class="toast">Event deleted <button>Undo</button></div>';
+    region.querySelector('button').addEventListener('click', () => { region.innerHTML = '<div class="toast">Event restored</div>'; });
+  });
   document.querySelectorAll('input[name="theme"]').forEach((r) => r.addEventListener('change', () => {
     if (r.value) root.dataset.theme = r.value; else delete root.dataset.theme;
   }));
