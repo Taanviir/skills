@@ -40,6 +40,8 @@ const RULES = {
   'inline-style': 'Inline style attribute. Move it into a class.',
   'tw-palette': 'Tailwind palette class. Use a semantic color utility (bg-surface, text-fg-secondary, ...).',
   'tw-arbitrary': 'Tailwind arbitrary value. Use a scale step or add a token.',
+  'hover-no-press': 'Hover state with no press state. On touch it shows nothing when tapped. Add :is(:active, [data-pressed]), or gr-allow if it is not tappable.',
+  'native-dialog': 'Browser confirm/prompt/alert. Use <dialog class="dialog">, or act at once and offer Undo in a toast.',
 };
 
 function walk(p, out) {
@@ -139,12 +141,94 @@ function scanCss(file, src, offsetLine = 0) {
       if (prop === 'font' && /\d*\.?\d+(?:px|r?em|pt)\b/.test(literal)) add('raw-font-size', file, n, line);
       if (prop === 'font-family' && /[a-z]/i.test(literal) && !/^\s*(?:inherit|initial)\s*$/.test(literal)) add('raw-font-family', file, n, line);
       if ((prop === 'box-shadow' || prop === 'text-shadow') && /\d/.test(literal)) add('raw-shadow', file, n, line);
-      if (/^(?:transition|animation)(?:-duration|-delay)?$/.test(prop) && /(?<![\w-])\d*\.?\d+m?s\b/.test(literal)) add('raw-duration', file, n, line);
+      if (/^(?:transition|animation)(?:-duration|-delay)?$/.test(prop) && [...literal.matchAll(/(?<![\w-])(\d*\.?\d+)m?s\b/g)].some((d) => +d[1] !== 0)) add('raw-duration', file, n, line);
       if (/^(?:transition|animation)(?:-timing-function)?$/.test(prop) && /cubic-bezier\(|\bease(?:-in|-out|-in-out)?\b/.test(literal)) add('raw-easing', file, n, line);
       if (prop === 'z-index' && /^\s*-?\d+\s*$/.test(literal) && Math.abs(+literal) > 1) add('raw-z-index', file, n, line);
     }
     if (/!important/.test(line)) add('important', file, n, line);
   }
+}
+
+// Yields { selector, line, props } for each style rule, nested ones included. At-rules are containers, not rules.
+function* cssRules(src, offsetLine = 0) {
+  const clean = src.replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, ' '));
+  const stack = [];
+  let start = 0;
+  for (let i = 0; i < clean.length; i++) {
+    const ch = clean[i];
+    if (ch === '{') {
+      const head = clean.slice(start, i);
+      const at = start + head.search(/\S/);
+      stack.push({ selector: head.replace(/\s+/g, ' ').trim(), line: clean.slice(0, at).split('\n').length + offsetLine, props: [], from: start });
+      start = i + 1;
+    } else if (ch === ';') {
+      const m = clean.slice(start, i).match(/^\s*([a-zA-Z-]+)\s*:/);
+      if (m && stack.length) stack.at(-1).props.push(m[1].toLowerCase());
+      start = i + 1;
+    } else if (ch === '}') {
+      const m = clean.slice(start, i).match(/^\s*([a-zA-Z-]+)\s*:/);
+      const rule = stack.pop();
+      if (rule && m) rule.props.push(m[1].toLowerCase());
+      if (rule && !rule.selector.startsWith('@')) yield { ...rule, allowed: /gr-allow/.test(src.split('\n')[rule.line - 1 - offsetLine] ?? '') };
+      start = i + 1;
+    }
+  }
+}
+
+// What a selector is about once its states are taken off: ".btn.ghost:hover:not(:disabled)" -> ".btn.ghost".
+// A one-level :is(a, b) expands, so ".btn:is(.ghost, .icon):active" covers ".btn.ghost" and ".btn.icon".
+const PRESS_RE = /:is\(\s*:active\s*,\s*\[data-pressed\]\s*\)|:active|\[data-pressed\]/g;
+function subjects(selector) {
+  const out = [];
+  for (const part of splitTop(selector)) {
+    let s = part.replace(PRESS_RE, '').replace(/:hover/g, '').replace(/:not\((?:[^()]|\([^()]*\))*\)/g, '').replace(/\s+/g, ' ').trim();
+    const is = s.match(/:is\(((?:[^()]|\([^()]*\))*)\)/);
+    if (is) for (const alt of splitTop(is[1])) out.push(s.replace(is[0], alt).replace(/\s+/g, ' ').trim());
+    else out.push(s);
+  }
+  return out;
+}
+function splitTop(list) {
+  const parts = [];
+  let depth = 0, from = 0;
+  for (let i = 0; i < list.length; i++) {
+    if (list[i] === '(') depth++;
+    else if (list[i] === ')') depth--;
+    else if (list[i] === ',' && depth === 0) { parts.push(list.slice(from, i)); from = i + 1; }
+  }
+  parts.push(list.slice(from));
+  return parts.map((p) => p.trim()).filter(Boolean);
+}
+// Hover that only underlines a link or edges a field is a mouse nicety, not the control's whole response.
+const HOVER_ONLY_PROPS = /^(?:text-decoration(?:-[a-z]+)?|border(?:-[a-z]+)*-color|border-color|cursor|outline(?:-color)?)$/;
+
+// Press states are gathered across every file first, since a hover and its press can live in different sheets.
+const pressed = new Set();
+function collectPressed(sources) {
+  for (const [src, off] of sources) for (const r of cssRules(src, off)) {
+    for (const part of splitTop(r.selector)) if (part.match(PRESS_RE)) subjects(part).forEach((s) => pressed.add(s));
+  }
+}
+
+function scanPress(file, sources) {
+  const hovers = [];
+  for (const [src, off] of sources) {
+    for (const r of cssRules(src, off)) {
+      for (const part of splitTop(r.selector)) {
+        if (/:hover/.test(part) && !r.allowed && !r.props.every((p) => HOVER_ONLY_PROPS.test(p))) {
+          for (const s of subjects(part)) if (!/(?:^|[\s>])(?:tr|td|th)(?:$|[.:\[])/.test(s.split(' ').at(-1))) hovers.push([s, r.line, part]);
+        }
+      }
+    }
+  }
+  for (const [s, line, part] of hovers) if (!pressed.has(s)) add('hover-no-press', file, line, part);
+}
+
+function scanNativeDialogs(file, src, offsetLine = 0) {
+  src.split('\n').forEach((line, i) => {
+    if (/^\s*(?:\/\/|\*)/.test(line) || /gr-allow/.test(line)) return;
+    if (/(?<![\w$.]|function\s)(?:window\.)?(?:confirm|prompt|alert)\s*\(/.test(line)) add('native-dialog', file, i + 1 + offsetLine, line);
+  });
 }
 
 const TW_COLORS = 'slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|black|white';
@@ -158,6 +242,7 @@ function scanClasses(file, src) {
     for (const m of line.matchAll(TW_PALETTE_RE)) {
       add('tw-palette', file, i + 1, m[0]);
     }
+    if (/(?<![\w-])hover:/.test(line) && !/(?<![\w-])(?:active:|tap\b|press\b)/.test(line)) add('hover-no-press', file, i + 1, line);
     for (const m of line.matchAll(TW_ARBITRARY_RE)) {
       if (/\[(?:--gr-|var\(--gr-)/.test(m[0])) continue;
       add('tw-arbitrary', file, i + 1, m[0]);
@@ -181,12 +266,14 @@ const styleSources = (file, src) => {
 };
 const allSources = files.flatMap((f) => styleSources(f, readFileSync(f, 'utf8')));
 collectBridges(allSources);
+collectPressed(allSources);
 
 for (const file of files) {
   const rel = relative(process.cwd(), file);
   if (extraIgnores.some((ig) => rel.startsWith(ig))) continue;
   const ext = extname(file).toLowerCase();
   const src = readFileSync(file, 'utf8');
+  scanPress(file, styleSources(file, src));
   if (STYLE_EXT.has(ext)) {
     scanCss(file, src);
     scanClasses(file, src);
@@ -196,9 +283,11 @@ for (const file of files) {
     }
     scanInlineStyles(file, src, false);
     scanClasses(file, src);
+    for (const m of src.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)) scanNativeDialogs(file, m[1], src.slice(0, m.index).split('\n').length - 1);
   } else {
     scanInlineStyles(file, src, /\.(?:jsx|tsx)$/.test(ext));
     scanClasses(file, src);
+    scanNativeDialogs(file, src);
   }
 }
 
