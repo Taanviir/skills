@@ -16,7 +16,7 @@ Apply every rule to every screen you touch. Each rule says what to do; the audit
 - Radius follows size: `control` (8) on things you click, `surface` (12) on things that hold content, `group` (10) on tracks that hold controls, `pill` on badges and avatars. A full-bleed element gets no radius.
 
 ## Type
-- `body` (14px) for all UI text. Bigger body copy makes dense screens feel like marketing pages.
+- `body` (14px) for all UI text in a desktop tool; bigger body copy makes dense screens feel like marketing pages. A phone-first app sets `--gr-text-body: 1rem` (16px) on `:root`, the size a phone is read at. One body size per app.
 - Weight 600 for headings and stat values, 500 for buttons, labels, nav and the first line of a row. Bold elsewhere is noise.
 - Numbers in tables, stats and counts use `font-variant-numeric: tabular-nums` (`.nums`, `.table` has it).
 - Uppercase only for `.overline` section labels, with `--gr-tracking-caps`.
@@ -27,7 +27,7 @@ Apply every rule to every screen you touch. Each rule says what to do; the audit
 - Table rows are around 48px, list rows around 52px. Pages with more than about 20 rows of data get `.table.compact`.
 - Page structure, top to bottom: `.page-head` (breadcrumbs, `h1`, one line of description, actions on the right), then sections with `.section-head`. Content is capped at `--gr-content-max`, prose at `--gr-prose-max`.
 - Sidebar navigation is at most two levels. Group headers are `.overline`.
-- Every screen works at 375px wide: the sidebar becomes a drawer, `.fields-2` stacks, tables scroll inside `.table-wrap`, dialogs become bottom sheets.
+- Every screen works at 375px wide: the sidebar becomes a drawer, `.fields-2` stacks, tables scroll inside `.table-wrap`, dialogs become bottom sheets that slide up from the edge.
 
 ## Motion
 - Transitions only on `color`, `background-color`, `box-shadow`, `opacity`, `translate`, `scale`. Never `all`.
@@ -37,6 +37,7 @@ Apply every rule to every screen you touch. Each rule says what to do; the audit
 ## Interaction and accessibility
 - Every interactive element shows `:focus-visible` with the 2px `--gr-border-focus` outline. Removing an outline without a replacement fails the step.
 - Hit areas are at least 40px even when the visible control is smaller (`.btn.icon::after` shows how).
+- A delete that can be undone happens at once, with Undo in a toast. A confirm dialog is for what can't be undone, and names the action in its title and button.
 - Native elements first: `<dialog>` for modals, the `popover` attribute for menus, `<select>` for short lists, radios for segmented controls, `<details>` for disclosure. Custom widgets only where the native one can't do the job, and then with the ARIA pattern from the APG.
 - Every form control has a visible `<label>`. Placeholder text is an example, never the label.
 - Use logical properties (`margin-inline-start`, `inset-inline-end`, `text-align: start`) so RTL works with only `dir="rtl"`.
@@ -47,9 +48,11 @@ A phone has no hover, and `base.css` turns off the browser's tap highlight, so a
 - A press comes on at once and fades out after release: `transition: none` on the pressed state, the fade on the base rule. A press that eases in never shows on a quick tap.
 - Load `assets/press.js` once and style every press as `:is(:active, [data-pressed])`. Chrome on Android holds `:active` back inside a scroller until it knows the touch is not a scroll, so a quick tap paints nothing; press.js sets `[data-pressed]` on pointerdown and keeps it for 120ms.
 - Pick the press by fill. No fill: the `--gr-bg-hover` tint. A fill: scale to `--gr-press-scale`. A solid accent fill: scale and darken, since its `-hover` shade is too close to see under a thumb. Nothing bounces. In Tailwind these are the `tap`, `press` and `press-solid` utilities.
-- Every tap gets an answer. A finished action confirms in a toast, and a row it changed tints briefly where it lands. A submit the form isn't ready for stays enabled: the tap focuses the missing field and shakes it by adding the `.nudge` recipe (remove it on `animationend` so it can play again). A disabled button gives a thumb nothing to go on.
+- Every tap gets an answer. A finished action confirms in a toast, and a row it changed gets `.flash` where it lands. A submit the form isn't ready for stays enabled: the tap focuses the missing field and shakes it by adding the `.nudge` recipe (remove it on `animationend` so it can play again). A disabled button gives a thumb nothing to go on.
 - Vibration marks a state change only: a toggle (press.js does this) or a toast, 8 to 12ms. A buzz on every tap stops meaning anything.
 - Anything pinned to the bottom (a tab bar, an action bar, the toast region) clears the gesture bar with `env(safe-area-inset-bottom)`.
+- A phone-first app navigates with `.tabbar` at the bottom in place of the sidebar.
+- In an app shell the content area is the one scroller, and `html, body { overscroll-behavior: none; }` keeps pull-to-refresh and the rubber band off the shell.
 
 ## Icons
 - One icon set per app, stroke icons, 16px in controls and 20px in empty states, `stroke-width` 1.5 to 1.75. Lucide is the default.
