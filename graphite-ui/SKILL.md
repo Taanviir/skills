@@ -65,7 +65,7 @@ Done when the audit exits 0.
 
 ### 7. Verify
 - `node $GR/scripts/contrast.mjs --hue H --chroma C` with the app's knobs. All pairs must pass.
-- Check light theme, dark theme, keyboard focus on every control, a 375px-wide viewport, and RTL if the app has Arabic or Hebrew. Run the app for these checks only if a dev server is already running or the user agrees to start one. Otherwise list them as remaining checks for the user.
+- Check light theme, dark theme, keyboard focus on every control, a 375px-wide viewport with touch emulation (press each kind of control and see it answer), and RTL if the app has Arabic or Hebrew. Run the app for these checks only if a dev server is already running or the user agrees to start one. Otherwise list them as remaining checks for the user.
 - Report to the user:
   - baseline and final audit counts,
   - files and tokens deleted,
@@ -74,7 +74,7 @@ Done when the audit exits 0.
 
 ## References
 - `references/tokens.md`: which token to use, the knobs, building the token map.
-- `references/rules.md`: the design rules every reworked screen follows.
+- `references/rules.md`: the design rules every reworked screen follows, including touch.
 - `references/components.md`: port or adopt, the name map from common class names, notes on each recipe.
 - `references/stacks.md`: install steps for plain CSS, Bootstrap 5, Sass, Tailwind v3/v4, shadcn and CSS-in-JS, plus dark mode.
 - `assets/preview.html`: every recipe with real markup, plus a theme switch and a hue slider.
