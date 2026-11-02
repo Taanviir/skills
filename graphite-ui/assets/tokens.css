@@ -160,9 +160,12 @@
   /* ---- motion ---- */
   --gr-ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
   --gr-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --gr-ease-fold:   cubic-bezier(0.2, 0, 0, 1);
   --gr-dur-fast: 120ms;  /* hover, press, color */
   --gr-dur:      180ms;  /* menus, popovers, toggles */
   --gr-dur-slow: 240ms;  /* dialogs, sheets, toasts */
+  --gr-dur-fold: 220ms;  /* sidebar folding to icons */
+  --gr-dur-fold-delay: 80ms;  /* sidebar labels wait this long to fade back in */
   --gr-press-scale: 0.97;
 
   /* ---- layers ---- */
