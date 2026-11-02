@@ -12,10 +12,10 @@ Paths below are relative to this skill's folder.
 ## 1. Get the source
 
 ```bash
-bash scripts/fetch_source.sh "<url or file.pdf>" <scratch-dir>
+bash scripts/fetch_source.sh "<url, file.pdf or saved file.html>" <scratch-dir>
 ```
 
-The script writes `<scratch-dir>/source.txt`. For YouTube it holds the captions with a timestamp each minute. For an article or a PDF it holds the extracted text. Use a scratch directory, not the working directory, and read all of `source.txt`. If the script fails on an article, use WebFetch. If a PDF has no text layer, use the pdf skill's OCR.
+The script writes `<scratch-dir>/source.txt`. For YouTube it holds the captions with a timestamp each minute. For an article, a saved web page or a PDF it holds the extracted text. Use a scratch directory, not the working directory, and read all of `source.txt`. If the script fails on an article, use WebFetch. If a PDF has no text layer, use the pdf skill's OCR.
 
 Done when you have read the whole source.
 
