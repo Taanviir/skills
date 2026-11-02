@@ -25,7 +25,7 @@ Apply every rule to every screen you touch. Each rule says what to do; the audit
 ## Density and layout
 - Controls are 36px (`--gr-control-md`), 32px in toolbars and tables, 44px on touch and for the one primary CTA on a form.
 - Table rows are around 48px, list rows around 52px. Pages with more than about 20 rows of data get `.table.compact`.
-- Page structure, top to bottom: `.page-head` (breadcrumbs, `h1`, one line of description, actions on the right), then sections with `.section-head`. Content is capped at `--gr-content-max`, prose at `--gr-prose-max`.
+- Page structure, top to bottom: `.page-head` (breadcrumbs, `h1`, one line of description, actions on the right), then sections with `.section-head`. Content is capped at `--gr-content-max`.
 - Sidebar navigation is at most two levels. Group headers are `.overline`.
 - Every screen works at 375px wide: the sidebar becomes a drawer, `.fields-2` stacks, tables scroll inside `.table-wrap`, dialogs become bottom sheets that slide up from the edge.
 

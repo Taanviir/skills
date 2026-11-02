@@ -132,7 +132,6 @@
   --default-transition-timing-function: var(--gr-ease-out);
 
   --container-content: var(--gr-content-max);
-  --container-prose: var(--gr-prose-max);
 }
 
 /* Tokens switch themselves, so dark: is only for the rare value with no token. It follows the
