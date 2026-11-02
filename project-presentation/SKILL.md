@@ -59,6 +59,9 @@ SVG icons are generic line icons — swap the `<path>`/`<rect>` for ones that ma
 - **Specific, not generic.** "Deterministic price engine over S&P benchmarks" beats "Powerful processing."
 - **Audience = decision-makers.** Lead with value and outcomes; keep jargon minimal and explained.
 - **Honest status.** Only tag things `live` if the repo shows they actually work. Put aspirational items under "Next."
+  This holds on every slide, not only the status list. A card, a pipeline step, a bullet or the feature callout
+  never states an unfinished feature in the present tense ("warnings land 12 hours ahead"). Say what it will
+  do and what it waits on ("warnings will go out by SMS once the contract is signed"), or leave it out.
 - **Tight copy.** Headlines short; card descriptions one or two sentences; bullets scannable.
 - **Bilingual / RTL** if the project is (the source example used an Arabic tagline) — mirror the project's languages.
 
