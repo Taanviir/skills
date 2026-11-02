@@ -151,7 +151,8 @@ function scanCss(file, src, offsetLine = 0) {
 
 // Yields { selector, line, props } for each style rule, nested ones included. At-rules are containers, not rules.
 function* cssRules(src, offsetLine = 0) {
-  const clean = src.replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, ' '));
+  const blank = (c) => c.replace(/[^\n]/g, ' ');
+  const clean = src.replace(/\/\*[\s\S]*?\*\//g, blank).replace(/^\s*\/\/.*$/gm, blank);
   const stack = [];
   let start = 0;
   for (let i = 0; i < clean.length; i++) {
