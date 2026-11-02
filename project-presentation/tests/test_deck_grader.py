@@ -24,6 +24,14 @@ def grade(html, name="tidepool-presentation.html", brand="#0f766e"):
         return r.returncode, r.stdout
 
 
+def phone(html):
+    with tempfile.TemporaryDirectory() as d:
+        with open(os.path.join(d, "x-presentation.html"), "w", encoding="utf-8") as f:
+            f.write(html)
+        r = subprocess.run([sys.executable, "-I", GRADER, "phone", d], capture_output=True, text=True)
+        return r.returncode, r.stdout
+
+
 class DeckGrader(unittest.TestCase):
     def test_filled_template_passes(self):
         code, out = grade(filled_template())
@@ -60,6 +68,19 @@ class DeckGrader(unittest.TestCase):
         code, out = grade(filled_template().replace("</body>", "<script>function (</script></body>"))
         self.assertEqual(code, 1)
         self.assertIn("parse", out)
+
+class PhoneWidth(unittest.TestCase):
+    """Needs headless Chromium from Playwright's cache."""
+
+    def test_template_with_a_long_title_fits(self):
+        code, out = phone(re.sub(r"\{\{[A-Z0-9_]+\}\}", "ledgerline", open(TEMPLATE, encoding="utf-8").read()))
+        self.assertEqual(code, 0, out)
+
+    def test_fixed_width_content_fails(self):
+        html = filled_template().replace("</style>", ".cover h1 { width: 600px; }</style>")
+        code, out = phone(html)
+        self.assertEqual(code, 1)
+        self.assertIn("slide 1", out)
 
 
 if __name__ == "__main__":

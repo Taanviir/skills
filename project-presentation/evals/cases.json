@@ -25,6 +25,17 @@
         ]
       },
       {
+        "name": "fits a phone",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/deck.py",
+          "phone",
+          "{ws}"
+        ]
+      },
+      {
         "name": "status is honest",
         "type": "judge",
         "file": "*presentation*.html",
@@ -84,6 +95,17 @@
           "{ws}",
           "ledgerline",
           "-"
+        ]
+      },
+      {
+        "name": "fits a phone",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/deck.py",
+          "phone",
+          "{ws}"
         ]
       },
       {
