@@ -40,6 +40,10 @@ ln -s "$PWD/project-presentation" ~/.claude/skills/project-presentation
 Then invoke it by asking for the task in natural language (or `/project-presentation`). Claude loads
 the matching `SKILL.md` and follows its instructions.
 
+## Testing
+
+Script tests and end-to-end evals are described in [`evals/README.md`](./evals/README.md).
+
 ## Adding a skill
 
 1. Create a new directory named after the skill.

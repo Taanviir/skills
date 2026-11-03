@@ -543,7 +543,7 @@ body:has(.tabbar) .toast-region { bottom: calc(var(--gr-tabbar-h) + var(--gr-spa
 .main { min-width: 0; }
 .content { width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: var(--gr-space-8) var(--gr-space-6) var(--gr-space-16); display: grid; gap: var(--gr-space-6); }
 .content.narrow { max-width: 760px; }
-.section { display: grid; gap: var(--gr-space-3); }
+.section { display: grid; align-content: start; gap: var(--gr-space-3); }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--gr-space-3); }
 .section-head h2 { font-size: var(--gr-text-heading); }
 
@@ -581,6 +581,25 @@ body:has(.tabbar) .toast-region { bottom: calc(var(--gr-tabbar-h) + var(--gr-spa
 .tabbar-add > span { display: grid; place-items: center; width: var(--gr-control-lg); height: var(--gr-control-lg); border-radius: var(--gr-radius-pill); background: var(--gr-accent-solid); color: var(--gr-fg-on-accent); box-shadow: var(--gr-shadow-raised); }
 .tabbar-add svg { width: var(--gr-icon-lg); height: var(--gr-icon-lg); }
 .tabbar-add:is(:active, [data-pressed]) { scale: var(--gr-press-scale); filter: brightness(0.88); transition-duration: var(--gr-dur-fast); }
+
+/* Folded sidebar (desktop): <html data-sidebar="collapsed">, set before first paint.
+   The column folds in one --gr-dur-fold motion, the same both ways. Labels (.fold) fade out at once and
+   fade back in once the column has nearly opened, so they never show squeezed. They only fade, so they
+   still name their row for screen readers. Parts that make no sense as icons (.fold-hide) also leave
+   the tab order. .fold-dot stands in for a count. */
+.sidebar .nav { grid-template-columns: minmax(0, 1fr); }
+.sidebar .nav-item { position: relative; overflow: hidden; }
+.sidebar .nav-item svg { flex-shrink: 0; }
+.fold, .fold-hide { white-space: nowrap; transition: opacity var(--gr-dur-fast) var(--gr-ease-out) var(--gr-dur-fold-delay); }
+.fold-dot { display: none; position: absolute; top: 6px; inset-inline-start: 20px; width: 7px; height: 7px; border-radius: var(--gr-radius-pill); background: var(--gr-accent-solid); outline: 2px solid var(--gr-bg-page); }
+@media (min-width: 961px) {
+  .app { transition: grid-template-columns var(--gr-dur-fold) var(--gr-ease-fold); }
+  .sidebar { overflow-x: hidden; }
+  :root[data-sidebar="collapsed"] .app { grid-template-columns: var(--gr-sidebar-w-collapsed) minmax(0, 1fr); }
+  :root[data-sidebar="collapsed"] .sidebar :is(.fold, .fold-hide) { opacity: 0; transition: opacity var(--gr-dur-fast) var(--gr-ease-out); }
+  :root[data-sidebar="collapsed"] .sidebar .fold-hide { visibility: hidden; pointer-events: none; transition: opacity var(--gr-dur-fast) var(--gr-ease-out), visibility var(--gr-dur-fold) step-end; }
+  :root[data-sidebar="collapsed"] .sidebar .fold-dot { display: block; }
+}
 
 /* ================================================================ page head */
 .page-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--gr-space-3) var(--gr-space-6); }

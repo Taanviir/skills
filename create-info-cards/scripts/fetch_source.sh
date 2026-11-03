@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: fetch_source.sh <youtube-url | article-url | file.pdf> <out-dir>
+# Usage: fetch_source.sh <youtube-url | article-url | file.pdf | file.html> <out-dir>
 # Writes <out-dir>/source.txt. Downloads go into <out-dir>/raw/.
 set -euo pipefail
 src="$1"; out="$2"
@@ -23,6 +23,9 @@ case "$src" in
     ;;
   http://*|https://*)
     uvx trafilatura --output-format txt --with-metadata -u "$src" > "$out/source.txt"
+    ;;
+  *.html|*.htm)
+    uvx trafilatura --output-format txt --with-metadata < "$src" > "$out/source.txt"
     ;;
   *)
     echo "Unknown source type: $src" >&2; exit 1

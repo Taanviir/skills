@@ -1,0 +1,247 @@
+[
+  {
+    "name": "cards-stop-at-fact-sheet",
+    "fixture": "fixtures/harbor-article.html",
+    "turns": [
+      "I saved this article as harbor-article.html. I want to send my friend the key points as images they can flick through."
+    ],
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "no page before approval",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/cards.py",
+          "no-page",
+          "{ws}"
+        ]
+      },
+      {
+        "name": "fact sheet has the headline numbers",
+        "type": "regex",
+        "pattern": "412.*1,?850|1,?850.*412"
+      },
+      {
+        "name": "proposes a card count",
+        "type": "regex",
+        "pattern": "\\b\\d{1,2}\\s+cards\\b|\\bcards\\b\\W{0,3}\\d{1,2}\\b"
+      },
+      {
+        "name": "asks for confirmation",
+        "type": "judge",
+        "criteria": "The reply shows a fact sheet of numbers, dates and names from an article, proposes an angle and a card count, and asks the user to confirm or correct before any cards are built. It does not claim the cards are finished."
+      }
+    ]
+  },
+  {
+    "name": "cards-article-full",
+    "fixture": "fixtures/harbor-article.html",
+    "turns": [
+      "I saved this article as harbor-article.html. I want to send my friend the key points as images they can flick through.",
+      "Facts, angle and count all look right. Go ahead and build the cards."
+    ],
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "first turn stopped for confirmation",
+        "type": "regex",
+        "turn": 0,
+        "pattern": "confirm|correct|look right|sound right|approve|go ahead"
+      },
+      {
+        "name": "cards built, fit, export, numbers traced",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/cards.py",
+          "built",
+          "{ws}",
+          "{evals}/fixtures/harbor-article.html",
+          "3",
+          "8",
+          "{replies}"
+        ]
+      },
+      {
+        "name": "design suits the topic",
+        "type": "judge",
+        "file": "*.html",
+        "criteria": "This HTML page holds a set of image cards summarizing a news article about a rebuilt cargo harbor. PASS if the visual design (the :root color tokens, fonts and the card-top strip) clearly borrows from the harbor or shipping world, for example nautical, port, container or tide-chart cues, and the page is not left on the template's placeholder blue-gray palette with {{...}} font names. FAIL otherwise."
+      }
+    ]
+  },
+  {
+    "name": "cards-pdf-full",
+    "fixture": "fixtures/library-report.pdf",
+    "turns": [
+      "Can you turn library-report.pdf into cards I can post for friends? Keep it to the main points.",
+      "Confirmed, the facts are right. Build them."
+    ],
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "cards built, fit, export, numbers traced",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/cards.py",
+          "built",
+          "{ws}",
+          "{evals}/fixtures/library-report.pdf",
+          "4",
+          "10",
+          "{replies}"
+        ]
+      },
+      {
+        "name": "reports the shortfalls too",
+        "type": "judge",
+        "file": "*.html",
+        "criteria": "These cards summarize a library network's annual report. The report has a section on where it fell short: a branch roof repair ran late, the summer reading program missed its target, and a mobile library van did not arrive. PASS if at least one card mentions at least one of these shortfalls. FAIL if the cards only report good news."
+      }
+    ]
+  },
+  {
+    "name": "cards-youtube-full",
+    "turns": [
+      "Get the transcript of https://www.youtube.com/watch?v=S6l3aRsecuE and make me image cards of the key points about how Meta built Muse, to send a friend.",
+      "That fact sheet is right, and Muse Spark is the correct model name. Build the cards."
+    ],
+    "timeout": 3000,
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "flags unsure names from captions",
+        "type": "judge",
+        "turn": 0,
+        "criteria": "The reply includes a fact sheet from a YouTube interview and separately lists names or terms the agent is unsure about because auto-captions may have garbled them."
+      },
+      {
+        "name": "cards built, fit, export",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/cards.py",
+          "built",
+          "{ws}",
+          "-",
+          "6",
+          "14",
+          "{replies}"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "cards-not-for-a-summary",
+    "fixture": "fixtures/harbor-article.html",
+    "turns": [
+      "Summarize harbor-article.html in three bullet points for me."
+    ],
+    "graders": [
+      {
+        "name": "skill did not fire",
+        "type": "skill_used",
+        "expect": false
+      },
+      {
+        "name": "no page built",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/cards.py",
+          "no-page",
+          "{ws}"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "cards-exact-count",
+    "fixture": "fixtures/library-report.pdf",
+    "turns": [
+      "Make exactly 4 image cards from library-report.pdf that I can send to friends.",
+      "Facts confirmed. Build the 4 cards."
+    ],
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "exactly 4 cards, fit, export, numbers traced",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/cards.py",
+          "built",
+          "{ws}",
+          "{evals}/fixtures/library-report.pdf",
+          "4",
+          "4",
+          "{replies}"
+        ]
+      },
+      {
+        "name": "planned count was 4",
+        "type": "regex",
+        "turn": 0,
+        "pattern": "\\b(4|four)\\s+cards\\b|\\bcards\\b\\W{0,3}(4|four)\\b"
+      }
+    ]
+  },
+  {
+    "name": "cards-correction-applied",
+    "fixture": "fixtures/harbor-article.html",
+    "turns": [
+      "Turn harbor-article.html into cards for my friend who works in shipping.",
+      "One change: lead with the 620 permanent jobs instead of the cost, that's what my friend cares about. Everything else is right, build them."
+    ],
+    "graders": [
+      {
+        "name": "skill fired",
+        "type": "skill_used"
+      },
+      {
+        "name": "cards built, fit, export, numbers traced",
+        "type": "cmd",
+        "argv": [
+          "python3",
+          "-I",
+          "{evals}/graders/cards.py",
+          "built",
+          "{ws}",
+          "{evals}/fixtures/harbor-article.html",
+          "3",
+          "8",
+          "{replies}"
+        ]
+      },
+      {
+        "name": "cover leads with 620 jobs",
+        "type": "judge",
+        "file": "*.html",
+        "criteria": "This page holds image cards about a rebuilt harbor. The user asked for the first card to lead with the 620 permanent jobs rather than the $412 million cost. PASS if the first card's headline or most prominent number is about the 620 permanent jobs. FAIL if the first card leads with the cost or something else."
+      }
+    ]
+  }
+]

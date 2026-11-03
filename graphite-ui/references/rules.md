@@ -30,8 +30,9 @@ Apply every rule to every screen you touch. Each rule says what to do; the audit
 - Every screen works at 375px wide: the sidebar becomes a drawer, `.fields-2` stacks, tables scroll inside `.table-wrap`, dialogs become bottom sheets that slide up from the edge.
 
 ## Motion
-- Transitions only on `color`, `background-color`, `box-shadow`, `opacity`, `translate`, `scale`. Never `all`.
+- Transitions only on `color`, `background-color`, `box-shadow`, `opacity`, `translate`, `scale`. Never `all`. The one layout transition is the folded sidebar's `grid-template-columns`.
 - Durations: `--gr-dur-fast` for hover, `--gr-dur` for menus, toggles and a press fading out, `--gr-dur-slow` for dialogs, sheets and toasts. Easing `--gr-ease-out` for anything entering, `--gr-ease-in-out` for anything moving between two places.
+- The sidebar folds in `--gr-dur-fold` with `--gr-ease-fold`, the same both ways. Its labels fade out at once and come back only once the column has nearly opened.
 - `base.css` already handles reduced motion. Hover effects sit inside `@media (hover: hover)`.
 
 ## Interaction and accessibility
