@@ -29,7 +29,7 @@
       {
         "name": "proposes a card count",
         "type": "regex",
-        "pattern": "\\b\\d{1,2}\\s+cards\\b"
+        "pattern": "\\b\\d{1,2}\\s+cards\\b|\\bcards\\b\\W{0,3}\\d{1,2}\\b"
       },
       {
         "name": "asks for confirmation",
@@ -205,7 +205,7 @@
         "name": "planned count was 4",
         "type": "regex",
         "turn": 0,
-        "pattern": "\\b(4|four)\\s+cards\\b"
+        "pattern": "\\b(4|four)\\s+cards\\b|\\bcards\\b\\W{0,3}(4|four)\\b"
       }
     ]
   },
