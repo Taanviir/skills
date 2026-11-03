@@ -40,12 +40,14 @@ def app_files(root):
 class Markup(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.ids, self.texts, self.scripts, self._in_script = set(), [], [], False
+        self.ids, self.texts, self.labels, self.scripts, self._in_script = set(), [], set(), [], False
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if "id" in a:
             self.ids.add(a["id"])
+        if a.get("aria-label"):
+            self.labels.add(" ".join(a["aria-label"].split()))
         self._in_script = tag == "script" and "src" not in a
 
     def handle_endtag(self, tag):
@@ -123,7 +125,9 @@ def reworked(run_dir, fixture):
         lost_ids = sorted(before.ids - after.ids)
         if lost_ids:
             fail(f"{rel} lost element ids: {lost_ids}")
-        lost_text = [t for t in before.texts if t not in after.texts]
+        # A control whose label lives on in another control's aria-label was a duplicate, such as a
+        # dialog's footer Close next to its header ×.
+        lost_text = [t for t in before.texts if t not in after.texts and t not in after.labels]
         if lost_text:
             fail(f"{rel} lost visible text: {lost_text[:5]}")
         if "data-bs-theme" in open(pages[rel], encoding="utf-8").read():

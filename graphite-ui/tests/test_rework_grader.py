@@ -85,6 +85,14 @@ class ReworkGrader(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("Keep it", out)
 
+    def test_text_kept_as_an_aria_label_passes(self):
+        self.rework()
+        page = os.path.join(self.app, "index.html")
+        html = open(page).read().replace('id="keep">Keep it</button>', 'id="keep" aria-label="Keep it"></button>')
+        open(page, "w").write(html)
+        code, out = grade("reworked", self.app, PLAIN)
+        self.assertEqual(code, 0, out)
+
     def test_a_leftover_old_token_fails(self):
         self.rework()
         with open(os.path.join(self.app, "style.css"), "a") as f:
