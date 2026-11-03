@@ -108,11 +108,11 @@ def skill_fired(turns, skill):
     return False
 
 
-def judge(criteria, material):
+def judge(criteria, material, what):
     prompt = (
         "You are grading the output of an AI agent. Read the material and decide whether it meets "
         "the criteria. Reply with PASS or FAIL on the first line, then one sentence of reason.\n\n"
-        f"Criteria:\n{criteria}\n\nMaterial:\n{material[:60000]}"
+        f"Criteria:\n{criteria}\n\nMaterial ({what}):\n{material[:60000]}"
     )
     out = subprocess.run(["claude", "-p", prompt, "--model", JUDGE_MODEL, "--output-format", "json", "--tools", ""],
                          capture_output=True, text=True, timeout=300)
@@ -149,9 +149,11 @@ def grade(case, ws, turns):
             if g.get("file"):
                 paths = [p for p in glob.glob(os.path.join(ws, g["file"]), recursive=True) if "/.claude/" not in p]
                 material = "\n\n".join(f"--- {os.path.relpath(p, ws)}\n" + open(p, encoding="utf-8", errors="ignore").read() for p in paths) or "(no file matched)"
+                what = "files the agent wrote"
             else:
                 material = turns[g["turn"]]["text"] if "turn" in g and g["turn"] < len(turns) else last
-            ok, note, c = judge(g["criteria"], material)
+                what = "the agent's reply to the user, not the user's request"
+            ok, note, c = judge(g["criteria"], material, what)
             cost += c
         else:
             ok, note = False, f"unknown grader type {kind}"
