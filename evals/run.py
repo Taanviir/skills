@@ -13,6 +13,7 @@ import argparse
 import concurrent.futures as cf
 import fnmatch
 import glob
+import hashlib
 import json
 import os
 import re
@@ -60,6 +61,18 @@ def workspace(case):
     for s in skills():
         os.symlink(os.path.join(REPO, s), os.path.join(ws, ".claude", "skills", s))
     return ws
+
+
+def snapshot(ws):
+    """Path -> content hash for every file the agent could have touched, skipping .claude."""
+    files = {}
+    for root, dirs, names in os.walk(ws):
+        dirs[:] = [d for d in dirs if d not in (".claude", "node_modules", ".git")]
+        for n in names:
+            p = os.path.join(root, n)
+            with open(p, "rb") as f:
+                files[os.path.relpath(p, ws)] = hashlib.sha1(f.read()).hexdigest()
+    return files
 
 
 def run_turn(ws, prompt, session, budget, timeout):
@@ -137,6 +150,14 @@ def grade(case, ws, turns):
         if kind == "skill_used":
             fired = skill_fired(turns, g.get("skill", case["skill"]))
             ok, note = fired == g.get("expect", True), f"skill fired: {fired}"
+        elif kind == "no_writes":
+            n = g.get("turn", 0)
+            if n >= len(turns):
+                ok, note = False, f"turn {n} never ran"
+            else:
+                before, after = turns[n]["files_before"], turns[n]["files"]
+                changed = sorted(k for k in before.keys() | after.keys() if before.get(k) != after.get(k))
+                ok, note = not changed, f"changed in turn {n}: {changed[:5]}" if changed else f"no files changed in turn {n}"
         elif kind == "cmd":
             argv = [re.sub(r"\{(?:ws|skill_dir|evals|replies)\}", lambda m: subs[m.group(0)], a) for a in g["argv"]]
             p = subprocess.run(argv, capture_output=True, text=True, timeout=g.get("timeout", 600))
@@ -165,8 +186,11 @@ def grade(case, ws, turns):
 def run_case(case, run_no, args, out_dir):
     ws = workspace(case)
     turns, session, started = [], None, time.time()
+    files = snapshot(ws)
     for prompt in case["turns"]:
         t = run_turn(ws, prompt, session, args.budget, case.get("timeout", 1800))
+        t["files_before"], t["files"] = files, snapshot(ws)
+        files = t["files"]
         turns.append(t)
         session = t["session"]
         if t["error"] or not session:
@@ -176,7 +200,7 @@ def run_case(case, run_no, args, out_dir):
         "case": case["name"], "skill": case["skill"], "run": run_no, "workspace": ws,
         "seconds": round(time.time() - started), "cost": round(sum(t["cost"] for t in turns) + judge_cost, 4),
         "pass": all(g["pass"] for g in graders), "graders": graders,
-        "turns": [{k: v for k, v in t.items() if k != "events"} for t in turns],
+        "turns": [{k: v for k, v in t.items() if k not in ("events", "files", "files_before")} for t in turns],
     }
     with open(os.path.join(out_dir, f"{case['name']}-{run_no}.json"), "w", encoding="utf-8") as f:
         json.dump(record, f, indent=2)

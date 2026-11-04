@@ -38,6 +38,7 @@ Each skill keeps its cases in `<skill>/evals/cases.json`, its fixtures in `<skil
 |---|---|
 | `skill_used` | the agent loaded the skill, or did not when `"expect": false` |
 | `cmd` | the command exits 0. `{ws}`, `{evals}`, `{skill_dir}` and `{replies}` (a file with the agent's replies) are filled in |
+| `no_writes` | no file in the workspace changed during turn `"turn": n` (default 0), such as a turn that should stop for approval |
 | `regex` | the pattern is found in the final reply, or in turn `"turn": n` |
 | `judge` | Haiku answers PASS to the criteria, given the final reply or the files matching `"file"` |
 
