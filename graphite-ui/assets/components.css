@@ -209,7 +209,7 @@ input[type="range"] { width: 100%; margin: 0; accent-color: var(--gr-accent-soli
 .tab[aria-selected="true"], .tab[aria-current="page"] { color: var(--gr-fg-primary); }
 .tab[aria-selected="true"]::after, .tab[aria-current="page"]::after { background: var(--gr-accent-solid); }
 .tab:focus-visible { outline-offset: -4px; border-radius: var(--gr-radius-control); }
-.tab .count { color: var(--gr-fg-tertiary); font-size: var(--gr-text-label); font-variant-numeric: tabular-nums; }
+.tab .count { color: var(--gr-fg-secondary); font-size: var(--gr-text-label); font-variant-numeric: tabular-nums; }
 @media (hover: hover) { .tab:hover { color: var(--gr-fg-primary); } }
 .tab:is(:active, [data-pressed]) { background: var(--gr-bg-hover); color: var(--gr-fg-primary); transition: none; }
 
@@ -438,7 +438,7 @@ body:has(.tabbar) .toast-region { bottom: calc(var(--gr-tabbar-h) + var(--gr-spa
 @media (hover: hover) { .menu-item:hover { background: var(--gr-bg-hover); } }
 .menu-item:is(:active, [data-pressed]) { background: var(--gr-bg-hover); transition: none; }
 .menu-sep { height: 1px; margin: var(--gr-space-1) calc(var(--gr-space-1) * -1); background: var(--gr-border-separator); }
-.menu-label { padding: var(--gr-space-1-5) var(--gr-space-2) var(--gr-space-1); color: var(--gr-fg-tertiary); font-size: var(--gr-text-label); font-weight: var(--gr-weight-medium); }
+.menu-label { padding: var(--gr-space-1-5) var(--gr-space-2) var(--gr-space-1); color: var(--gr-fg-secondary); font-size: var(--gr-text-label); font-weight: var(--gr-weight-medium); }
 
 /* ================================================================ tooltip */
 .tooltip {
@@ -523,7 +523,7 @@ body:has(.tabbar) .toast-region { bottom: calc(var(--gr-tabbar-h) + var(--gr-spa
   transition: background-color var(--gr-dur-fast) var(--gr-ease-out), color var(--gr-dur-fast) var(--gr-ease-out);
 }
 .nav-item svg { width: var(--gr-icon-md); height: var(--gr-icon-md); }
-.nav-item .count { margin-inline-start: auto; color: var(--gr-fg-tertiary); font-size: var(--gr-text-label); font-variant-numeric: tabular-nums; }
+.nav-item .count { margin-inline-start: auto; color: var(--gr-fg-secondary); font-size: var(--gr-text-label); font-variant-numeric: tabular-nums; }
 .nav-item[aria-current="page"] { background: var(--gr-bg-surface); color: var(--gr-fg-primary); box-shadow: var(--gr-shadow-border); }
 @media (hover: hover) { .nav-item:not([aria-current="page"]):hover { background: var(--gr-bg-hover); color: var(--gr-fg-primary); } }
 .nav-item:not([aria-current="page"]):is(:active, [data-pressed]) { background: var(--gr-bg-hover); color: var(--gr-fg-primary); transition: none; }

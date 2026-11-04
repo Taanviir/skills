@@ -194,3 +194,42 @@ test('contrast: every knob pair brand.mjs prints passes', () => {
     assert.equal(r.code, 0, `${hex} -> ${h}/${c}\n${r.out}`);
   }
 });
+
+test('contrast: white text on the danger button is checked in both themes', () => {
+  const r = run('contrast.mjs', []);
+  assert.equal(r.out.match(/--gr-fg-on-accent on --gr-danger-solid/g).length, 2);
+});
+
+test('contrast: a hue the screen cannot show is a gamut problem, not a contrast failure', () => {
+  assert.match(run('contrast.mjs', ['--hue', '90', '--chroma', '1']).out, /GAMUT .*lower --chroma/);
+});
+
+test('contrast: --help prints usage and an unknown option exits 2', () => {
+  assert.equal(run('contrast.mjs', ['--help']).code, 0);
+  assert.equal(run('contrast.mjs', ['--bogus']).code, 2);
+});
+
+// ---------- export.mjs ----------
+
+test('export: every semantic color comes out as hex for both themes', () => {
+  const r = run('export.mjs', []);
+  assert.equal(r.code, 0, r.out);
+  const { light, dark } = JSON.parse(r.out);
+  assert.deepEqual(Object.keys(light), Object.keys(dark));
+  for (const key of ['bg-page', 'fg-primary', 'accent-solid', 'danger-text', 'series-5', 'scrim']) assert.match(light[key], /^#[0-9a-f]{6}(?:[0-9a-f]{2})?$/);
+  assert.ok(!Object.keys(light).some((k) => k.startsWith('gray-')), 'primitives stay out');
+});
+
+test('export: the hue knob moves the accent and the css format has a dark block', () => {
+  const blue = JSON.parse(run('export.mjs', []).out).light['accent-solid'];
+  const red = JSON.parse(run('export.mjs', ['--hue', '25']).out).light['accent-solid'];
+  assert.notEqual(blue, red);
+  assert.match(run('export.mjs', ['--format', 'css']).out, /prefers-color-scheme: dark[\s\S]*--gr-bg-page: #/);
+});
+
+// ---------- brand.mjs status notes ----------
+
+test('brand: a hue on top of a status color gets a note', () => {
+  assert.match(run('brand.mjs', ['#16a34a']).out, /close to the success color/);
+  assert.doesNotMatch(run('brand.mjs', ['#2563eb']).out, /close to the/);
+});

@@ -41,7 +41,7 @@ hr { border: 0; border-top: 1px solid var(--gr-border-separator); margin: var(--
 code, kbd, samp, pre { font-family: var(--gr-font-mono); font-size: 0.92em; } /* gr-allow: mono runs large */
 
 ::selection { background: var(--gr-accent-bg-subtle); color: var(--gr-fg-primary); }
-::placeholder { color: var(--gr-fg-tertiary); opacity: 1; }
+::placeholder { color: var(--gr-fg-secondary); opacity: 1; }
 
 :focus-visible { outline: 2px solid var(--gr-border-focus); outline-offset: 2px; }
 :focus:not(:focus-visible) { outline: none; }
