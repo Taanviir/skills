@@ -4,7 +4,7 @@ A personal collection of agent skills I use in my day-to-day work. Each skill li
 directory and packages instructions (and any supporting assets) that teach a coding agent how to do a
 specific task well.
 
-Site, with the latest eval results and the Graphite UI board: https://taanviir.github.io/skills/
+Site, with the Graphite UI board: https://taanviir.github.io/skills/
 
 ## Skills
 
