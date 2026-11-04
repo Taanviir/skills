@@ -1,0 +1,42 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>deck-tidepool run 2</title><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap"><link rel="stylesheet" href="../../graphite-ui/tokens.css"><link rel="stylesheet" href="../../graphite-ui/base.css"><link rel="stylesheet" href="../../graphite-ui/components.css"><style>
+.brand { font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
+.topbar { padding: 0; }
+.topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: 0 var(--gr-space-6); }
+.topbar nav { display: flex; gap: var(--gr-space-1); overflow-x: auto; }
+.runs { display: flex; flex-wrap: wrap; gap: var(--gr-space-1-5); }
+.runs a { text-decoration: none; }
+.turn { display: grid; gap: var(--gr-space-3); }
+.bubble { justify-self: end; max-width: 80%; padding: var(--gr-space-3) var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-accent-bg-subtle); }
+.text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.reply { max-height: 480px; overflow-y: auto; }
+.tools { display: grid; gap: var(--gr-space-1); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
+.tools code { overflow-wrap: anywhere; }
+.tools-foot { display: block; }
+details > summary { cursor: pointer; }
+pre.report { margin: 0; overflow-x: auto; font-size: var(--gr-text-label); line-height: 1.5; }
+.up { color: var(--gr-danger-text); } .down { color: var(--gr-success-text); }
+.graders .list-row { grid-template-columns: minmax(0, 1fr) auto; }
+.text code { font-size: 0.92em; }
+@media (max-width: 640px) {
+  .topbar .bar { padding: 0 var(--gr-space-4); }
+  .topbar .brand { display: none; }
+  .content { padding-inline: var(--gr-space-4); }
+  .bubble { max-width: 100%; }
+}
+</style></head><body><header class="topbar"><div class="bar"><a class="brand" href="../../">Taanviir's skills</a><span class="spacer"></span><nav aria-label="Site"><a class="btn ghost" href="../../#skills">Skills</a><a class="btn ghost" href="../" aria-current="page">Eval results</a><a class="btn ghost" href="../../graphite-ui/preview.html">Graphite UI board</a><a class="btn ghost" href="https://github.com/Taanviir/skills">GitHub</a></nav></div></header><main class="content"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Eval results</a><span>/</span><span>project-presentation</span><span>/</span><span aria-current="page">deck-tidepool run 2</span></nav><div class="page-head"><div class="titles"><h1>deck-tidepool, run 2</h1><p class="nums">$0.33 · 57s · 1 turn</p></div><div class="actions"><span class="badge success">Passed</span></div></div><section class="section"><div class="section-head"><h2>Graders</h2></div><div class="card"><div class="list graders"><div class="list-row"><div class="meta"><span>skill fired</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>deck built, self-contained, on brand</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>fits a phone</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>status is honest</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>content is specific</span></div><span class="status success">pass</span></div></div></div></section><section class="section"><div class="section-head"><h2>Turn 1</h2><span class="text-caption text-secondary nums">$0.33</span></div><div class="turn"><div class="bubble text">Make a presentation of this project I can show my manager.</div><div class="card"><div class="card-body reply"><div class="text">I&#x27;ve made the deck: <code>/tmp/eval-deck-tidepool-ve_emwo9/tidepool-presentation.html</code>. I checked that every template placeholder got filled, but I haven&#x27;t opened it in a browser to see how it looks.
+
+- <strong>To view:</strong> double-click the file, or open it in any browser. It needs no internet connection.
+- <strong>To move between slides:</strong> use ← → or click the right or left half of the screen. The dots at the bottom jump to a slide, and Home/End go to the first or last one.
+- <strong>Colors:</strong> taken from the teal in <code>web/style.css</code> (<code>#0f766e</code>).
+
+<strong>The 5 slides</strong>
+1. <strong>Cover:</strong> what Tidepool does, and that it has been piloting at Port Calloway and Westhaven since January 2026.
+2. <strong>What it delivers:</strong> gauge sync, tide prediction, low-water alerts (marked in progress) and the port dashboard.
+3. <strong>How it works:</strong> sync → model → check → show, plus why it&#x27;s cheap to run.
+4. <strong>Headline feature:</strong> predictions within 8 cm of the real water level 95% of the time, measured at both pilot ports.
+5. <strong>Status:</strong> live today are sync, prediction and the dashboard. In progress are the SMS alerts. Planned are storm-surge adjustment and a mobile app.
+
+<strong>Things to know before you present</strong>
+- <strong>Alerts aren&#x27;t live, and the deck says so.</strong> SMS messages won&#x27;t go out until the SMS provider contract is signed; for now alerts only go to a log file. Slide 5 names the contract as the open blocker.
+- <strong>The dashboard server file is missing.</strong> The README says the dashboard works, but <code>web/server.ts</code>, which <code>npm run web</code> needs, isn&#x27;t in this folder. I listed the dashboard as live because the README does. Check it runs before you tell your manager it does.
+- <strong>The code checks gauges every 5 minutes, not 6.</strong> The README says readings come in every 6 minutes. The code polls every 5 so it doesn&#x27;t miss any. The deck uses both numbers correctly.</div></div><details class="card-foot tools-foot"><summary class="text-caption">5 tool calls</summary><div class="tools"><div><strong>Skill</strong> <code>project-presentation</code></div><div><strong>Bash</strong> <code>find . -path ./node_modules -prune -o -type f -print | grep -v &#x27;/.git/&#x27; | head -100 &amp;&amp; cat README.md 2&gt;/dev/null</code></div><div><strong>Bash</strong> <code>cat package.json web/style.css src/*.ts; cat .claude/skills/project-presentation/assets/template.html</code></div><div><strong>Bash</strong> <code>mkdir -p /tmp/deckgen &amp;&amp; cat &gt; /tmp/deckgen/fill.py &lt;&lt;&#x27;EOF&#x27;</code></div><div><strong>Bash</strong> <code>sed -i &#x27;s|Main ask: sign the SMS provider contract. That.s the only thing between the finished alert logic and alerts re</code></div></div></details></div></div></section></main></body></html>

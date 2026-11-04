@@ -1,0 +1,106 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>graphite-audit-bootstrap run 3</title><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap"><link rel="stylesheet" href="../../graphite-ui/tokens.css"><link rel="stylesheet" href="../../graphite-ui/base.css"><link rel="stylesheet" href="../../graphite-ui/components.css"><style>
+.brand { font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
+.topbar { padding: 0; }
+.topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: 0 var(--gr-space-6); }
+.topbar nav { display: flex; gap: var(--gr-space-1); overflow-x: auto; }
+.runs { display: flex; flex-wrap: wrap; gap: var(--gr-space-1-5); }
+.runs a { text-decoration: none; }
+.turn { display: grid; gap: var(--gr-space-3); }
+.bubble { justify-self: end; max-width: 80%; padding: var(--gr-space-3) var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-accent-bg-subtle); }
+.text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.reply { max-height: 480px; overflow-y: auto; }
+.tools { display: grid; gap: var(--gr-space-1); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
+.tools code { overflow-wrap: anywhere; }
+.tools-foot { display: block; }
+details > summary { cursor: pointer; }
+pre.report { margin: 0; overflow-x: auto; font-size: var(--gr-text-label); line-height: 1.5; }
+.up { color: var(--gr-danger-text); } .down { color: var(--gr-success-text); }
+.graders .list-row { grid-template-columns: minmax(0, 1fr) auto; }
+.text code { font-size: 0.92em; }
+@media (max-width: 640px) {
+  .topbar .bar { padding: 0 var(--gr-space-4); }
+  .topbar .brand { display: none; }
+  .content { padding-inline: var(--gr-space-4); }
+  .bubble { max-width: 100%; }
+}
+</style></head><body><header class="topbar"><div class="bar"><a class="brand" href="../../">Taanviir's skills</a><span class="spacer"></span><nav aria-label="Site"><a class="btn ghost" href="../../#skills">Skills</a><a class="btn ghost" href="../" aria-current="page">Eval results</a><a class="btn ghost" href="../../graphite-ui/preview.html">Graphite UI board</a><a class="btn ghost" href="https://github.com/Taanviir/skills">GitHub</a></nav></div></header><main class="content"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Eval results</a><span>/</span><span>graphite-ui</span><span>/</span><span aria-current="page">graphite-audit-bootstrap run 3</span></nav><div class="page-head"><div class="titles"><h1>graphite-audit-bootstrap, run 3</h1><p class="nums">$0.31 · 31s · 1 turn</p></div><div class="actions"><span class="badge success">Passed</span></div></div><section class="section"><div class="section-head"><h2>Graders</h2></div><div class="card"><div class="list graders"><div class="list-row"><div class="meta"><span>skill fired</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>app unchanged</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>flags the !important overrides</span></div><span class="status success">pass</span></div></div></div></section><section class="section"><div class="section-head"><h2>Turn 1</h2><span class="text-caption text-secondary nums">$0.31</span></div><div class="turn"><div class="bubble text">Audit this Bootstrap app against graphite-ui. Report only, no edits.</div><div class="card"><div class="card-body reply"><div class="text">Audit only. Nothing was edited.
+
+<strong>App:</strong> Clinic Rota. It is one static page, <code>index.html</code>, with Bootstrap 5.3.8 from the CDN and one stylesheet, <code>custom.css</code>. It has no JS color configs and no RTL. It has a hand-rolled <code>data-bs-theme</code> dark-mode toggle.
+
+<strong>Baseline:</strong> <code>audit.mjs index.html custom.css</code> found 16 findings, all in <code>custom.css</code>, and exited 1. My first run also scanned <code>.claude/skills/</code> and reported 280 findings. That count was the skills&#x27; own templates, so I&#x27;ve excluded it.
+
+## Audit findings by rule
+
+- <strong>color-literal (6)</strong>
+  - <code>custom.css:2</code> <code>--brand: #7c3aed</code>
+  - <code>custom.css:3</code> <code>--bs-primary: #7c3aed</code>
+  - <code>custom.css:7</code> navbar shadow <code>rgba(0,0,0,.15)</code>
+  - <code>custom.css:8</code> <code>.kpi</code> border <code>#e9d5ff</code>
+  - <code>custom.css:10</code> <code>.table th</code> color <code>#6b7280</code>
+  - <code>custom.css:11</code> <code>.btn-primary</code> background <code>#7c3aed</code>
+- <strong>legacy-token (3):</strong> <code>--brand</code>, <code>--bs-primary</code>, <code>--bs-primary-rgb</code> (<code>custom.css:2-4</code>).
+- <strong>legacy-ref (1):</strong> <code>.kpi-value</code> reads <code>var(--brand)</code> (<code>custom.css:9</code>).
+- <strong>raw-radius (2):</strong> <code>.kpi</code> 14px (<code>:8</code>), <code>.modal-content</code> 18px (<code>:12</code>). These should be <code>--gr-radius-surface</code> (12px).
+- <strong>raw-font-size (2):</strong>
+  - <code>.kpi-value</code> is 34px (<code>:9</code>). Use <code>display</code> (32px) at weight 600, not 700.
+  - <code>.table th</code> is 13px (<code>:10</code>). Use <code>caption</code>.
+- <strong>raw-shadow (1):</strong> navbar <code>box-shadow</code> (<code>:7</code>).
+- <strong>important (1):</strong> <code>.btn-primary</code> <code>!important</code> (<code>:11</code>). It overrides Bootstrap&#x27;s compiled color, and once the button is ported it should go.
+
+## Problems the audit can&#x27;t see (markup and Bootstrap)
+
+- <strong>Dark mode:</strong>
+  - <code>data-bs-theme=&quot;light&quot;</code> on <code>&lt;html&gt;</code> (<code>index.html:2</code>) and the toggle script (<code>:45-50</code>) should be deleted. Graphite tokens switch theme themselves.
+  - If the toggle stays, it should set <code>data-theme</code> instead.
+- <strong>Brand override doesn&#x27;t fully work:</strong> <code>--bs-primary</code> and <code>--bs-primary-rgb</code> on <code>:root</code> don&#x27;t reach <code>.btn-primary</code>, alerts or badges. Bootstrap compiles those colors in with Sass, which is why the <code>!important</code> hack exists.
+- <strong>Bootstrap color utilities in the markup:</strong> these read <code>--bs-*-rgb</code> triplets, which can&#x27;t hold a token, so each needs a token rule or a Graphite class.
+  - <code>bg-primary</code> (navbar)
+  - <code>text-danger</code> and <code>text-muted</code> (KPIs)
+  - <code>bg-success</code>, <code>bg-danger</code>, <code>bg-warning text-dark</code> (badges)
+  - <code>btn-outline-light</code>
+- <strong>Status badges</strong> (<code>index.html:28-30</code>): these show a state in a table cell. Under Graphite&#x27;s rules that is <code>.status</code> (dot plus word), not <code>.badge</code>. The words are present, so they don&#x27;t rely on color alone.
+- <strong>The <code>.kpi</code> card</strong> uses a 1px purple border. Graphite draws card edges with <code>--gr-shadow-border</code> and <code>border: 0</code>.
+- <strong>The modal</strong> is a Bootstrap <code>.modal</code>. Graphite&#x27;s recipe is a native <code>&lt;dialog class=&quot;dialog&quot;&gt;</code>.
+
+## Proposed token map
+
+| Legacy | Maps to |
+|---|---|
+| <code>--brand</code> | delete; reads become <code>--gr-accent-text</code> (for <code>.kpi-value</code>) |
+| <code>--bs-primary</code> | delete (<code>bootstrap.css</code> bridge handles it) |
+| <code>--bs-primary-rgb</code> | delete |
+| <code>#e9d5ff</code> (kpi border) | <code>--gr-shadow-border</code> |
+| <code>#6b7280</code> (th) | <code>--gr-fg-secondary</code> |
+| <code>#7c3aed</code> (btn) | <code>--gr-accent-solid</code>, via the <code>.btn-primary</code> port |
+| navbar shadow | <code>--gr-shadow-*</code>, or none (topbar recipe) |
+
+## Proposed component map
+
+| App selector | Recipe | Approach |
+|---|---|---|
+| <code>.navbar</code> | <code>.topbar</code> | port |
+| <code>.btn-primary</code> / <code>.btn-secondary</code> / <code>.btn-outline-light</code> | button | port onto Bootstrap selectors |
+| <code>.card.kpi</code> + <code>.kpi-value</code> | <code>.stats</code> + <code>.stat</code> | port |
+| <code>.table.table-striped</code> | <code>.table-wrap</code> + <code>.table</code> | port |
+| <code>.badge bg-*</code> | <code>.status</code> + tone | adopt |
+| <code>.alert-danger</code> | <code>.notice</code> danger | port |
+| <code>.modal</code> | <code>&lt;dialog class=&quot;dialog&quot;&gt;</code> | adopt (or port onto <code>.modal-content</code>) |
+| <code>.form-select</code> | input | port |
+
+## Brand
+
+- <code>brand.mjs &quot;#7c3aed&quot;</code> gives <code>--gr-accent-h: 293; --gr-accent-c: 1</code>.
+- <strong>Warning:</strong> this hue is close to Graphite&#x27;s violet info color, so the primary button will read as &quot;info&quot;. Every status needs its word or icon, which the current markup already has.
+
+## Can be deleted on rework
+
+- All of <code>custom.css</code>&#x27;s current rules.
+- The <code>data-bs-theme</code> attribute and the toggle script.
+- The <code>--bs-primary*</code> overrides.
+
+## Not checked
+
+- No contrast run.
+- No light/dark, keyboard focus, 375px touch or browser checks. No dev server was started.
+
+If you want the rework, approve or adjust the two maps and the brand knobs, and I&#x27;ll go on to install.</div></div><details class="card-foot tools-foot"><summary class="text-caption">6 tool calls</summary><div class="tools"><div><strong>Skill</strong> <code>graphite-ui</code></div><div><strong>Bash</strong> <code>find . -path ./.claude -prune -o -path ./node_modules -prune -o -type f -print | head -100; node --version</code></div><div><strong>Read</strong> <code>/tmp/eval-graphite-audit-bootstrap-or7rgb4k/.claude/skills/graphite-ui/references/stacks.md</code></div><div><strong>Bash</strong> <code>cat -n index.html custom.css; echo ---; node .claude/skills/graphite-ui/scripts/audit.mjs . ; echo &quot;exit $?&quot;</code></div><div><strong>Bash</strong> <code>node .claude/skills/graphite-ui/scripts/audit.mjs index.html custom.css; echo &quot;exit $?&quot;; node .claude/skills/graphite-ui</code></div><div><strong>Grep</strong> <code>(?i)kpi|stat|badge|alert|modal|navbar|table|bridge|--bs-</code></div></div></details></div></div></section></main></body></html>

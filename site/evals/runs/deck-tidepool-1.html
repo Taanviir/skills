@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>deck-tidepool run 1</title><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap"><link rel="stylesheet" href="../../graphite-ui/tokens.css"><link rel="stylesheet" href="../../graphite-ui/base.css"><link rel="stylesheet" href="../../graphite-ui/components.css"><style>
+.brand { font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
+.topbar { padding: 0; }
+.topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: 0 var(--gr-space-6); }
+.topbar nav { display: flex; gap: var(--gr-space-1); overflow-x: auto; }
+.runs { display: flex; flex-wrap: wrap; gap: var(--gr-space-1-5); }
+.runs a { text-decoration: none; }
+.turn { display: grid; gap: var(--gr-space-3); }
+.bubble { justify-self: end; max-width: 80%; padding: var(--gr-space-3) var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-accent-bg-subtle); }
+.text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.reply { max-height: 480px; overflow-y: auto; }
+.tools { display: grid; gap: var(--gr-space-1); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
+.tools code { overflow-wrap: anywhere; }
+.tools-foot { display: block; }
+details > summary { cursor: pointer; }
+pre.report { margin: 0; overflow-x: auto; font-size: var(--gr-text-label); line-height: 1.5; }
+.up { color: var(--gr-danger-text); } .down { color: var(--gr-success-text); }
+.graders .list-row { grid-template-columns: minmax(0, 1fr) auto; }
+.text code { font-size: 0.92em; }
+@media (max-width: 640px) {
+  .topbar .bar { padding: 0 var(--gr-space-4); }
+  .topbar .brand { display: none; }
+  .content { padding-inline: var(--gr-space-4); }
+  .bubble { max-width: 100%; }
+}
+</style></head><body><header class="topbar"><div class="bar"><a class="brand" href="../../">Taanviir's skills</a><span class="spacer"></span><nav aria-label="Site"><a class="btn ghost" href="../../#skills">Skills</a><a class="btn ghost" href="../" aria-current="page">Eval results</a><a class="btn ghost" href="../../graphite-ui/preview.html">Graphite UI board</a><a class="btn ghost" href="https://github.com/Taanviir/skills">GitHub</a></nav></div></header><main class="content"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Eval results</a><span>/</span><span>project-presentation</span><span>/</span><span aria-current="page">deck-tidepool run 1</span></nav><div class="page-head"><div class="titles"><h1>deck-tidepool, run 1</h1><p class="nums">$0.48 · 84s · 1 turn</p></div><div class="actions"><span class="badge success">Passed</span></div></div><section class="section"><div class="section-head"><h2>Graders</h2></div><div class="card"><div class="list graders"><div class="list-row"><div class="meta"><span>skill fired</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>deck built, self-contained, on brand</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>fits a phone</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>status is honest</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>content is specific</span></div><span class="status success">pass</span></div></div></div></section><section class="section"><div class="section-head"><h2>Turn 1</h2><span class="text-caption text-secondary nums">$0.47</span></div><div class="turn"><div class="bubble text">Make a presentation of this project I can show my manager.</div><div class="card"><div class="card-body reply"><div class="text">I made the deck: <code>/tmp/eval-deck-tidepool-n7jppg4c/tidepool-presentation.html</code>
+
+- <strong>To view:</strong> double-click the file to open it in a browser. Use the arrow keys or click to move between slides, the dots to jump to one, and <code>Home</code>/<code>End</code> for the first and last slide.
+- <strong>Colours:</strong> the deck uses the project&#x27;s own teal from <code>web/style.css</code>.
+- <strong>Slides:</strong>
+  1. Cover: the one-line pitch and the two pilot ports
+  2. What it delivers: gauge sync, tide prediction, the port dashboard, and low-water alerts (marked &quot;in progress&quot;)
+  3. How it works: collect → model → check → show
+  4. Headline feature: depth forecasts within 8 cm, 95% of the time
+  5. Status: what works today, what&#x27;s in progress and what&#x27;s planned. It ends with the decision your manager can make: sign the SMS provider contract.
+- <strong>SMS alerts:</strong> they are never described as working. The README and <code>src/alerts.ts</code> both say alerts only go to a log file until that contract is signed.
+
+Check before you present:
+- The README says the dashboard is live, but <code>web/server.ts</code> (the file <code>npm run web</code> starts) isn&#x27;t in this folder. Neither is <code>src/nmea.ts</code>, which <code>sync.ts</code> needs to read the gauges. The deck follows the README, so make sure that code exists somewhere else.
+- The README says readings come in every 6 minutes. The code checks every 5 minutes so it doesn&#x27;t miss one. Slide 3 says &quot;every 5 min&quot;.</div></div><details class="card-foot tools-foot"><summary class="text-caption">6 tool calls</summary><div class="tools"><div><strong>Skill</strong> <code>project-presentation</code></div><div><strong>Bash</strong> <code>find . -path ./node_modules -prune -o -type f -print | grep -v &#x27;/.git/&#x27; | head -100</code></div><div><strong>Bash</strong> <code>for f in package.json README.md web/style.css src/*.ts; do echo &quot;=== $f&quot;; cat &quot;$f&quot;; done; ls .claude/skills/project-pres</code></div><div><strong>Read</strong> <code>/tmp/eval-deck-tidepool-n7jppg4c/.claude/skills/project-presentation/assets/template.html</code></div><div><strong>Bash</strong> <code>cp .claude/skills/project-presentation/assets/template.html tidepool-presentation.html</code></div><div><strong>Write</strong> <code>/tmp/eval-deck-tidepool-n7jppg4c/tidepool-presentation.html</code></div></div></details></div></div></section></main></body></html>

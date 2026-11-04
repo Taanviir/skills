@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>graphite-new-page run 3</title><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap"><link rel="stylesheet" href="../../graphite-ui/tokens.css"><link rel="stylesheet" href="../../graphite-ui/base.css"><link rel="stylesheet" href="../../graphite-ui/components.css"><style>
+.brand { font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
+.topbar { padding: 0; }
+.topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: 0 var(--gr-space-6); }
+.topbar nav { display: flex; gap: var(--gr-space-1); overflow-x: auto; }
+.runs { display: flex; flex-wrap: wrap; gap: var(--gr-space-1-5); }
+.runs a { text-decoration: none; }
+.turn { display: grid; gap: var(--gr-space-3); }
+.bubble { justify-self: end; max-width: 80%; padding: var(--gr-space-3) var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-accent-bg-subtle); }
+.text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.reply { max-height: 480px; overflow-y: auto; }
+.tools { display: grid; gap: var(--gr-space-1); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
+.tools code { overflow-wrap: anywhere; }
+.tools-foot { display: block; }
+details > summary { cursor: pointer; }
+pre.report { margin: 0; overflow-x: auto; font-size: var(--gr-text-label); line-height: 1.5; }
+.up { color: var(--gr-danger-text); } .down { color: var(--gr-success-text); }
+.graders .list-row { grid-template-columns: minmax(0, 1fr) auto; }
+.text code { font-size: 0.92em; }
+@media (max-width: 640px) {
+  .topbar .bar { padding: 0 var(--gr-space-4); }
+  .topbar .brand { display: none; }
+  .content { padding-inline: var(--gr-space-4); }
+  .bubble { max-width: 100%; }
+}
+</style></head><body><header class="topbar"><div class="bar"><a class="brand" href="../../">Taanviir's skills</a><span class="spacer"></span><nav aria-label="Site"><a class="btn ghost" href="../../#skills">Skills</a><a class="btn ghost" href="../" aria-current="page">Eval results</a><a class="btn ghost" href="../../graphite-ui/preview.html">Graphite UI board</a><a class="btn ghost" href="https://github.com/Taanviir/skills">GitHub</a></nav></div></header><main class="content"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Eval results</a><span>/</span><span>graphite-ui</span><span>/</span><span aria-current="page">graphite-new-page run 3</span></nav><div class="page-head"><div class="titles"><h1>graphite-new-page, run 3</h1><p class="nums">$0.49 · 50s · 1 turn</p></div><div class="actions"><span class="badge success">Passed</span></div></div><section class="section"><div class="section-head"><h2>Graders</h2></div><div class="card"><div class="list graders"><div class="list-row"><div class="meta"><span>skill fired</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>page uses the tokens and passes the audit</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>uses the recipes</span></div><span class="status success">pass</span></div></div></div></section><section class="section"><div class="section-head"><h2>Turn 1</h2><span class="text-caption text-secondary nums">$0.49</span></div><div class="turn"><div class="bubble text">Using graphite-ui, build a simple settings page in this folder: index.html with a name field, an email notifications switch and a Save button. Plain HTML and CSS, no framework.</div><div class="card"><div class="card-body reply"><div class="text">I built the settings page in <code>index.html</code> using Graphite UI&#x27;s ready-made components. The style checks pass, but I haven&#x27;t opened it in a browser.
+
+<strong>Files</strong>
+- <code>index.html</code>: the page.
+  - A card holds a Name field and an &quot;Email notifications&quot; switch, which is on by default.
+  - The button reads &quot;Save settings&quot;.
+  - Saving with an empty name shows &quot;Enter your name to save.&quot; under the field, moves the cursor there and shakes the field.
+  - A valid save shows a &quot;Settings saved&quot; message for 3 seconds. Nothing is stored or sent anywhere yet.
+- <code>style.css</code>: sets the brand color to Graphite&#x27;s default blue, and gives the switch row the same height as the other controls.
+- <code>graphite-ui/</code>: the copied Graphite UI files (<code>tokens.css</code>, <code>base.css</code>, <code>components.css</code>, <code>press.js</code>).
+- The font loads from Google Fonts. Offline, the page falls back to the system font.
+
+<strong>Checks</strong>
+- The style audit on <code>index.html</code> and <code>style.css</code> found 0 problems. Running it on the whole folder also scans the skill files in <code>.claude/</code>, so it reports their findings, none from the page.
+- The color contrast check passed for every pair.
+- No exceptions to the design rules were needed.
+
+<strong>Still to check in a browser</strong>
+- Light and dark theme (it follows the OS setting).
+- Tab focus on the name field, the switch and the button.
+- A 375px-wide screen with touch.</div></div><details class="card-foot tools-foot"><summary class="text-caption">15 tool calls</summary><div class="tools"><div><strong>Skill</strong> <code>graphite-ui</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-new-page-cot75zj7; ls -la; ls -R .claude/skills/graphite-ui; cat .claude/skills/graphite-ui/refere</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-new-page-cot75zj7/.claude/skills/graphite-ui; cat references/components.md references/rules.md; gr</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-new-page-cot75zj7/.claude/skills/graphite-ui/assets; grep -n &quot;=====&quot; components.css; grep -n &quot;toas</code></div><div><strong>Read</strong> <code>/tmp/eval-graphite-new-page-cot75zj7/.claude/skills/graphite-ui/assets/components.css</code></div><div><strong>Read</strong> <code>/tmp/eval-graphite-new-page-cot75zj7/.claude/skills/graphite-ui/assets/components.css</code></div><div><strong>Read</strong> <code>/tmp/eval-graphite-new-page-cot75zj7/.claude/skills/graphite-ui/assets/components.css</code></div><div><strong>Read</strong> <code>/tmp/eval-graphite-new-page-cot75zj7/.claude/skills/graphite-ui/assets/components.css</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-new-page-cot75zj7; mkdir graphite-ui &amp;&amp; cp .claude/skills/graphite-ui/assets/{tokens.css,base.css,</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-new-page-cot75zj7; sed -n 1,40p graphite-ui/tokens.css</code></div><div><strong>Write</strong> <code>/tmp/eval-graphite-new-page-cot75zj7/index.html</code></div><div><strong>Write</strong> <code>/tmp/eval-graphite-new-page-cot75zj7/style.css</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-new-page-cot75zj7; GR=.claude/skills/graphite-ui; grep -n &quot;\.btn.lg\|\.lg&quot; graphite-ui/components.</code></div><div><strong>Edit</strong> <code>/tmp/eval-graphite-new-page-cot75zj7/index.html</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-new-page-cot75zj7; node .claude/skills/graphite-ui/scripts/audit.mjs index.html style.css; echo &quot;e</code></div></div></details></div></div></section></main></body></html>

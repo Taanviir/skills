@@ -1,0 +1,77 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>cards-youtube-full run 1</title><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap"><link rel="stylesheet" href="../../graphite-ui/tokens.css"><link rel="stylesheet" href="../../graphite-ui/base.css"><link rel="stylesheet" href="../../graphite-ui/components.css"><style>
+.brand { font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
+.topbar { padding: 0; }
+.topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: 0 var(--gr-space-6); }
+.topbar nav { display: flex; gap: var(--gr-space-1); overflow-x: auto; }
+.runs { display: flex; flex-wrap: wrap; gap: var(--gr-space-1-5); }
+.runs a { text-decoration: none; }
+.turn { display: grid; gap: var(--gr-space-3); }
+.bubble { justify-self: end; max-width: 80%; padding: var(--gr-space-3) var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-accent-bg-subtle); }
+.text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.reply { max-height: 480px; overflow-y: auto; }
+.tools { display: grid; gap: var(--gr-space-1); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
+.tools code { overflow-wrap: anywhere; }
+.tools-foot { display: block; }
+details > summary { cursor: pointer; }
+pre.report { margin: 0; overflow-x: auto; font-size: var(--gr-text-label); line-height: 1.5; }
+.up { color: var(--gr-danger-text); } .down { color: var(--gr-success-text); }
+.graders .list-row { grid-template-columns: minmax(0, 1fr) auto; }
+.text code { font-size: 0.92em; }
+@media (max-width: 640px) {
+  .topbar .bar { padding: 0 var(--gr-space-4); }
+  .topbar .brand { display: none; }
+  .content { padding-inline: var(--gr-space-4); }
+  .bubble { max-width: 100%; }
+}
+</style></head><body><header class="topbar"><div class="bar"><a class="brand" href="../../">Taanviir's skills</a><span class="spacer"></span><nav aria-label="Site"><a class="btn ghost" href="../../#skills">Skills</a><a class="btn ghost" href="../" aria-current="page">Eval results</a><a class="btn ghost" href="../../graphite-ui/preview.html">Graphite UI board</a><a class="btn ghost" href="https://github.com/Taanviir/skills">GitHub</a></nav></div></header><main class="content"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Eval results</a><span>/</span><span>create-info-cards</span><span>/</span><span aria-current="page">cards-youtube-full run 1</span></nav><div class="page-head"><div class="titles"><h1>cards-youtube-full, run 1</h1><p class="nums">$1.03 · 218s · 2 turns</p></div><div class="actions"><span class="badge success">Passed</span></div></div><section class="section"><div class="section-head"><h2>Graders</h2></div><div class="card"><div class="list graders"><div class="list-row"><div class="meta"><span>skill fired</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>first turn stopped for approval</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>flags unsure names from captions</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>cards built, fit, export</span></div><span class="status success">pass</span></div></div></div></section><section class="section"><div class="section-head"><h2>Turn 1</h2><span class="text-caption text-secondary nums">$0.36</span></div><div class="turn"><div class="bubble text">Get the transcript of https://www.youtube.com/watch?v=S6l3aRsecuE and make me image cards of the key points about how Meta built Muse, to send a friend.</div><div class="card"><div class="card-body reply"><div class="text">I&#x27;ve read the whole transcript: Alexandr Wang (Meta, MSL) on a podcast with the Founders host, about 1h12m. Before I build anything, can you check these?
+
+<strong>Fact sheet (timestamps)</strong>
+- <strong>June 2025.</strong> Mark&#x27;s &quot;Personal Super Intelligence&quot; memo, written with Wang and Nat Friedman. It set the MSL mission. [0:00]
+- <strong>Early 2026.</strong> Opus 4.5 and OpenClaw showed what agents could do. Nat was the first person in MSL to try OpenClaw. He called it &quot;somewhere between terrifying and euphoric&quot;. [1:02–2:02]
+- <strong>Water story.</strong> Nat told his agent he wanted to drink more water, and it watched him on security footage. [2:02]
+- <strong>&quot;3 years of therapy&quot;.</strong> Wang&#x27;s first OpenClaw session was Nat&#x27;s psychoanalysis prompt. [3:02–4:02]
+- <strong>February 2026.</strong> Both wrote memos to the Meta board. Wang called the super agent &quot;the final consumer product&quot;. Nat wrote two memos, one of them &quot;trust is a must&quot;. [4:02–5:03]
+- <strong>1–2 weeks to a prototype</strong>, demoed to the board. The mascot and an early Muse Charm were already in it. [5:03]
+- <strong>7 months from prototype to launch</strong> (Feb → ~Sept), the &quot;lengthy and quite painful&quot; part. [6:04, 18:16]
+- <strong>&quot;Over a hundred&quot; behaviors on a spreadsheet.</strong> Each one got an eval, a launch-blocking threshold and a &quot;good&quot; threshold. Some checkpoints were green on 80 rows and red on 20. The first all-green checkpoint was a specially trained &quot;Muse Spark 1.3&quot;(?). [13:12, 21:17–22:17]
+- <strong>Under 200 people</strong> across model and product. &quot;A single work of art&quot;, not a &quot;Frankenstein&quot; built in &quot;PM hell&quot;. Nat&#x27;s taste shaped it. [22:17–25:18]
+- <strong>Why Meta.</strong> 3.5B daily users. AI should take over the things we *have* to do, and Meta&#x27;s apps are the things we *want* to do. [10:06–12:12]
+- <strong>Usage.</strong> Meta says &quot;millions&quot; of users, and Wang hints it&#x27;s the fastest-growing consumer AI app ever. [25:18]
+- <strong>Growth.</strong> Wang wrote every one of his own meme tweets. The mascot made screenshots recognizable, and screenshots spread through word of mouth. [26:18–38:33]
+- <strong>The &quot;trust fall&quot;.</strong> Users give it small tasks, then bigger ones, and it has to work every time. [34:28–35:28]
+- <strong>Quotes.</strong> &quot;the internet rewards risk&quot; and &quot;Muse can give everyone the adulthood they dreamed of in childhood&quot;. [29:23, 40:33]
+
+<strong>Names I&#x27;m unsure of (garbled captions)</strong>
+- The mascot: &quot;Jollybot&quot; / &quot;Jolly&quot; / &quot;the little jolly guy&quot;.
+- &quot;Muse Charm&quot;.
+- Model name &quot;Musepark 1.3&quot;, probably &quot;Muse Spark 1.3&quot;.
+- Nat&#x27;s other memo title: &quot;blames the clause the law&quot;.
+- &quot;OpenClaw&quot; and its creator, &quot;Peter Seinberger&quot; (probably Steinberger).
+
+<strong>Angle</strong>
+- For a friend who&#x27;s curious about AI but hasn&#x27;t followed the story.
+- Takeaway: Muse came from a two-week prototype, then seven months of polishing a short list of measured behaviors with a small team, then memes.
+
+<strong>Cards:</strong> 8 (cover, origin, prototype, the spreadsheet, the &quot;ready&quot; test, small team, why Meta, growth and trust fall). I&#x27;d leave out the Scale AI deal and the management parts.
+
+Can you confirm or correct these, or tell me to drop the uncertain names?</div></div><details class="card-foot tools-foot"><summary class="text-caption">3 tool calls</summary><div class="tools"><div><strong>Skill</strong> <code>create-info-cards</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-cards-youtube-full-to1h_453/.claude/skills/create-info-cards &amp;&amp; D=$(mktemp -d) &amp;&amp; echo $D &amp;&amp; bash scripts/f</code></div><div><strong>Read</strong> <code>/tmp/tmp.HYmV6jlx0b/source.txt</code></div></div></details></div></div></section><section class="section"><div class="section-head"><h2>Turn 2</h2><span class="text-caption text-secondary nums">$0.67</span></div><div class="turn"><div class="bubble text">That fact sheet is right, and Muse Spark is the correct model name. Build the cards.</div><div class="card"><div class="card-body reply"><div class="text">I made 8 cards from the transcript. All of them pass the fit check, and the PNG export check passed.
+
+Open: <code>file://wsl.localhost/Ubuntu/tmp/eval-cards-youtube-full-to1h_453/muse-cards.html</code>
+
+Each card has a Save PNG button, and there&#x27;s a &quot;Download all PNGs&quot; button at the top. The design borrows from an eval spreadsheet: column letters across the top, a cell-grid background, and green and red pass/fail cells.
+
+<strong>Cards</strong>
+1. <strong>Cover:</strong> &quot;How Meta built Muse&quot;, with four numbers: 1–2 weeks, 7 months, 100+ behaviors, under 200 people.
+2. <strong>Origin:</strong> a timeline from the June 2025 memo, through OpenClaw and the February memos, to the board demo and the launch.
+3. <strong>Prototype to product:</strong> the demo was magic, but making it reliable took 7 months.
+4. <strong>The spreadsheet:</strong> list the behaviors, build an eval for each, set the thresholds, then fix the weak rows.
+5. <strong>Launch bar:</strong> a grid with 80 green and 20 red cells next to an all-green Muse Spark 1.3. Quote: &quot;We knew that wasn&#x27;t good enough.&quot;
+6. <strong>Small team:</strong> &quot;a single work of art&quot;, no &quot;PM hell&quot;, and Nat Friedman&#x27;s taste.
+7. <strong>Why Meta:</strong> everyone else chased coding agents and Meta went personal (3.5B daily users).
+8. <strong>Growth:</strong> memes, the mascot in screenshots, and the &quot;trust fall&quot;.
+
+<strong>Still unconfirmed</strong>
+- <strong>Mascot name.</strong> None of the cards use one; they just say &quot;the mascot&quot;.
+- <strong>&quot;Muse Charm&quot;.</strong> It appears on card 3.
+- <strong>Date in the footers.</strong> They say &quot;Oct 2026&quot;. That&#x27;s the recording date (the 15th anniversary of Steve Jobs&#x27;s death); I don&#x27;t know when it was published.
+- <strong>Launch timing.</strong> The &quot;~September&quot; launch is my inference from the transcript. Card 2 only says &quot;7 months on&quot;.</div></div><details class="card-foot tools-foot"><summary class="text-caption">11 tool calls</summary><div class="tools"><div><strong>Bash</strong> <code>cd /tmp/eval-cards-youtube-full-to1h_453/.claude/skills/create-info-cards &amp;&amp; ls -R &amp;&amp; cat references/design.md reference</code></div><div><strong>Bash</strong> <code>cp .claude/skills/create-info-cards/assets/template.html muse-cards.html &amp;&amp; ls</code></div><div><strong>Write</strong> <code>/tmp/eval-cards-youtube-full-to1h_453/muse-cards.html</code></div><div><strong>Bash</strong> <code>python3 -I .claude/skills/create-info-cards/scripts/check.py muse-cards.html fit</code></div><div><strong>Bash</strong> <code>python3 - &lt;&lt;&#x27;EOF&#x27;</code></div><div><strong>Bash</strong> <code>python3 - &lt;&lt;&#x27;EOF&#x27;</code></div><div><strong>Read</strong> <code>/tmp/tmp.HYmV6jlx0b/shot.png</code></div><div><strong>Bash</strong> <code>python3 - &lt;&lt;&#x27;EOF&#x27;</code></div><div><strong>Bash</strong> <code>python3 - &lt;&lt;&#x27;EOF&#x27;</code></div><div><strong>Read</strong> <code>/tmp/tmp.HYmV6jlx0b/shot2.png</code></div><div><strong>Bash</strong> <code>sed -i &#x27;s/\[data-name=&quot;01-cover&quot;\] h2 { font-size: 104px; }/[data-name=&quot;01-cover&quot;] h2 { font-size: 104px; margin-bottom:</code></div></div></details></div></div></section></main></body></html>

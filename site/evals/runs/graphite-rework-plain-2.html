@@ -1,0 +1,101 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>graphite-rework-plain run 2</title><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap"><link rel="stylesheet" href="../../graphite-ui/tokens.css"><link rel="stylesheet" href="../../graphite-ui/base.css"><link rel="stylesheet" href="../../graphite-ui/components.css"><style>
+.brand { font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
+.topbar { padding: 0; }
+.topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: 0 var(--gr-space-6); }
+.topbar nav { display: flex; gap: var(--gr-space-1); overflow-x: auto; }
+.runs { display: flex; flex-wrap: wrap; gap: var(--gr-space-1-5); }
+.runs a { text-decoration: none; }
+.turn { display: grid; gap: var(--gr-space-3); }
+.bubble { justify-self: end; max-width: 80%; padding: var(--gr-space-3) var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-accent-bg-subtle); }
+.text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.reply { max-height: 480px; overflow-y: auto; }
+.tools { display: grid; gap: var(--gr-space-1); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
+.tools code { overflow-wrap: anywhere; }
+.tools-foot { display: block; }
+details > summary { cursor: pointer; }
+pre.report { margin: 0; overflow-x: auto; font-size: var(--gr-text-label); line-height: 1.5; }
+.up { color: var(--gr-danger-text); } .down { color: var(--gr-success-text); }
+.graders .list-row { grid-template-columns: minmax(0, 1fr) auto; }
+.text code { font-size: 0.92em; }
+@media (max-width: 640px) {
+  .topbar .bar { padding: 0 var(--gr-space-4); }
+  .topbar .brand { display: none; }
+  .content { padding-inline: var(--gr-space-4); }
+  .bubble { max-width: 100%; }
+}
+</style></head><body><header class="topbar"><div class="bar"><a class="brand" href="../../">Taanviir's skills</a><span class="spacer"></span><nav aria-label="Site"><a class="btn ghost" href="../../#skills">Skills</a><a class="btn ghost" href="../" aria-current="page">Eval results</a><a class="btn ghost" href="../../graphite-ui/preview.html">Graphite UI board</a><a class="btn ghost" href="https://github.com/Taanviir/skills">GitHub</a></nav></div></header><main class="content"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Eval results</a><span>/</span><span>graphite-ui</span><span>/</span><span aria-current="page">graphite-rework-plain run 2</span></nav><div class="page-head"><div class="titles"><h1>graphite-rework-plain, run 2</h1><p class="nums">$0.87 · 126s · 2 turns</p></div><div class="actions"><span class="badge success">Passed</span></div></div><section class="section"><div class="section-head"><h2>Graders</h2></div><div class="card"><div class="list graders"><div class="list-row"><div class="meta"><span>skill fired</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>first turn waited</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>rework is complete and safe</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>final report has counts and allowances</span></div><span class="status success">pass</span></div></div></div></section><section class="section"><div class="section-head"><h2>Turn 1</h2><span class="text-caption text-secondary nums">$0.34</span></div><div class="turn"><div class="bubble text">Rework this app&#x27;s design with graphite-ui.</div><div class="card"><div class="card-body reply"><div class="text">Survey done. Plain static app (<code>index.html</code>, <code>style.css</code>, <code>app.js</code>). Here&#x27;s the plan. I need your approval before I touch any files.
+
+<strong>Survey</strong>
+- Stylesheets: <code>style.css</code> only. The layout is <code>index.html</code>.
+- Colors outside CSS: <code>CHART_COLORS</code> in <code>app.js</code> (canvas chart).
+- Already there: dark mode through a <code>body.dark</code> toggle. No RTL, no per-tenant branding.
+- Baseline audit: <strong>93 findings</strong> in 3 files. Biggest groups: 26 color literals, 19 off-scale spacing, 16 raw font sizes, 8 legacy tokens, 22 legacy refs, 1 script color, 1 hover with no press state.
+
+<strong>Stack:</strong> Plain CSS. I&#x27;d copy <code>tokens.css</code>, <code>base.css</code> and <code>press.js</code> into <code>graphite-ui/</code>. Every component is ported, so <code>components.css</code> stays out. Font: Instrument Sans from Google Fonts.
+
+<strong>Brand:</strong> I&#x27;d keep the current blue, <code>#2563eb</code>. The script turns it into <code>--gr-accent-h: 263; --gr-accent-c: 0.95</code> on <code>:root</code>.
+
+<strong>Token map</strong>
+| Legacy | → |
+|---|---|
+| <code>--primary</code> | split by use: button fill → <code>--gr-accent-solid</code>, active nav text → <code>--gr-accent-text</code>, input focus → <code>--gr-border-focus</code> outline |
+| <code>--primary-dark</code> | <code>--gr-accent-solid-hover</code> |
+| <code>--text</code> | <code>--gr-fg-primary</code> |
+| <code>--text-muted</code> | <code>--gr-fg-secondary</code> |
+| <code>--border</code> | split: panel and button → <code>--gr-shadow-border</code>, sidebar edge → <code>--gr-border-separator</code>, input → <code>--gr-border-control</code> |
+| <code>--bg</code> | <code>--gr-bg-page</code> |
+| <code>--danger</code> | <code>--gr-danger-text</code> (outline button), <code>--gr-danger-solid</code> (confirm button) |
+| <code>body.dark { … }</code> overrides | delete. The toggle sets <code>data-theme</code> on <code>&lt;html&gt;</code> instead |
+| <code>CHART_COLORS</code> (JS) | read at draw time with <code>getComputedStyle</code>: bar → <code>--gr-series-1</code>, grid → <code>--gr-border-separator</code>, label → <code>--gr-fg-secondary</code> |
+| Literal colors (<code>#fff</code>, <code>#dbeafe</code>, <code>#e5e7eb</code>, badge and alert colors, modal rgba) | <code>--gr-bg-surface</code>, <code>--gr-bg-selected</code>, separator, status <code>-bg-subtle</code>/<code>-text</code>, <code>--gr-scrim</code> |
+
+<strong>Component map</strong>
+| App selector | Recipe | How |
+|---|---|---|
+| <code>.layout</code>, <code>.side-nav</code>, <code>.logo</code>, <code>.nav-link(.active)</code> | shell / <code>.sidebar</code> / <code>.nav-item</code> | port |
+| <code>.page-header</code> | <code>.page-head</code> | port |
+| <code>.btn</code>, <code>.btn-primary</code>, <code>.btn-secondary</code>, <code>.btn-danger</code>, <code>.btn-sm</code> | <code>.btn</code> primary / default / danger outline / small; the modal confirm becomes danger solid | port (drops <code>transition: all</code>, adds a press state) |
+| <code>.alert.alert-warning</code> | <code>.notice</code> warning | port |
+| <code>.stats</code>, <code>.stat</code> | <code>.stats</code> / <code>.stat</code> | port |
+| <code>.panel</code> | <code>.card</code> | port |
+| <code>.data-table</code> | <code>.table</code> | port. Adds a <code>num</code> class on the Kg cells |
+| <code>.badge-green/amber/gray</code> | <code>.badge</code> success / warning / neutral | port |
+| <code>.form-group</code>, <code>.form-control</code> | <code>.field</code>, <code>.input</code> | port |
+| <code>.modal</code>, <code>.modal-box</code> | native <code>&lt;dialog class=&quot;dialog&quot;&gt;</code> | <strong>adopt</strong>: markup change, and the JS switches to <code>showModal()</code>/<code>close()</code> |
+| <code>&lt;canvas id=&quot;chart&quot;&gt;</code> | chart notes | token colors, sized from CSS × devicePixelRatio |
+
+<strong>Three decisions for you:</strong>
+1. Keep the blue (hue 263), or use a different brand color?
+2. OK to replace the custom modal with a native <code>&lt;dialog&gt;</code>? Behavior stays the same, but the markup and JS change.
+3. The dark-mode toggle switches to <code>data-theme</code> on <code>&lt;html&gt;</code>. Should it keep cycling only light/dark, or also get a &quot;follow OS&quot; state?</div></div><details class="card-foot tools-foot"><summary class="text-caption">5 tool calls</summary><div class="tools"><div><strong>Skill</strong> <code>graphite-ui</code></div><div><strong>Bash</strong> <code>find . -path ./.claude -prune -o -type f -print | grep -v node_modules | head -50; ls .claude/skills/graphite-ui/*</code></div><div><strong>Bash</strong> <code>cat index.html style.css app.js; GR=.claude/skills/graphite-ui; node $GR/scripts/audit.mjs . 2&gt;&amp;1 | grep -v &quot;\.claude&quot; |</code></div><div><strong>Bash</strong> <code>GR=.claude/skills/graphite-ui; node $GR/scripts/audit.mjs index.html style.css app.js | head -5; node $GR/scripts/brand.</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-rework-plain-3pjvnef4/.claude/skills/graphite-ui &amp;&amp; cat references/components.md references/rules.</code></div></div></details></div></div></section><section class="section"><div class="section-head"><h2>Turn 2</h2><span class="text-caption text-secondary nums">$0.53</span></div><div class="turn"><div class="bubble text">The plan is approved. Go ahead and do the full rework, then verify.</div><div class="card"><div class="card-body reply"><div class="text">The rework is finished and the audit is clean. I haven&#x27;t looked at it in a browser: no dev server was running, and I didn&#x27;t start one.
+
+<strong>Audit:</strong> 93 findings before, 0 after (exit 0). The contrast check passes on every pair with hue 263, chroma 0.95.
+
+<strong>What changed</strong>
+- <strong>Install:</strong> <code>graphite-ui/</code> now holds copies of <code>tokens.css</code>, <code>base.css</code> and <code>press.js</code>. They load before <code>style.css</code>, along with the Instrument Sans font. I left <code>components.css</code> out because every component is ported onto the app&#x27;s own class names.
+- <strong><code>style.css</code>:</strong> rewritten with tokens only. The brand blue is set on <code>:root</code>.
+- <strong>Modal:</strong> now a native <code>&lt;dialog&gt;</code> that opens with <code>showModal()</code> and closes on an outside click. &quot;Cancel order&quot; is a solid danger button. On phones it slides up from the bottom.
+- <strong>Theme toggle:</strong> sets <code>data-theme</code> on <code>&lt;html&gt;</code> instead of a class on <code>body</code>. With no choice made it follows the OS, and its label shows the mode it will switch to.
+- <strong>Chart:</strong> colors come from tokens at draw time, so it redraws correctly when the theme changes. It sizes from CSS × devicePixelRatio and redraws on resize, so it&#x27;s no longer blurry.
+- <strong>Table:</strong> the Kg and action columns are end-aligned with <code>num</code>.
+- <strong>Sidebar:</strong> the active nav link gets <code>aria-current=&quot;page&quot;</code>. Below 960px the sidebar becomes a row on top. The app has no drawer toggle, so I didn&#x27;t add a drawer.
+- <strong>&quot;Save&quot; button:</strong> now a default button. The design rules allow one primary button per view, and the page has &quot;New order&quot;. This is the only change to how a control looks that wasn&#x27;t in the plan.
+- <strong>Buttons and nav:</strong> every hover now has a matching press state for touch. <code>transition: all</code> is gone.
+
+<strong>Deleted</strong>
+- Tokens: <code>--primary</code>, <code>--primary-dark</code>, <code>--text</code>, <code>--text-muted</code>, <code>--border</code>, <code>--bg</code>, <code>--danger</code>
+- The whole <code>body.dark</code> block
+- <code>CHART_COLORS</code> in <code>app.js</code>
+- Every literal color, shadow, radius, font size and z-index in <code>style.css</code>
+- The canvas <code>width</code>/<code>height</code> attributes
+- The <code>.modal</code>/<code>.modal-box</code> CSS
+
+<strong><code>gr-allow</code>:</strong> one. <code>.form-control { font-size: 1rem }</code> on small touch screens, which stops iOS from zooming into inputs.
+
+<strong>Still to check (needs the app open):</strong>
+- Light and dark themes, including the chart after toggling
+- Keyboard focus on every control, and the dialog&#x27;s focus trap and Escape key
+- 375px width with touch emulation: the nav row, the dialog as a bottom sheet, and the press states
+- RTL isn&#x27;t needed: the app has no Arabic or Hebrew.
+
+It isn&#x27;t a git repo, so there&#x27;s nothing staged and no diff to show.</div></div><details class="card-foot tools-foot"><summary class="text-caption">11 tool calls</summary><div class="tools"><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-rework-plain-3pjvnef4/.claude/skills/graphite-ui/assets &amp;&amp; grep -n &quot;^\s*--gr-[a-z0-9-]*:&quot; tokens.c</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-rework-plain-3pjvnef4/.claude/skills/graphite-ui/assets &amp;&amp; grep -oE &quot;^\s*--gr-[a-z0-9-]+&quot; tokens.c</code></div><div><strong>Bash</strong> <code>mkdir graphite-ui &amp;&amp; cp .claude/skills/graphite-ui/assets/{tokens.css,base.css,press.js} graphite-ui/ &amp;&amp; grep -n &quot;data-t</code></div><div><strong>Write</strong> <code>/tmp/eval-graphite-rework-plain-3pjvnef4/index.html</code></div><div><strong>Bash</strong> <code>sed -i &#x27;s|&lt;button class=&quot;btn btn-primary&quot; type=&quot;submit&quot;&gt;Save&lt;/button&gt;|&lt;button class=&quot;btn btn-secondary&quot; type=&quot;submit&quot;&gt;Sa</code></div><div><strong>Write</strong> <code>/tmp/eval-graphite-rework-plain-3pjvnef4/style.css</code></div><div><strong>Bash</strong> <code>sed -i &#x27;s|&lt;canvas id=&quot;chart&quot; aria-label|&lt;canvas id=&quot;chart&quot; role=&quot;img&quot; aria-label|&#x27; index.html &amp;&amp; grep -n canvas index.ht</code></div><div><strong>Write</strong> <code>/tmp/eval-graphite-rework-plain-3pjvnef4/app.js</code></div><div><strong>Bash</strong> <code>GR=.claude/skills/graphite-ui; node $GR/scripts/audit.mjs index.html style.css app.js graphite-ui; echo &quot;exit $?&quot;; node </code></div><div><strong>Edit</strong> <code>/tmp/eval-graphite-rework-plain-3pjvnef4/style.css</code></div><div><strong>Bash</strong> <code>node .claude/skills/graphite-ui/scripts/audit.mjs index.html style.css app.js; echo &quot;exit $?&quot;; ss -ltn 2&gt;/dev/null | gre</code></div></div></details></div></div></section></main></body></html>

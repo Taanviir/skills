@@ -29,9 +29,10 @@
   .board { display: grid; gap: var(--gr-space-8); }
   .group { display: grid; gap: var(--gr-space-3); }
   .group > h3 { font-size: var(--gr-text-label); font-weight: var(--gr-weight-strong); letter-spacing: var(--gr-tracking-caps); text-transform: uppercase; color: var(--gr-fg-secondary); }
-  .specimens { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: var(--gr-space-3); align-items: start; }
-  .specimen { display: grid; gap: var(--gr-space-3); padding: var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-bg-surface); box-shadow: var(--gr-shadow-border); }
-  .specimen.wide { grid-column: 1 / -1; }
+  /* Columns, not a grid, so cards of different heights stack without gaps. */
+  .specimens { columns: 290px; column-gap: var(--gr-space-3); }
+  .specimen { break-inside: avoid; margin-block-end: var(--gr-space-3); display: grid; gap: var(--gr-space-3); padding: var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-bg-surface); box-shadow: var(--gr-shadow-border); }
+  .specimen.wide { column-span: all; }
   .specimen > .name { font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
   .specimen > .name code { color: var(--gr-fg-primary); }
 
@@ -41,12 +42,12 @@
   .swatch code { font-size: var(--gr-text-label); color: var(--gr-fg-secondary); overflow-wrap: anywhere; }
   .type-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--gr-space-3); }
   .type-row code { font-size: var(--gr-text-label); color: var(--gr-fg-secondary); white-space: nowrap; }
-  .ladder { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gr-space-3); }
+  .ladder { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gr-space-3); }
   .ladder > div { display: grid; place-items: center; height: 64px; border-radius: var(--gr-radius-surface); background: var(--gr-bg-raised); font-size: var(--gr-text-label); color: var(--gr-fg-secondary); }
   .sh-border { box-shadow: var(--gr-shadow-border); } .sh-hover { box-shadow: var(--gr-shadow-border-hover); }
   .sh-raised { box-shadow: var(--gr-shadow-raised); } .sh-overlay { box-shadow: var(--gr-shadow-overlay); }
-  .radii { display: flex; gap: var(--gr-space-3); }
-  .radii > div { display: grid; place-items: center; width: 64px; height: 48px; background: var(--gr-bg-sunken); box-shadow: var(--gr-shadow-inset); font-size: var(--gr-text-label); color: var(--gr-fg-secondary); }
+  .radii { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gr-space-2); }
+  .radii > div { display: grid; place-items: center; height: 48px; text-align: center; background: var(--gr-bg-sunken); box-shadow: var(--gr-shadow-inset); font-size: var(--gr-text-label); color: var(--gr-fg-secondary); }
   .r-sm { border-radius: var(--gr-radius-sm); } .r-control { border-radius: var(--gr-radius-control); }
   .r-group { border-radius: var(--gr-radius-group); } .r-surface { border-radius: var(--gr-radius-surface); }
   .spaces { display: grid; gap: var(--gr-space-1); }
@@ -217,6 +218,20 @@
           <button class="menu-item danger" role="menuitem"><svg><use href="#i-trash"/></svg>Delete</button>
         </div>
       </div>
+      <div class="specimen">
+        <span class="name">Phone: <code>.tabbar</code>, <code>.pager</code>, <code>.dots</code></span>
+        <div class="phone">
+          <div class="pager" data-pager><div>Page one</div><div>Page two</div><div>Page three</div></div>
+          <div class="dots" data-dots><button aria-current="true" aria-label="Page 1"></button><button aria-current="false" aria-label="Page 2"></button><button aria-current="false" aria-label="Page 3"></button></div>
+          <nav class="tabbar" aria-label="Phone">
+            <a class="tabbar-item" href="#" aria-current="page"><svg><use href="#i-home"/></svg>Home</a>
+            <a class="tabbar-item" href="#"><svg><use href="#i-calendar"/></svg>Events</a>
+            <button class="tabbar-add" aria-label="Add event"><span><svg><use href="#i-plus"/></svg></span></button>
+            <a class="tabbar-item" href="#"><svg><use href="#i-chart"/></svg>Reports</a>
+            <a class="tabbar-item" href="#"><svg><use href="#i-settings"/></svg>Settings</a>
+          </nav>
+        </div>
+      </div>
       <div class="specimen wide">
         <span class="name">Shell: <code>.app</code>, <code>.sidebar</code>, <code>.topbar</code>, <code>.page-head</code>. Tick "Fold sidebar" above for the folded rail.</span>
         <div class="frame">
@@ -244,20 +259,6 @@
               </main>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="specimen">
-        <span class="name">Phone: <code>.tabbar</code>, <code>.pager</code>, <code>.dots</code></span>
-        <div class="phone">
-          <div class="pager" data-pager><div>Page one</div><div>Page two</div><div>Page three</div></div>
-          <div class="dots" data-dots><button aria-current="true" aria-label="Page 1"></button><button aria-current="false" aria-label="Page 2"></button><button aria-current="false" aria-label="Page 3"></button></div>
-          <nav class="tabbar" aria-label="Phone">
-            <a class="tabbar-item" href="#" aria-current="page"><svg><use href="#i-home"/></svg>Home</a>
-            <a class="tabbar-item" href="#"><svg><use href="#i-calendar"/></svg>Events</a>
-            <button class="tabbar-add" aria-label="Add event"><span><svg><use href="#i-plus"/></svg></span></button>
-            <a class="tabbar-item" href="#"><svg><use href="#i-chart"/></svg>Reports</a>
-            <a class="tabbar-item" href="#"><svg><use href="#i-settings"/></svg>Settings</a>
-          </nav>
         </div>
       </div>
     </div>

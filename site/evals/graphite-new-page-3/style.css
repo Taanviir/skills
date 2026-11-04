@@ -1,6 +1,0 @@
-:root {
-  --gr-accent-h: 256;
-  --gr-accent-c: 1;
-}
-
-.check { min-height: var(--gr-control-md); }
