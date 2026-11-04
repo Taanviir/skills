@@ -233,3 +233,8 @@ test('brand: a hue on top of a status color gets a note', () => {
   assert.match(run('brand.mjs', ['#16a34a']).out, /close to the success color/);
   assert.doesNotMatch(run('brand.mjs', ['#2563eb']).out, /close to the/);
 });
+
+test('export: the fallback format only applies where light-dark() is unknown', () => {
+  const out = run('export.mjs', ['--format', 'fallback']).out;
+  assert.match(out, /^@supports not \(color: light-dark\(#000, #fff\)\) \{\n  :root \{\n    --gr-bg-page: #/);
+});

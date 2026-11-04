@@ -24,7 +24,7 @@ Load order is always tokens, base, then the app's CSS, with components where the
    ```
    In a bundled app, use `@import` lines at the top of the entry CSS instead, and import `press.js` from the entry script.
 3. Linking `components.css` is optional when every component is ported. Leave it out if no markup uses its class names, so two definitions of `.btn` never fight.
-4. Fonts: add the Google Fonts link for Instrument Sans (see `preview.html`), or self-host with `@fontsource-variable/instrument-sans`. Without either, the stack falls back to the system UI font, which is acceptable.
+4. Fonts: add the Google Fonts link for Instrument Sans (see `preview.html`), or self-host with `@fontsource-variable/instrument-sans`. Without either, the stack falls back to the system UI font, which is acceptable. An app with Arabic also loads IBM Plex Sans Arabic (Google Fonts, or `@fontsource/ibm-plex-sans-arabic`), which `--gr-font-arabic` names first; without it RTL text falls back to Noto or the system font.
 
 ## Bootstrap 5
 Bootstrap 5.3 reads `--bs-*` variables, so most of it can follow Graphite UI tokens without overriding its components one by one.
@@ -36,7 +36,7 @@ Bootstrap 5.3 reads `--bs-*` variables, so most of it can follow Graphite UI tok
    <link rel="stylesheet" href="/assets/graphite-ui/bootstrap.css">
    <link rel="stylesheet" href="/assets/style.css">
    ```
-2. Port recipes onto Bootstrap's own selectors (`.btn-primary`, `.form-control`, `.card`, `.modal-content`), using the name map in `references/components.md`. Bootstrap draws edges with `border`; the ported rules swap those for `box-shadow: var(--gr-shadow-border)` and set `border: 0`.
+2. The bridge only reaches what Bootstrap reads from variables at runtime: the body, links, borders, radius and focus ring. Buttons, alerts, badges, nav pills, pagination, list-group active rows, progress bars and checked checkboxes get `$primary` and friends compiled in by Sass, so each one needs porting; checkbox and radio ticks are hex SVG data URLs, which the audit now flags. Port recipes onto Bootstrap's own selectors (`.btn-primary`, `.form-control`, `.card`, `.modal-content`), using the name map in `references/components.md`. Bootstrap draws edges with `border`; the ported rules swap those for `box-shadow: var(--gr-shadow-border)` and set `border: 0`.
 3. Color utilities (`.text-primary`, `.bg-success`, `.border-danger`, `.text-bg-*`) read `--bs-*-rgb` triplets, which can't hold a token. Grep the templates for them. Give each a rule in the app CSS that uses the matching token (`.text-primary { color: var(--gr-accent-text) !important; }`), or swap it for a Graphite UI class. The `!important` matches Bootstrap's and needs a `gr-allow` comment.
 4. Delete `data-bs-theme` attributes and any Bootstrap dark-mode toggle. Graphite UI tokens switch theme themselves.
 5. Bootstrap 4 compatibility shims (heading sizes, `.btn-block`, old paddings) go in the token map like any legacy value. Replace them with tokens or delete them.
@@ -57,7 +57,7 @@ Same as plain CSS. Import the `.css` files from the entry `.scss` with `@use "gr
 4. Recipes are ported into `@layer components` in the app CSS, or written as utilities in the markup. Pick one per app and stay with it.
 
 ## Tailwind v3
-Upgrade to v4 first if the app allows it (`npx @tailwindcss/upgrade`). Otherwise extend `theme.colors` in `tailwind.config.js` with the same names as `tailwind.css`, valued as `'var(--gr-bg-surface)'`. Set `theme.colors` itself (not `extend`) to drop the default palette.
+Upgrade to v4 first if the app allows it (`npx @tailwindcss/upgrade`). Otherwise extend `theme.colors` in `tailwind.config.js` with the same names as `tailwind.css`, valued as `'var(--gr-bg-surface)'`. Set `theme.colors` itself (not `extend`) to drop the default palette. v3 can't apply opacity modifiers (`bg-surface/50`) to a variable that holds `light-dark()`: it needs an `<alpha-value>` slot. Replace each with a token that already has the strength (`bg-hover`, `accent-subtle`), or with an arbitrary `color-mix()` behind a `gr-allow`.
 
 ## shadcn/ui
 1. Do the Tailwind v4 branch.
@@ -69,6 +69,13 @@ Upgrade to v4 first if the app allows it (`npx @tailwindcss/upgrade`). Otherwise
 
 ## CSS-in-JS
 Import `tokens.css` and `base.css` once at the app root. Theme objects (`theme.colors.primary`) become `'var(--gr-accent-solid)'` strings. Keep the theme object only if components read it, and delete its literal values. Port recipes into styled components by copying their declarations.
+
+## JS component libraries (MUI, Mantine, Ant Design, Vuetify)
+Their theme builders compute shades from real colors, so they can't take `var()` everywhere.
+1. Load `tokens.css` and `base.css` as for plain CSS, so the app's own CSS uses the tokens.
+2. Generate the library theme from `node $GR/scripts/export.mjs --hue H --chroma C`. It prints every semantic color as hex for `light` and `dark`. Map them by role: `palette.primary.main` ← `accent-solid`, `background.default` ← `bg-page`, `background.paper` ← `bg-surface`, `text.primary` / `text.secondary` ← `fg-primary` / `fg-secondary`, `divider` ← `border-separator`, `error.main` ← `danger-solid`, and so on. Build one light and one dark theme from the two halves.
+3. Where the library can use CSS variables, point it at the tokens instead of the hex: MUI with `cssVariables: true`, Mantine by overriding its `--mantine-color-*` variables. Ant Design and Vuetify need the hex.
+4. Commit the generated file with the export command in a comment, and rerun it when the knobs change. A hand-edited copy is the bug.
 
 ## Dark mode in the app
 If the app has a theme toggle, it sets `data-theme="light"` or `"dark"` on `<html>`, or removes the attribute to follow the OS. Delete the app's old dark-mode mechanism: a `.dark` class, a separate stylesheet, or JS-swapped colors. If the app has no toggle, dark mode follows the OS with no further work. If the app owner wants light only, add `:root { color-scheme: light; }` after tokens.css.

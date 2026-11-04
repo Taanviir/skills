@@ -5,16 +5,17 @@ description: Graphite UI design system. Tokens, component recipes and an audit s
 
 # Graphite UI
 
-Graphite UI is a design system that ships inside this skill. `assets/` has the CSS. `scripts/` has three scripts that need Node 21 or newer and no dependencies:
+Graphite UI is a design system that ships inside this skill. `assets/` has the CSS. `scripts/` has four scripts that need Node 21 or newer and no dependencies:
 - `audit.mjs` lists styling that bypasses the tokens.
 - `contrast.mjs` checks color pairs.
 - `brand.mjs` turns a brand color into token knobs.
+- `export.mjs` prints the colors as hex for code that can't read CSS variables.
 
 `GR` below means this skill's directory.
 
 The job is a **rework**: the app keeps its markup structure, routes, copy and behavior. Its visual layer is replaced by Graphite UI tokens and recipes, and the old layer is deleted, not left underneath. Three branches:
 - **Existing app**: every step below.
-- **New app**: steps 3 and 6, then build with the recipes.
+- **New app**: steps 3, 6 and 7, building with the recipes in between.
 - **Audit only**: step 1, then report the findings grouped by rule with the worst files.
 
 ## Steps
@@ -76,5 +77,5 @@ Done when the audit exits 0.
 - `references/tokens.md`: which token to use, the knobs, building the token map.
 - `references/rules.md`: the design rules every reworked screen follows, including touch.
 - `references/components.md`: port or adopt, the name map from common class names, notes on each recipe.
-- `references/stacks.md`: install steps for plain CSS, Bootstrap 5, Sass, Tailwind v3/v4, shadcn and CSS-in-JS, plus dark mode.
-- `assets/preview.html`: every recipe with real markup, plus a theme switch and a hue slider.
+- `references/stacks.md`: install steps for plain CSS, Bootstrap 5, Sass, Tailwind v3/v4, shadcn, CSS-in-JS and JS component libraries (MUI, Mantine, Ant Design), plus dark mode and fonts.
+- `assets/preview.html`: the board. Every recipe with real markup, light and dark side by side, plus a hue slider.
