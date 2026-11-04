@@ -11,20 +11,22 @@
 <link rel="stylesheet" href="graphite-ui/base.css">
 <link rel="stylesheet" href="graphite-ui/components.css">
 <style>
+  .topbar { padding: 0; }
+  .topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: 0 var(--gr-space-6); }
   .brand { font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
   .topbar nav { display: flex; gap: var(--gr-space-1); overflow-x: auto; }
   .skills { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--gr-space-4); }
   .skills .card { display: grid; grid-template-rows: auto 1fr auto; }
   .install { margin: 0; overflow-x: auto; font-size: var(--gr-text-caption); }
   @media (max-width: 640px) {
-    .topbar { padding: 0 var(--gr-space-4); }
+    .topbar .bar { padding: 0 var(--gr-space-4); }
     .topbar .brand { display: none; }
     .content { padding-inline: var(--gr-space-4); }
   }
 </style>
 </head>
 <body>
-<header class="topbar">
+<header class="topbar"><div class="bar">
   <a class="brand" href="./">Taanviir's skills</a>
   <span class="spacer"></span>
   <nav aria-label="Site">
@@ -33,7 +35,7 @@
     <a class="btn ghost" href="graphite-ui/preview.html">Graphite UI board</a>
     <a class="btn ghost" href="https://github.com/Taanviir/skills">GitHub</a>
   </nav>
-</header>
+</div></header>
 
 <main class="content">
   <div class="page-head">
