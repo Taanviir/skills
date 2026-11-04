@@ -104,7 +104,7 @@ def run_turn(ws, prompt, session, budget, timeout):
         "prompt": prompt,
         "session": result.get("session_id", session),
         "text": result.get("result", ""),
-        "cost": result.get("total_cost_usd", 0) or 0,
+        "session_cost": result.get("total_cost_usd", 0) or 0,
         "error": result.get("is_error", not result),
         "tools": tools,
         "events": events,
@@ -190,13 +190,11 @@ def grade(case, ws, turns):
 def run_case(case, run_no, args, out_dir):
     ws = workspace(case)
     turns, session, started = [], None, time.time()
-    files, spent = snapshot(ws), 0
+    files = snapshot(ws)
     for prompt in case["turns"]:
         t = run_turn(ws, prompt, session, args.budget, case.get("timeout", 1800))
         t["files_before"], t["files"] = files, snapshot(ws)
         files = t["files"]
-        # A resumed session reports its running total, so the turn's own cost is the difference.
-        t["cost"], spent = max(0, t["cost"] - spent), max(spent, t["cost"])
         turns.append(t)
         session = t["session"]
         if t["error"] or not session:
@@ -204,9 +202,11 @@ def run_case(case, run_no, args, out_dir):
     graders, judge_cost = grade(case, ws, turns)
     record = {
         "case": case["name"], "skill": case["skill"], "run": run_no, "workspace": ws,
-        "seconds": round(time.time() - started), "cost": round(sum(t["cost"] for t in turns) + judge_cost, 4),
+        "seconds": round(time.time() - started),
+        # total_cost_usd keeps counting across a resumed session, so the largest one is the whole run.
+        "cost": round(max((t["session_cost"] for t in turns), default=0) + judge_cost, 4),
         "pass": all(g["pass"] for g in graders), "graders": graders,
-        "turns": [{k: v for k, v in t.items() if k not in ("events", "files", "files_before")} for t in turns],
+        "turns": [{k: v for k, v in t.items() if k not in ("events", "files", "files_before", "session_cost")} for t in turns],
     }
     with open(os.path.join(out_dir, f"{case['name']}-{run_no}.json"), "w", encoding="utf-8") as f:
         json.dump(record, f, indent=2)
