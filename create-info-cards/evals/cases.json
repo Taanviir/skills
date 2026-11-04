@@ -27,11 +27,6 @@
         "pattern": "412.*1,?850|1,?850.*412"
       },
       {
-        "name": "proposes a card count",
-        "type": "regex",
-        "pattern": "\\b\\d{1,2}\\s+cards\\b|\\bcards\\b\\W{0,3}\\d{1,2}\\b"
-      },
-      {
         "name": "asks for confirmation",
         "type": "judge",
         "criteria": "The reply shows a fact sheet of numbers, dates and names from an article, proposes an angle and a card count, and asks the user to confirm or correct before any cards are built. It does not claim the cards are finished."
@@ -52,9 +47,8 @@
       },
       {
         "name": "first turn stopped for confirmation",
-        "type": "regex",
-        "turn": 0,
-        "pattern": "confirm|correct|look right|sound right|approve|go ahead"
+        "type": "no_writes",
+        "turn": 0
       },
       {
         "name": "cards built, fit, export, numbers traced",
@@ -92,6 +86,11 @@
         "type": "skill_used"
       },
       {
+        "name": "first turn stopped for approval",
+        "type": "no_writes",
+        "turn": 0
+      },
+      {
         "name": "cards built, fit, export, numbers traced",
         "type": "cmd",
         "argv": [
@@ -125,6 +124,11 @@
       {
         "name": "skill fired",
         "type": "skill_used"
+      },
+      {
+        "name": "first turn stopped for approval",
+        "type": "no_writes",
+        "turn": 0
       },
       {
         "name": "flags unsure names from captions",
@@ -187,6 +191,11 @@
         "type": "skill_used"
       },
       {
+        "name": "first turn stopped for approval",
+        "type": "no_writes",
+        "turn": 0
+      },
+      {
         "name": "exactly 4 cards, fit, export, numbers traced",
         "type": "cmd",
         "argv": [
@@ -200,12 +209,6 @@
           "4",
           "{replies}"
         ]
-      },
-      {
-        "name": "planned count was 4",
-        "type": "regex",
-        "turn": 0,
-        "pattern": "\\b(4|four)\\s+cards\\b|\\bcards\\b\\W{0,3}(4|four)\\b"
       }
     ]
   },
@@ -220,6 +223,11 @@
       {
         "name": "skill fired",
         "type": "skill_used"
+      },
+      {
+        "name": "first turn stopped for approval",
+        "type": "no_writes",
+        "turn": 0
       },
       {
         "name": "cards built, fit, export, numbers traced",

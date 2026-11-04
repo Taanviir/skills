@@ -84,9 +84,8 @@
       },
       {
         "name": "first turn waited",
-        "type": "regex",
-        "turn": 0,
-        "pattern": "approv|your (ok|go-ahead)|before I (change|edit|start)|shall I (go ahead|start)|want me to (go ahead|start)"
+        "type": "no_writes",
+        "turn": 0
       },
       {
         "name": "rework is complete and safe",
@@ -119,6 +118,11 @@
       {
         "name": "skill fired",
         "type": "skill_used"
+      },
+      {
+        "name": "first turn stopped for approval",
+        "type": "no_writes",
+        "turn": 0
       },
       {
         "name": "rework is complete and safe",
@@ -172,6 +176,11 @@
       {
         "name": "skill fired",
         "type": "skill_used"
+      },
+      {
+        "name": "first turn stopped for approval",
+        "type": "no_writes",
+        "turn": 0
       },
       {
         "name": "accent hue follows the brand",
