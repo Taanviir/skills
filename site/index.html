@@ -5,116 +5,89 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Taanviir's skills</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="description" content="Agent skills for Claude Code and Codex, with their eval results.">
+<meta name="description" content="Agent skills for Claude Code and Codex.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap">
 <link rel="stylesheet" href="graphite-ui/tokens.css">
 <link rel="stylesheet" href="graphite-ui/base.css">
 <link rel="stylesheet" href="graphite-ui/components.css">
-<link rel="stylesheet" href="site.css">
 <style>
-  .skills { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--gr-space-4); }
-  .skill { display: grid; grid-template-rows: auto 1fr auto; }
-  .skill .card-head { justify-content: flex-start; }
-  .skill .card-body { align-content: start; }
-  .skill .card-foot { justify-content: space-between; align-items: center; }
-  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--gr-space-4); }
-  .step .num-dot { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--gr-bg-sunken); font-size: var(--gr-text-label); font-weight: var(--gr-weight-semibold); }
-  .install { margin: 0; overflow-x: auto; font-size: var(--gr-text-caption); }
+  .topbar { padding: 0; border-bottom: 0; background: var(--gr-bg-page); backdrop-filter: none; }
+  .topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: 760px; margin: 0 auto; padding: 0 var(--gr-space-6); }
+  .brand { display: inline-flex; align-items: center; gap: var(--gr-space-2); font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
+  .brand img { width: 20px; height: 20px; }
+  .topbar nav { display: flex; gap: var(--gr-space-1); }
+
+  .content { gap: var(--gr-space-12); }
+  .intro { display: grid; gap: var(--gr-space-3); padding-top: var(--gr-space-8); }
+  .intro h1 { font-size: var(--gr-text-display); }
+  .intro p { font-size: 1rem; color: var(--gr-fg-secondary); }
+
+  .skills { display: grid; gap: var(--gr-space-8); }
+  .skill { display: grid; gap: var(--gr-space-1-5); }
+  .skill h3 { font-size: var(--gr-text-heading); }
+  .skill p { color: var(--gr-fg-secondary); }
+  .links { display: flex; gap: var(--gr-space-4); font-size: var(--gr-text-caption); }
+
+  .install { margin: 0; padding: var(--gr-space-4); overflow-x: auto; border-radius: var(--gr-radius-control); background: var(--gr-bg-sunken); font-size: var(--gr-text-caption); }
+  footer { color: var(--gr-fg-secondary); font-size: var(--gr-text-caption); }
+
+  @media (max-width: 640px) {
+    .topbar .bar { padding: 0 var(--gr-space-4); }
+    .topbar .brand span { display: none; }
+    .content { padding-inline: var(--gr-space-4); gap: var(--gr-space-10); }
+    .intro { padding-top: var(--gr-space-2); }
+    .intro h1 { font-size: var(--gr-text-page); }
+  }
 </style>
 </head>
 <body>
-{{icons}}
-
 <header class="topbar"><div class="bar">
   <a class="brand" href="./"><img src="favicon.svg" alt=""><span>Taanviir's skills</span></a>
   <span class="spacer"></span>
   <nav aria-label="Site">
     <a class="btn ghost" href="#skills">Skills</a>
-    <a class="btn ghost" href="evals/">Eval results</a>
     <a class="btn ghost" href="graphite-ui/preview.html">Graphite UI board</a>
     <a class="btn ghost" href="https://github.com/Taanviir/skills">GitHub</a>
   </nav>
 </div></header>
 
-<main class="content">
-  <section class="hero">
-    <span class="overline">Agent skills</span>
+<main class="content narrow">
+  <section class="intro">
     <h1>Taanviir's skills</h1>
-    <p>Skills I use day to day with Claude Code and Codex. Each one teaches the agent one job, and each is tested end to end: the agent runs the task, and graders check what it built.</p>
-    <div class="cluster">
-      <a class="btn primary" href="#skills">Browse the skills</a>
-      <a class="btn" href="evals/">See the eval results</a>
-    </div>
+    <p>Skills I use day to day with Claude Code and Codex. Each one teaches the agent one job. Each is also tested end to end: the agent does the task in a fresh folder, and <a href="https://github.com/Taanviir/skills/blob/main/evals/README.md">evals</a> check what it built.</p>
   </section>
-
-  <div class="stats">
-    <div class="stat"><span class="label">Skills</span><span class="value">3</span></div>
-    <div class="stat"><span class="label">Eval cases</span><span class="value">{{cases}}</span></div>
-    <div class="stat"><span class="label">Runs passed, latest run</span><span class="value">{{passed}}/{{runs}}</span></div>
-    <div class="stat"><span class="label">Cost of that run</span><span class="value">${{cost}}</span></div>
-  </div>
 
   <section class="section" id="skills" aria-labelledby="skills-title">
-    <div class="section-head"><h2 id="skills-title">Skills</h2></div>
+    <h2 id="skills-title">Skills</h2>
     <div class="skills">
-      <article class="card skill">
-        <div class="card-head titled"><span class="tile"><svg aria-hidden="true"><use href="#i-palette"/></svg></span><h3>graphite-ui</h3></div>
-        <div class="card-body">
-          <p>A design system as a skill. Reworks an app's UI onto Graphite UI tokens and component recipes, then runs an audit that proves nothing hardcoded is left.</p>
-          <span class="status {{skills.graphite-ui.tone}}">{{skills.graphite-ui.passed}}/{{skills.graphite-ui.runs}} eval runs passed</span>
-        </div>
-        <div class="card-foot">
-          <a class="btn ghost" href="graphite-ui/preview.html">Open the board</a>
-          <a class="btn" href="https://github.com/Taanviir/skills/tree/main/skills/graphite-ui">Source</a>
-        </div>
-      </article>
-      <article class="card skill">
-        <div class="card-head titled"><span class="tile"><svg aria-hidden="true"><use href="#i-slides"/></svg></span><h3>project-presentation</h3></div>
-        <div class="card-body">
-          <p>Turns a repository into one self-contained HTML slide deck for stakeholders, using the repo's own content and brand colors.</p>
-          <span class="status {{skills.project-presentation.tone}}">{{skills.project-presentation.passed}}/{{skills.project-presentation.runs}} eval runs passed</span>
-        </div>
-        <div class="card-foot">
-          <span></span>
-          <a class="btn" href="https://github.com/Taanviir/skills/tree/main/skills/project-presentation">Source</a>
-        </div>
-      </article>
-      <article class="card skill">
-        <div class="card-head titled"><span class="tile"><svg aria-hidden="true"><use href="#i-image"/></svg></span><h3>create-info-cards</h3></div>
-        <div class="card-body">
-          <p>Turns a YouTube video, article or PDF into 1080×1350 image cards on a collage page. Each card exports as a PNG.</p>
-          <span class="status {{skills.create-info-cards.tone}}">{{skills.create-info-cards.passed}}/{{skills.create-info-cards.runs}} eval runs passed</span>
-        </div>
-        <div class="card-foot">
-          <span></span>
-          <a class="btn" href="https://github.com/Taanviir/skills/tree/main/skills/create-info-cards">Source</a>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="evals-title">
-    <div class="section-head"><h2 id="evals-title">How each skill is tested</h2><a class="btn ghost" href="evals/">Latest results</a></div>
-    <div class="steps">
-      <div class="card step"><div class="card-body"><span class="num-dot">1</span><h3 class="text-heading">Fresh folder</h3><p class="text-secondary">Each case starts the agent in an empty folder with its own starting files: an app to rework, an article, a repo.</p></div></div>
-      <div class="card step"><div class="card-body"><span class="num-dot">2</span><h3 class="text-heading">Scripted user</h3><p class="text-secondary">A fixed request, then a follow-up such as "approved" or a correction, the way a person would reply.</p></div></div>
-      <div class="card step"><div class="card-body"><span class="num-dot">3</span><h3 class="text-heading">Graders</h3><p class="text-secondary">Checks on what the agent did: it loaded the skill, waited for approval, and the files it built pass the skill's own scripts.</p></div></div>
+      <div class="skill">
+        <h3>graphite-ui</h3>
+        <p>A design system as a skill. Reworks an app's UI onto Graphite UI tokens and component recipes, then runs an audit that proves nothing hardcoded is left.</p>
+        <div class="links"><a href="graphite-ui/preview.html">See the board</a><a href="https://github.com/Taanviir/skills/tree/main/skills/graphite-ui">Source</a></div>
+      </div>
+      <div class="skill">
+        <h3>project-presentation</h3>
+        <p>Turns a repository into one self-contained HTML slide deck for stakeholders, using the repo's own content and brand colors.</p>
+        <div class="links"><a href="https://github.com/Taanviir/skills/tree/main/skills/project-presentation">Source</a></div>
+      </div>
+      <div class="skill">
+        <h3>create-info-cards</h3>
+        <p>Turns a YouTube video, article or PDF into 1080×1350 image cards on a collage page. Each card exports as a PNG.</p>
+        <div class="links"><a href="https://github.com/Taanviir/skills/tree/main/skills/create-info-cards">Source</a></div>
+      </div>
     </div>
   </section>
 
   <section class="section" aria-labelledby="install-title">
-    <div class="section-head"><h2 id="install-title">Install</h2></div>
-    <div class="card"><div class="card-body">
-      <p>Clone the repo and link a skill into your agent's skills folder:</p>
+    <h2 id="install-title">Install</h2>
+    <p>Clone the repo and link a skill into your agent's skills folder, then ask for the task in plain words.</p>
 <pre class="install mono">git clone https://github.com/Taanviir/skills.git && cd skills
 ln -s "$PWD/skills/graphite-ui" ~/.claude/skills/graphite-ui   # Claude Code
 ln -s "$PWD/skills/graphite-ui" ~/.agents/skills/graphite-ui   # Codex</pre>
-      <p class="text-secondary">Then ask for the task in plain words. The agent loads the matching skill.</p>
-    </div></div>
   </section>
 
-  <footer class="split"><span>Taanviir's skills</span><a href="https://github.com/Taanviir/skills">github.com/Taanviir/skills</a></footer>
+  <footer><a href="https://github.com/Taanviir/skills">github.com/Taanviir/skills</a></footer>
 </main>
 
 <script src="graphite-ui/press.js"></script>
