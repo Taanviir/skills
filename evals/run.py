@@ -186,11 +186,13 @@ def grade(case, ws, turns):
 def run_case(case, run_no, args, out_dir):
     ws = workspace(case)
     turns, session, started = [], None, time.time()
-    files = snapshot(ws)
+    files, spent = snapshot(ws), 0
     for prompt in case["turns"]:
         t = run_turn(ws, prompt, session, args.budget, case.get("timeout", 1800))
         t["files_before"], t["files"] = files, snapshot(ws)
         files = t["files"]
+        # A resumed session reports its running total, so the turn's own cost is the difference.
+        t["cost"], spent = max(0, t["cost"] - spent), max(spent, t["cost"])
         turns.append(t)
         session = t["session"]
         if t["error"] or not session:
