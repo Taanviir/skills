@@ -49,5 +49,14 @@ class NoWrites(unittest.TestCase):
         self.assertFalse(self.grade([])["pass"])
 
 
+class MissingTurn(unittest.TestCase):
+    def test_a_regex_on_a_turn_that_never_ran_fails_instead_of_reading_the_last_one(self):
+        case = {"skill": "graphite-ui", "graders": [
+            {"name": "no plan in turn 1", "type": "regex", "turn": 1, "pattern": "plan", "expect": False}]}
+        r = run.grade(case, tempfile.mkdtemp(), [{"text": "done"}])[0][0]
+        self.assertFalse(r["pass"])
+        self.assertIn("turn 1 never ran", r["note"])
+
+
 if __name__ == "__main__":
     unittest.main()

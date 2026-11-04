@@ -148,13 +148,16 @@ def grade(case, ws, turns):
     last = turns[-1]["text"] if turns else ""
     for g in case["graders"]:
         kind = g["type"]
-        if kind == "skill_used":
+        n = g.get("turn")
+        if n is not None and n >= len(turns):
+            ok, note = False, f"turn {n} never ran"
+        elif kind == "skill_used":
             fired = skill_fired(turns, g.get("skill", case["skill"]))
             ok, note = fired == g.get("expect", True), f"skill fired: {fired}"
         elif kind == "no_writes":
-            n = g.get("turn", 0)
-            if n >= len(turns):
-                ok, note = False, f"turn {n} never ran"
+            n = n or 0
+            if not turns:
+                ok, note = False, "turn 0 never ran"
             else:
                 before, after = turns[n]["files_before"], turns[n]["files"]
                 changed = sorted(k for k in before.keys() | after.keys() if before.get(k) != after.get(k))
@@ -164,7 +167,7 @@ def grade(case, ws, turns):
             p = subprocess.run(argv, capture_output=True, text=True, timeout=g.get("timeout", 600))
             ok, note = p.returncode == 0, (p.stdout + p.stderr).strip()[-1500:]
         elif kind == "regex":
-            turn_text = turns[g["turn"]]["text"] if "turn" in g and g["turn"] < len(turns) else last
+            turn_text = last if n is None else turns[n]["text"]
             found = re.search(g["pattern"], turn_text, re.I | re.S) is not None
             ok, note = found == g.get("expect", True), f"pattern {'found' if found else 'not found'}: {g['pattern']}"
         elif kind == "judge":
@@ -173,7 +176,7 @@ def grade(case, ws, turns):
                 material = "\n\n".join(f"--- {os.path.relpath(p, ws)}\n" + open(p, encoding="utf-8", errors="ignore").read() for p in paths) or "(no file matched)"
                 what = "files the agent wrote"
             else:
-                material = turns[g["turn"]]["text"] if "turn" in g and g["turn"] < len(turns) else last
+                material = last if n is None else turns[n]["text"]
                 what = "the agent's reply to the user, not the user's request"
             ok, note, c = judge(g["criteria"], material, what)
             cost += c
