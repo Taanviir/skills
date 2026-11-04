@@ -38,6 +38,7 @@ EXPORT_JS = """
 setTimeout(async () => {
   try {
     for (let i = 0; i < 100 && typeof htmlToImage === 'undefined'; i++) await new Promise(r => setTimeout(r, 200));
+    if (typeof htmlToImage === 'undefined') throw new Error('html-to-image did not load from the CDN in 20s');
     await document.fonts.ready;
     const u = await htmlToImage.toPng(document.querySelector('.card'),
       { width: 1080, height: 1350, pixelRatio: 1, style: { transform: 'none' } });
@@ -104,7 +105,8 @@ def main():
         run(["--virtual-time-budget=5000", f"--screenshot={out}", "file://" + os.path.abspath(page)])
         print(out)
     elif mode == "export":
-        r = result(page, EXPORT_JS, 15000)
+        # Longer than the script's own wait (1.5s plus up to 20s for the library), so it always reports.
+        r = result(page, EXPORT_JS, 30000)
         print(r)
         sys.exit(0 if r.get("ok") else 1)
     else:

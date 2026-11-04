@@ -55,4 +55,8 @@ console.log(`input        #${full}  oklch(${(L * 100).toFixed(1)}% ${C.toFixed(3
 console.log(`--gr-accent-h: ${Math.round(H)};`);
 console.log(`--gr-accent-c: ${k};`);
 if (C < 0.04) console.log('note: the brand color is close to gray; consider --gr-tint: 0 and keep the default blue accent');
+// Status hues are fixed so their meaning never changes; a brand that sits on one needs the status word or icon to carry it.
+const STATUS = { success: 150, warning: 70, danger: 25, info: 290 };
+const near = Object.entries(STATUS).filter(([, h]) => Math.abs(((H - h + 540) % 360) - 180) < 25).map(([s]) => s);
+if (C >= 0.04 && near.length) console.log(`note: this hue is close to the ${near.join(' and ')} color. Primary buttons will read as ${near.join('/')}, so keep every status next to its word or icon`);
 console.log(`check: node contrast.mjs --hue ${Math.round(H)} --chroma ${k}`);

@@ -16,7 +16,8 @@
 | Modal backdrop | `--gr-scrim` |
 | Body text, headings, values | `--gr-fg-primary` |
 | Hints, meta, table headers, inactive nav | `--gr-fg-secondary` |
-| Placeholders, decorative icons, counts in nav | `--gr-fg-tertiary` (3:1, never sentences) |
+| Placeholders, counts, menu group labels | `--gr-fg-secondary` (these are text, so 4.5:1) |
+| Decorative icons, disabled text | `--gr-fg-tertiary` (3:1, never text people need to read) |
 | Text on accent or danger solids | `--gr-fg-on-accent` |
 | Row dividers, section rules | `--gr-border-separator` |
 | A card that needs a drawn border | `--gr-shadow-border` (preferred) or `--gr-border-default` |
@@ -49,6 +50,7 @@ Spacing tokens use Tailwind step names: `--gr-space-3` is 12px. Use the steps in
 
 - `--gr-accent-h`: brand hue. Get it from the app's current brand color with `node scripts/brand.mjs "#hex"`. That prints `--gr-accent-h` and `--gr-accent-c`.
 - `--gr-accent-c`: chroma multiplier. Amber, yellow and teal need 0.55 to 0.65. `brand.mjs` picks it.
+- Status colors never follow the knobs: success is green, warning amber, danger red, info violet, whatever the brand. A brand near one of them (`brand.mjs` prints a note) makes the primary button look like that status, so status must always come with its word or icon. Chart series 2 to 4 do turn with the hue, so none of them lands on the brand.
 - `--gr-tint`: how far the grays lean toward the hue. Keep 1. Set 0 for neutral grays when the brand hue is warm and the grays would turn beige.
 
 Set knobs in the app's own stylesheet on `:root`, after importing `tokens.css`. Never edit `tokens.css` in the app. Then run `node scripts/contrast.mjs --hue H --chroma C` and keep the knobs only when every pair passes.
@@ -67,6 +69,6 @@ To fill a row, look at how the old token is used, not at its name:
 2. For grays, sort the old grays by lightness and map them to the semantic layer by role. Darkest text is `fg-primary`, then `fg-secondary`, `fg-tertiary`, `border-control`, `border-default`, `border-separator`, `bg-hover`, `bg-sunken`, `bg-page`. White is `bg-surface`.
 3. Status colors map by meaning. Green "success" and "paid" are `success`. A green used as decoration is not status: map it to the accent or delete it.
 4. Old token sets often sit on top of each other: a Bootstrap-style `--primary-color` set over a Tailwind-style one. Map both sets to the same `--gr-*` targets, then delete both.
-5. Tokens copied into JS (chart configs, canvas code, email or PDF renderers) get one of two treatments. Code that runs in the page reads the CSS variable: `getComputedStyle(document.documentElement).getPropertyValue('--gr-series-1')`. Code that runs elsewhere imports a generated constant. Two hand-kept copies is the bug to remove.
+5. Tokens copied into JS (chart configs, canvas code, email or PDF renderers) get one of two treatments. Code that runs in the page reads the CSS variable: `getComputedStyle(document.documentElement).getPropertyValue('--gr-series-1')`. Code that runs elsewhere (email and PDF renderers, native apps, a component library's JS theme) imports the hex values from `node scripts/export.mjs --hue H --chroma C`, regenerated whenever the knobs change. Two hand-kept copies is the bug to remove.
 
 A **bridge** is a custom property whose value is only `--gr-*` references. Examples are shadcn's `--primary: var(--gr-accent-solid)`, or a component-scoped `--tone: var(--gr-success-solid)`. The audit allows bridges. Keep them only where a library demands the name or one component swaps a value by variant.

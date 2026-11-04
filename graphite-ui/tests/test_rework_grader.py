@@ -107,7 +107,7 @@ class ReworkGrader(unittest.TestCase):
             f.write("\nconst EXTRA = '#ff0000';\n")
         code, out = grade("reworked", self.app, PLAIN)
         self.assertEqual(code, 1)
-        self.assertIn("hex", out)
+        self.assertIn("script-color", out)
 
     def test_knobs(self):
         self.rework()

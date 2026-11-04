@@ -1,6 +1,6 @@
 # Graphite UI
 
-A design system that ships as an agent skill. Give it to Claude Code (or any agent that reads `SKILL.md`), point it at an app, and it reworks the app's look onto Graphite UI. The markup, routes, copy and behavior stay as they are.
+A design system that ships as an agent skill. Give it to any agent that reads `SKILL.md`, point it at an app, and it reworks the app's look onto Graphite UI. The markup, routes, copy and behavior stay as they are.
 
 The look is dense, calm and flat: 1px rings instead of borders, one accent color, 14px UI text, light and dark themes that follow the OS.
 
@@ -17,12 +17,13 @@ graphite-ui/
 │   ├── shadcn.css        shadcn/ui role mapping
 │   ├── bootstrap.css     Bootstrap 5.3 variable mapping
 │   ├── press.js          marks pressed controls so quick taps show on touch
-│   └── preview.html      every recipe on one page, with theme and hue controls
+│   └── preview.html      the board: every recipe, light and dark side by side, with a hue slider
 ├── references/           token guide, design rules, component name map, per-stack install
 └── scripts/              Node 21 or newer, no dependencies
     ├── audit.mjs         finds styling that bypasses the tokens; exits 1 if any
     ├── contrast.mjs      WCAG check of every color pair, both themes
-    └── brand.mjs         brand hex → hue and chroma knobs
+    ├── brand.mjs         brand hex → hue and chroma knobs
+    └── export.mjs        every color as hex, both themes, for code that can't read CSS variables
 ```
 
 ## Use it
@@ -30,7 +31,8 @@ graphite-ui/
 Install the skill:
 
 ```sh
-ln -s "$PWD/graphite-ui" ~/.claude/skills/graphite-ui
+ln -s "$PWD/graphite-ui" ~/.claude/skills/graphite-ui   # Claude Code
+ln -s "$PWD/graphite-ui" ~/.agents/skills/graphite-ui   # Codex
 ```
 
 Then, inside the app's repo:
@@ -62,8 +64,8 @@ Put the two lines on `:root` in the app's CSS. The whole accent ramp, focus ring
 
 ## Try it without an app
 
-Open `assets/preview.html` in a browser. Switch between light, dark and RTL, and drag the hue slider.
+Open `assets/preview.html` in a browser. Every recipe is shown in light and dark side by side. Drag the hue slider to try a brand, or switch to RTL.
 
 ## Browser support
 
-The CSS needs `light-dark()`, `oklch()`, `:has()` and `@starting-style`. Chrome and Edge 123+, Safari 17.5+ and Firefox 129+ have all four. Older browsers get no theme switching.
+The CSS needs `light-dark()`, `oklch()`, `:has()` and `@starting-style`. Chrome and Edge 123+, Safari 17.5+ and Firefox 129+ have all four. In an older browser every color token is invalid, so the page shows no backgrounds, borders or accent at all, not a light-only version. That includes iPads still on iOS 17.0 to 17.4. If the app has to work there, ship the output of `node scripts/export.mjs --format fallback` as a stylesheet loaded after `tokens.css`. It gives those browsers the light colors, without dark mode.

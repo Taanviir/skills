@@ -3,25 +3,75 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Graphite UI preview</title>
+<title>Graphite UI board</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap">
 <link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="base.css">
 <link rel="stylesheet" href="components.css">
 <style>
-  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--gr-space-2); }
+  /* Board scaffolding only. Each pane sets its own color-scheme, and light-dark() in the tokens follows it. */
+  body { background: var(--gr-bg-sunken); }
+  .controls { position: sticky; top: 0; z-index: var(--gr-z-sticky); display: flex; flex-wrap: wrap; align-items: center; gap: var(--gr-space-3) var(--gr-space-5); padding: var(--gr-space-3) var(--gr-space-5); background: var(--gr-bg-surface); box-shadow: var(--gr-shadow-border); }
+  .controls h1 { font-size: var(--gr-text-heading); margin-inline-end: auto; }
+  .controls label { display: inline-flex; align-items: center; gap: var(--gr-space-2); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
+  .controls input[type="range"] { width: 120px; }
+  .controls output { min-width: 3ch; color: var(--gr-fg-primary); }
+
+  .panes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 660px), 1fr)); }
+  .panes[data-view="light"] > [data-pane="dark"], .panes[data-view="dark"] > [data-pane="light"] { display: none; }
+  .pane { min-width: 0; padding: var(--gr-space-6) var(--gr-space-5) var(--gr-space-16); background: var(--gr-bg-page); color: var(--gr-fg-primary); }
+  .pane[data-pane="light"] { color-scheme: light; }
+  .pane[data-pane="dark"]  { color-scheme: dark; }
+  .pane-title { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--gr-space-5); }
+  .pane-title h2 { font-size: var(--gr-text-title); }
+
+  .board { display: grid; gap: var(--gr-space-8); }
+  .group { display: grid; gap: var(--gr-space-3); }
+  .group > h3 { font-size: var(--gr-text-label); font-weight: var(--gr-weight-strong); letter-spacing: var(--gr-tracking-caps); text-transform: uppercase; color: var(--gr-fg-secondary); }
+  .specimens { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: var(--gr-space-3); align-items: start; }
+  .specimen { display: grid; gap: var(--gr-space-3); padding: var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-bg-surface); box-shadow: var(--gr-shadow-border); }
+  .specimen.wide { grid-column: 1 / -1; }
+  .specimen > .name { font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
+  .specimen > .name code { color: var(--gr-fg-primary); }
+
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: var(--gr-space-2); }
   .swatch { display: grid; gap: var(--gr-space-1); }
-  .swatch i { display: block; height: 40px; border-radius: var(--gr-radius-control); box-shadow: var(--gr-shadow-inset); }
-  .swatch code { font-size: var(--gr-text-label); color: var(--gr-fg-secondary); }
-  .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--gr-space-4); align-items: start; }
-  .knobs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gr-space-4); }
-  .knobs label { display: inline-flex; align-items: center; gap: var(--gr-space-2); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
-  .knobs input[type="range"] { width: 140px; }
-  .phone { display: grid; gap: var(--gr-space-3); max-width: 375px; padding-top: var(--gr-space-3); overflow: hidden; }
-  .phone > .scroll-row, .phone > .actions { padding-inline: var(--gr-space-4); }
-  .phone .actions { display: flex; gap: var(--gr-space-2); }
-  .phone .pager > div { display: grid; place-items: center; min-height: 96px; color: var(--gr-fg-secondary); }
+  .swatch i { display: block; height: 36px; border-radius: var(--gr-radius-control); box-shadow: var(--gr-shadow-inset); }
+  .swatch code { font-size: var(--gr-text-label); color: var(--gr-fg-secondary); overflow-wrap: anywhere; }
+  .type-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--gr-space-3); }
+  .type-row code { font-size: var(--gr-text-label); color: var(--gr-fg-secondary); white-space: nowrap; }
+  .ladder { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gr-space-3); }
+  .ladder > div { display: grid; place-items: center; height: 64px; border-radius: var(--gr-radius-surface); background: var(--gr-bg-raised); font-size: var(--gr-text-label); color: var(--gr-fg-secondary); }
+  .sh-border { box-shadow: var(--gr-shadow-border); } .sh-hover { box-shadow: var(--gr-shadow-border-hover); }
+  .sh-raised { box-shadow: var(--gr-shadow-raised); } .sh-overlay { box-shadow: var(--gr-shadow-overlay); }
+  .radii { display: flex; gap: var(--gr-space-3); }
+  .radii > div { display: grid; place-items: center; width: 64px; height: 48px; background: var(--gr-bg-sunken); box-shadow: var(--gr-shadow-inset); font-size: var(--gr-text-label); color: var(--gr-fg-secondary); }
+  .r-sm { border-radius: var(--gr-radius-sm); } .r-control { border-radius: var(--gr-radius-control); }
+  .r-group { border-radius: var(--gr-radius-group); } .r-surface { border-radius: var(--gr-radius-surface); }
+  .spaces { display: grid; gap: var(--gr-space-1); }
+  .spaces > div { display: flex; align-items: center; gap: var(--gr-space-2); font-size: var(--gr-text-label); color: var(--gr-fg-secondary); }
+  .spaces > div > i { height: 8px; border-radius: var(--gr-radius-pill); background: var(--gr-accent-solid); }
+
+  .chart { width: 100%; height: auto; }
+  .chart .grid { stroke: var(--gr-border-separator); }
+  .chart text { fill: var(--gr-fg-secondary); font-size: 11px; }
+  .chart .s1 { fill: var(--gr-series-1); } .chart .s2 { fill: var(--gr-series-2); } .chart .s3 { fill: var(--gr-series-3); }
+  .chart .s4 { fill: var(--gr-series-4); } .chart .s5 { fill: var(--gr-series-5); }
+
+  /* Top-layer and fixed recipes, shown in place so both themes can be compared. */
+  .inline-layer .toast-region, .inline-layer .dialog { position: static; inset: auto; translate: none; margin: 0; width: auto; max-width: none; }
+  .inline-layer .menu { position: static; }
+  .frame { height: 420px; overflow: hidden; border-radius: var(--gr-radius-surface); box-shadow: var(--gr-shadow-border); }
+  .frame .app { min-height: 0; height: 100%; }
+  .frame .sidebar { position: static; height: 100%; }
+  .frame .main { overflow: auto; }
+  .frame .content { padding: var(--gr-space-5); }
+  .phone { display: grid; gap: var(--gr-space-3); max-width: 375px; padding-top: var(--gr-space-3); overflow: hidden; border-radius: var(--gr-radius-surface); background: var(--gr-bg-surface); box-shadow: var(--gr-shadow-border); }
+  .phone > .pad { padding-inline: var(--gr-space-4); }
+  .phone .pager > div { display: grid; place-items: center; min-height: 72px; color: var(--gr-fg-secondary); }
+  .phone .tabbar { position: static; }
+  .brand-mark { fill: var(--gr-fg-primary); }
 </style>
 </head>
 <body>
@@ -30,164 +80,177 @@
   <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
   <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></symbol>
-  <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68 1.65 1.65 0 0 0 10 3.17V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.66 0-1.25.4-1.51 1z"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
   <symbol id="i-more" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
   <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></symbol>
+  <symbol id="i-panel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></symbol>
 </svg>
 
-<div class="app">
-  <aside class="sidebar" id="sidebar">
-    <a class="brand" href="#"><svg viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="var(--gr-fg-primary)"/><path d="M16.5 8.5A5.5 5.5 0 1 0 17.5 13H12.5" fill="none" stroke="var(--gr-bg-page)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Graphite UI</a>
-    <nav class="nav" aria-label="Main">
-      <a class="nav-item" href="#" aria-current="page"><svg><use href="#i-home"/></svg>Overview</a>
-      <a class="nav-item" href="#"><svg><use href="#i-calendar"/></svg>Events<span class="count">12</span></a>
-      <a class="nav-item" href="#"><svg><use href="#i-users"/></svg>Students<span class="count">348</span></a>
-      <a class="nav-item" href="#"><svg><use href="#i-chart"/></svg>Reports</a>
-      <div class="overline">Workspace</div>
-      <a class="nav-item" href="#"><svg><use href="#i-settings"/></svg>Settings</a>
-    </nav>
-    <div class="foot list-row" style="padding:0;min-height:0"> <!-- gr-allow: demo -->
-      <span class="avatar">TA</span>
-      <span class="meta"><span>Tanvir</span><span>Admin</span></span>
-      <span></span>
+<header class="controls" aria-label="Board controls">
+  <h1>Graphite UI board</h1>
+  <div class="seg" role="radiogroup" aria-label="Show">
+    <label><input type="radio" name="view" value="both" checked>Both</label>
+    <label><input type="radio" name="view" value="light">Light</label>
+    <label><input type="radio" name="view" value="dark">Dark</label>
+  </div>
+  <label>Hue <input type="range" min="0" max="360" value="256" id="hue"><output id="hue-out" class="nums">256</output></label>
+  <label>Chroma <input type="range" min="0" max="1" step="0.05" value="1" id="chroma"><output id="chroma-out" class="nums">1</output></label>
+  <label>Tint <input type="range" min="0" max="1" step="0.25" value="1" id="tint"><output id="tint-out" class="nums">1</output></label>
+  <label class="check"><input type="checkbox" id="fold">Fold sidebar</label>
+  <label class="check"><input type="checkbox" id="rtl">RTL</label>
+</header>
+
+<div class="panes" id="panes">
+  <section class="pane" data-pane="light" aria-label="Light theme"><div class="pane-title"><h2>Light</h2><span class="text-caption text-secondary">color-scheme: light</span></div></section>
+  <section class="pane" data-pane="dark" aria-label="Dark theme"><div class="pane-title"><h2>Dark</h2><span class="text-caption text-secondary">color-scheme: dark</span></div></section>
+</div>
+
+<template id="board">
+<div class="board">
+
+  <section class="group">
+    <h3>Foundations</h3>
+    <div class="specimens">
+      <div class="specimen wide"><span class="name">Semantic colors</span><div class="swatches" data-swatches></div></div>
+      <div class="specimen">
+        <span class="name">Type roles</span>
+        <div class="type-row"><span class="text-display">1,284</span><code>display 32</code></div>
+        <div class="type-row"><span class="text-page">Page title</span><code>page 24</code></div>
+        <div class="type-row"><span class="text-title">Dialog title</span><code>title 20</code></div>
+        <div class="type-row"><span class="text-heading">Card heading</span><code>heading 16</code></div>
+        <div class="type-row"><span class="text-body">Body text for every control and row</span><code>body 14</code></div>
+        <div class="type-row"><span class="text-caption text-secondary">Caption, hints and meta</span><code>caption 13</code></div>
+        <div class="type-row"><span class="overline">Overline label</span><code>label 12</code></div>
+        <div class="type-row"><span class="mono">const gr = 'mono';</span><code>mono</code></div>
+      </div>
+      <div class="specimen">
+        <span class="name">Elevation, one rung per element</span>
+        <div class="ladder"><div class="sh-border">border</div><div class="sh-hover">hover</div><div class="sh-raised">raised</div><div class="sh-overlay">overlay</div></div>
+        <span class="name">Radius</span>
+        <div class="radii"><div class="r-sm">sm 4</div><div class="r-control">control 8</div><div class="r-group">group 10</div><div class="r-surface">surface 12</div></div>
+        <span class="name">Space, 4px grid</span>
+        <div class="spaces" data-spaces></div>
+      </div>
     </div>
-  </aside>
+  </section>
 
-  <div class="main">
-    <header class="topbar">
-      <button class="btn icon" aria-label="Menu" onclick="sidebar.dataset.open = sidebar.dataset.open !== 'true'"><svg><use href="#i-more"/></svg></button>
-      <div class="input-group" style="max-width:320px;flex:1"> <!-- gr-allow: demo -->
-        <svg><use href="#i-search"/></svg>
-        <input class="input" type="search" placeholder="Search events, students…" aria-label="Search">
+  <section class="group">
+    <h3>Actions and labels</h3>
+    <div class="specimens">
+      <div class="specimen">
+        <span class="name"><code>.btn</code> variants</span>
+        <div class="cluster"><button class="btn primary">Primary</button><button class="btn">Default</button><button class="btn ghost">Ghost</button></div>
+        <div class="cluster"><button class="btn danger">Delete</button><button class="btn danger solid">Delete forever</button><button class="btn" disabled>Disabled</button></div>
+        <div class="cluster"><button class="btn sm">Small</button><button class="btn lg primary">Large</button><button class="btn icon" aria-label="Add"><svg><use href="#i-plus"/></svg></button><button class="btn icon ghost" aria-label="Copy"><svg><use href="#i-copy"/></svg></button></div>
       </div>
-      <span class="spacer"></span>
-      <span class="kbd">⌘</span><span class="kbd">K</span>
-    </header>
-
-    <main class="content">
-      <div class="page-head">
-        <div class="titles">
-          <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#">Workspace</a><span>/</span><span aria-current="page">Overview</span></nav>
-          <h1>Overview</h1>
-          <p>Every component in one place. Change the theme and hue to check that nothing is hardcoded.</p>
-        </div>
-        <div class="actions">
-          <button class="btn">Export</button>
-          <button class="btn primary"><svg><use href="#i-plus"/></svg>New event</button>
-        </div>
+      <div class="specimen">
+        <span class="name"><code>.badge</code> and <code>.status</code></span>
+        <div class="cluster"><span class="badge">Neutral</span><span class="badge accent">Accent</span><span class="badge success">Paid</span><span class="badge warning">Pending</span><span class="badge danger">Failed</span><span class="badge info">Beta</span></div>
+        <div class="cluster"><span class="status">Draft</span><span class="status accent">Lead</span><span class="status success">Open</span><span class="status warning">Almost full</span><span class="status danger">Closed</span><span class="status info">Synced</span></div>
+        <div class="cluster"><span class="avatar">TA</span><span class="avatar">RM</span><span class="kbd">⌘</span><span class="kbd">K</span><span class="tooltip">Tooltip on hover and focus</span></div>
       </div>
+    </div>
+  </section>
 
-      <section class="card card-body knobs" aria-label="Preview controls">
-        <div class="seg" role="radiogroup" aria-label="Theme">
-          <label><input type="radio" name="theme" value="" checked>System</label>
-          <label><input type="radio" name="theme" value="light">Light</label>
-          <label><input type="radio" name="theme" value="dark">Dark</label>
-        </div>
-        <label>Hue <input type="range" min="0" max="360" value="256" id="hue"><output id="hue-out" class="nums">256</output></label>
-        <label>Chroma <input type="range" min="0" max="1" step="0.05" value="1" id="chroma"><output id="chroma-out" class="nums">1</output></label>
-        <label class="check"><input type="checkbox" id="rtl">RTL</label>
+  <section class="group">
+    <h3>Cards and sections</h3>
+    <div class="specimens">
+      <section class="card">
+        <div class="card-head"><h3>Create event</h3><span class="text-label text-tertiary">Draft</span></div>
+        <div class="card-body"><p class="text-secondary">One card level: content inside a card is rows or sections, never another card.</p></div>
+        <div class="card-foot"><button class="btn ghost">Cancel</button><button class="btn primary">Create</button></div>
       </section>
-
-      <div class="stats">
-        <div class="stat"><span class="label">Registrations</span><span class="value">1,284</span><span class="delta up">+12% this week</span></div>
-        <div class="stat"><span class="label">Check-in rate</span><span class="value">86%</span><span class="delta">Same as last week</span></div>
-        <div class="stat"><span class="label">Open reviews</span><span class="value">37</span><span class="delta down">+9 overdue</span></div>
+      <div class="stack">
+        <a class="card card-body interactive" href="#"><b>Interactive card</b><span class="text-caption text-secondary">Hover and press it</span></a>
+        <section class="section"><div class="section-head"><h2>Section head</h2><a href="#" class="text-caption">View all</a></div><button class="btn block">Full-width button</button></section>
       </div>
+    </div>
+  </section>
 
-      <section class="section">
-        <div class="section-head"><h2>Upcoming events</h2><a href="#" class="text-caption">View all</a></div>
-        <div class="tabs" role="tablist">
-          <button class="tab" role="tab" aria-selected="true">Upcoming <span class="count">8</span></button>
-          <button class="tab" role="tab" aria-selected="false">Past <span class="count">41</span></button>
-          <button class="tab" role="tab" aria-selected="false">Drafts <span class="count">3</span></button>
+  <section class="group">
+    <h3>Forms</h3>
+    <div class="specimens">
+      <div class="specimen fields">
+        <div class="field"><label for="f-name">Name</label><input class="input" id="f-name" value="Piscine kickoff"></div>
+        <div class="field"><label for="f-place">Place</label><input class="input" id="f-place" placeholder="Room or link"></div>
+        <div class="fields-2">
+          <div class="field"><label for="f-date">Date</label><input class="input" id="f-date" type="date"></div>
+          <div class="field"><label for="f-type">Type</label><select class="select" id="f-type"><option>Seminar</option><option>Workshop</option></select></div>
         </div>
-        <div class="table-wrap">
-          <table class="table">
-            <thead><tr><th aria-sort="ascending"><button>Event ↑</button></th><th>Date</th><th>Status</th><th class="num">Seats</th><th></th></tr></thead>
-            <tbody>
-              <tr><td><b>Intro to C seminar</b></td><td class="text-secondary">Oct 18</td><td><span class="status success">Open</span></td><td class="num">42 / 60</td><td><button class="btn icon" aria-label="More"><svg><use href="#i-more"/></svg></button></td></tr>
-              <tr><td><b>ft_transcendence demo day</b></td><td class="text-secondary">Oct 22</td><td><span class="status warning">Almost full</span></td><td class="num">58 / 60</td><td><button class="btn icon" aria-label="More"><svg><use href="#i-more"/></svg></button></td></tr>
-              <tr><td><b>Internship fair</b></td><td class="text-secondary">Nov 02</td><td><span class="status danger">Closed</span></td><td class="num">120 / 120</td><td><button class="btn icon" aria-label="More"><svg><use href="#i-more"/></svg></button></td></tr>
-              <tr><td><b>Level 4 module review</b></td><td class="text-secondary">Nov 09</td><td><span class="status">Draft</span></td><td class="num">0 / 30</td><td><button class="btn icon" aria-label="More"><svg><use href="#i-more"/></svg></button></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+        <div class="field"><label for="f-seats">Seats</label><input class="input" id="f-seats" aria-invalid="true" value="-4"><span class="error">Seats must be 1 or more.</span></div>
+        <div class="field"><label for="f-notes">Notes</label><textarea class="textarea" id="f-notes" placeholder="Shown on the registration page"></textarea><span class="hint">Markdown works.</span></div>
+      </div>
+      <div class="specimen">
+        <div class="input-group"><svg><use href="#i-search"/></svg><input class="input" type="search" placeholder="Search events…" aria-label="Search"></div>
+        <label class="check"><input type="checkbox" checked>Require check-in</label>
+        <label class="check"><input type="checkbox">Send a reminder</label>
+        <label class="check"><input type="checkbox" role="switch" class="switch" checked>Open registration now</label>
+        <div class="seg" role="radiogroup" aria-label="Range"><label><input type="radio" name="range" checked>Week</label><label><input type="radio" name="range">Month</label><label><input type="radio" name="range">Year</label></div>
+        <div class="cluster"><input class="input" data-nudge-field placeholder="Amount" aria-label="Amount"><button class="btn primary" data-nudge>Add</button></div>
+        <span class="text-caption text-secondary">Add with no amount shakes the field: <code>.nudge</code></span>
+      </div>
+    </div>
+  </section>
 
-      <div class="demo-grid">
-        <section class="card">
-          <div class="card-head"><h3>Create event</h3></div>
-          <div class="card-body fields">
-            <div class="field"><label for="f-name">Name</label><input class="input" id="f-name" value="Piscine kickoff"></div>
-            <div class="fields-2">
-              <div class="field"><label for="f-date">Date</label><input class="input" id="f-date" type="date"></div>
-              <div class="field"><label for="f-type">Type</label><select class="select" id="f-type"><option>Seminar</option><option>Workshop</option></select></div>
+  <section class="group">
+    <h3>Navigation</h3>
+    <div class="specimens">
+      <div class="specimen">
+        <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#">Workspace</a><span>/</span><span aria-current="page">Events</span></nav>
+        <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="true">Upcoming <span class="count">8</span></button><button class="tab" role="tab" aria-selected="false">Past <span class="count">41</span></button><button class="tab" role="tab" aria-selected="false">Drafts <span class="count">3</span></button></div>
+        <div class="scroll-row" data-chips><button class="chip" aria-pressed="true">All</button><button class="chip" aria-pressed="false">Workshops</button><button class="chip" aria-pressed="false">Talks</button><button class="chip" aria-pressed="false">Socials</button><button class="chip" aria-pressed="false">Online</button></div>
+      </div>
+      <div class="specimen inline-layer">
+        <span class="name"><code>.menu</code>, shown open</span>
+        <div class="menu" role="menu">
+          <div class="menu-label">Event</div>
+          <button class="menu-item" role="menuitem"><svg><use href="#i-copy"/></svg>Duplicate<span class="kbd">D</span></button>
+          <button class="menu-item" role="menuitem"><svg><use href="#i-calendar"/></svg>Reschedule</button>
+          <div class="menu-sep" role="separator"></div>
+          <button class="menu-item danger" role="menuitem"><svg><use href="#i-trash"/></svg>Delete</button>
+        </div>
+      </div>
+      <div class="specimen wide">
+        <span class="name">Shell: <code>.app</code>, <code>.sidebar</code>, <code>.topbar</code>, <code>.page-head</code>. Tick "Fold sidebar" above for the folded rail.</span>
+        <div class="frame">
+          <div class="app">
+            <aside class="sidebar">
+              <a class="brand" href="#"><svg viewBox="0 0 24 24"><rect width="24" height="24" rx="6" class="brand-mark"/></svg><span class="fold">Graphite UI</span></a>
+              <nav class="nav" aria-label="Main">
+                <a class="nav-item" href="#" aria-current="page"><svg><use href="#i-home"/></svg><span class="fold">Overview</span></a>
+                <a class="nav-item" href="#"><svg><use href="#i-calendar"/></svg><span class="fold">Events</span><span class="count fold">12</span><span class="fold-dot"></span></a>
+                <a class="nav-item" href="#"><svg><use href="#i-users"/></svg><span class="fold">Students</span><span class="count fold">348</span><span class="fold-dot"></span></a>
+                <a class="nav-item" href="#"><svg><use href="#i-chart"/></svg><span class="fold">Reports</span></a>
+                <div class="overline fold-hide">Workspace</div>
+                <a class="nav-item" href="#"><svg><use href="#i-settings"/></svg><span class="fold">Settings</span></a>
+              </nav>
+              <div class="foot"><button class="nav-item" data-fold aria-keyshortcuts="["><svg><use href="#i-panel"/></svg><span class="fold">Fold sidebar</span></button></div>
+            </aside>
+            <div class="main">
+              <header class="topbar"><div class="input-group grow"><svg><use href="#i-search"/></svg><input class="input" type="search" placeholder="Search" aria-label="Search"></div><span class="spacer"></span><span class="kbd">⌘</span><span class="kbd">K</span></header>
+              <main class="content">
+                <div class="page-head"><div class="titles"><h1>Events</h1><p>Everything scheduled this term.</p></div><div class="actions"><button class="btn">Export</button><button class="btn primary"><svg><use href="#i-plus"/></svg>New event</button></div></div>
+                <div class="stats">
+                  <div class="stat"><span class="label">Registrations</span><span class="value">1,284</span><span class="delta up">+12% this week</span></div>
+                  <div class="stat"><span class="label">Open reviews</span><span class="value">37</span><span class="delta down">+9 overdue</span></div>
+                </div>
+              </main>
             </div>
-            <div class="field"><label for="f-seats">Seats</label><input class="input" id="f-seats" aria-invalid="true" value="-4"><span class="error">Seats must be 1 or more.</span></div>
-            <div class="field"><label for="f-notes">Notes</label><textarea class="textarea" id="f-notes" placeholder="Shown on the registration page"></textarea><span class="hint">Markdown works.</span></div>
-            <label class="check"><input type="checkbox" checked>Require check-in</label>
-            <label class="check"><input type="checkbox" role="switch" class="switch" checked>Open registration now</label>
           </div>
-          <div class="card-foot"><button class="btn ghost">Cancel</button><button class="btn primary">Create</button></div>
-        </section>
-
-        <div class="stack">
-          <section class="card card-body">
-            <h3>Buttons</h3>
-            <div class="cluster">
-              <button class="btn primary">Primary</button><button class="btn">Default</button><button class="btn ghost">Ghost</button><button class="btn danger">Delete</button><button class="btn" disabled>Disabled</button>
-            </div>
-            <div class="cluster">
-              <button class="btn sm">Small</button><button class="btn lg primary">Large</button><button class="btn icon" aria-label="Add"><svg><use href="#i-plus"/></svg></button>
-            </div>
-            <div class="cluster">
-              <span class="badge">Neutral</span><span class="badge accent">Accent</span><span class="badge success">Paid</span><span class="badge warning">Pending</span><span class="badge danger">Failed</span><span class="badge info">Beta</span>
-            </div>
-          </section>
-
-          <div class="notice info"><svg><use href="#i-info"/></svg><div><strong>Sync runs nightly.</strong> Changes on the 42 intra show up here by 06:00.</div></div>
-          <div class="notice warning"><svg><use href="#i-alert"/></svg><div>Three events have no room assigned.</div><button class="btn sm">Fix</button></div>
-
-          <section class="card">
-            <ul class="list">
-              <li><a class="list-row" href="#"><span class="avatar">AK</span><span class="meta"><span>Amal Khan</span><span>Registered for 3 events</span></span><span class="status success">Active</span></a></li>
-              <li><a class="list-row" href="#" aria-current="true"><span class="avatar">RM</span><span class="meta"><span>Rashid Mansoor</span><span>Capstone group lead</span></span><span class="status accent">Lead</span></a></li>
-              <li><a class="list-row" href="#"><span class="avatar">SL</span><span class="meta"><span>Sara Lopez</span><span>Waiting on review</span></span><span class="status warning">Review</span></a></li>
-            </ul>
-          </section>
-
-          <section class="card card-body">
-            <div class="skeleton line" style="width:60%"></div> <!-- gr-allow: demo -->
-            <div class="skeleton line" style="width:90%"></div> <!-- gr-allow: demo -->
-            <div class="cluster"><span class="spinner" role="status" aria-label="Loading"></span><span class="text-secondary text-caption">Loading attendance…</span></div>
-          </section>
         </div>
       </div>
-
-      <section class="card empty">
-        <svg><use href="#i-inbox"/></svg>
-        <h3>No reports yet</h3>
-        <p>Reports appear after the first event closes. You can also build one from a template.</p>
-        <div class="actions"><button class="btn">Browse templates</button><button class="btn primary" onclick="dlg.showModal()">Open dialog</button></div>
-      </section>
-
-      <section class="section">
-        <div class="section-head"><h2>Phone</h2><span class="text-caption">Turn on touch emulation and press things</span></div>
-        <div class="phone card">
-          <div class="scroll-row" id="chips">
-            <button class="chip" aria-pressed="true">All</button><button class="chip" aria-pressed="false">Workshops</button><button class="chip" aria-pressed="false">Talks</button><button class="chip" aria-pressed="false">Socials</button><button class="chip" aria-pressed="false">Online</button><button class="chip" aria-pressed="false">Archived</button>
-          </div>
-          <ul class="list">
-            <li><button class="list-row" data-flash><svg><use href="#i-calendar"/></svg><span class="meta"><span>Design review</span><span>Tap to save and see the row flash</span></span><span class="nums">14:00</span></button></li>
-            <li><button class="list-row" data-flash><svg><use href="#i-users"/></svg><span class="meta"><span>Team social</span><span>Tap to save and see the row flash</span></span><span class="nums">18:30</span></button></li>
-          </ul>
-          <div class="pager" id="pager"><div>Page one</div><div>Page two</div><div>Page three</div></div>
-          <div class="dots" id="dots"><button aria-current="true" aria-label="Page 1"></button><button aria-current="false" aria-label="Page 2"></button><button aria-current="false" aria-label="Page 3"></button></div>
-          <div class="actions"><button class="btn" onclick="dlg.showModal()">Open sheet</button><button class="btn danger" id="del">Delete event</button></div>
+      <div class="specimen">
+        <span class="name">Phone: <code>.tabbar</code>, <code>.pager</code>, <code>.dots</code></span>
+        <div class="phone">
+          <div class="pager" data-pager><div>Page one</div><div>Page two</div><div>Page three</div></div>
+          <div class="dots" data-dots><button aria-current="true" aria-label="Page 1"></button><button aria-current="false" aria-label="Page 2"></button><button aria-current="false" aria-label="Page 3"></button></div>
           <nav class="tabbar" aria-label="Phone">
             <a class="tabbar-item" href="#" aria-current="page"><svg><use href="#i-home"/></svg>Home</a>
             <a class="tabbar-item" href="#"><svg><use href="#i-calendar"/></svg>Events</a>
@@ -196,58 +259,151 @@
             <a class="tabbar-item" href="#"><svg><use href="#i-settings"/></svg>Settings</a>
           </nav>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <section class="section">
-        <div class="section-head"><h2>Semantic colors</h2></div>
-        <div class="swatches" id="swatches"></div>
-      </section>
-    </main>
-  </div>
+  <section class="group">
+    <h3>Data</h3>
+    <div class="specimens">
+      <div class="specimen wide">
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th aria-sort="ascending"><button>Event ↑</button></th><th>Date</th><th>Status</th><th class="num">Seats</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><b>Intro to C seminar</b></td><td class="text-secondary">Oct 18</td><td><span class="status success">Open</span></td><td class="num">42 / 60</td><td><button class="btn icon ghost" aria-label="More"><svg><use href="#i-more"/></svg></button></td></tr>
+              <tr aria-selected="true"><td><b>Demo day</b></td><td class="text-secondary">Oct 22</td><td><span class="status warning">Almost full</span></td><td class="num">58 / 60</td><td><button class="btn icon ghost" aria-label="More"><svg><use href="#i-more"/></svg></button></td></tr>
+              <tr><td><b>Internship fair</b></td><td class="text-secondary">Nov 02</td><td><span class="status danger">Closed</span></td><td class="num">120 / 120</td><td><button class="btn icon ghost" aria-label="More"><svg><use href="#i-more"/></svg></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <span class="name"><code>.table.compact</code></span>
+        <div class="table-wrap">
+          <table class="table compact">
+            <thead><tr><th>Student</th><th>Cohort</th><th class="num">Level</th></tr></thead>
+            <tbody><tr><td>Amal Khan</td><td class="text-secondary">2025</td><td class="num">7.4</td></tr><tr><td>Sara Lopez</td><td class="text-secondary">2024</td><td class="num">11.2</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="specimen">
+        <span class="name"><code>.list</code>; tap a row for <code>.just-changed</code></span>
+        <ul class="list">
+          <li><button class="list-row" data-changed><span class="avatar">AK</span><span class="meta"><span>Amal Khan</span><span>Registered for 3 events</span></span><span class="status success">Active</span></button></li>
+          <li><a class="list-row" href="#" aria-current="true"><span class="avatar">RM</span><span class="meta"><span>Rashid Mansoor</span><span>Capstone group lead</span></span><span class="status accent">Lead</span></a></li>
+          <li><button class="list-row" data-changed><span class="avatar">SL</span><span class="meta"><span>Sara Lopez</span><span>Waiting on review</span></span><span class="status warning">Review</span></button></li>
+        </ul>
+      </div>
+      <div class="specimen">
+        <span class="name">Chart series 1 to 5. 2 to 4 turn with the hue.</span>
+        <svg class="chart" viewBox="0 0 300 140" role="img" aria-label="Five series by month">
+          <path class="grid" d="M24 20H296M24 60H296M24 100H296"/>
+          <g data-bars></g>
+          <text x="24" y="134">Jan</text><text x="130" y="134">Feb</text><text x="236" y="134">Mar</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="group">
+    <h3>Feedback and overlays</h3>
+    <div class="specimens">
+      <div class="specimen">
+        <div class="notice info"><svg><use href="#i-info"/></svg><div><strong>Sync runs nightly.</strong> Changes show up by 06:00.</div></div>
+        <div class="notice success"><svg><use href="#i-check"/></svg><div>All 42 seats confirmed.</div></div>
+        <div class="notice warning"><svg><use href="#i-alert"/></svg><div>Three events have no room.</div><button class="btn sm">Fix</button></div>
+        <div class="notice danger"><svg><use href="#i-alert"/></svg><div>The export failed. Try again in a minute.</div></div>
+      </div>
+      <div class="specimen inline-layer">
+        <div class="toast-region"><div class="toast">Event deleted <button>Undo</button></div></div>
+        <div class="skeleton line"></div>
+        <div class="cluster"><span class="spinner" role="status" aria-label="Loading"></span><span class="text-secondary text-caption">Loading attendance…</span></div>
+        <div class="empty"><svg><use href="#i-inbox"/></svg><h3>No reports yet</h3><p>Reports appear after the first event closes.</p><div class="actions"><button class="btn">Browse templates</button></div></div>
+      </div>
+      <div class="specimen inline-layer">
+        <span class="name"><code>.dialog</code>, shown open</span>
+        <dialog class="dialog" open>
+          <form method="dialog">
+            <div class="dialog-head"><h2>Delete this event?</h2><p>42 people lose their seats. This can't be undone.</p></div>
+            <div class="dialog-body"><label class="check"><input type="checkbox" checked>Email registered people</label></div>
+            <div class="dialog-foot"><button class="btn" type="button">Keep event</button><button class="btn danger solid" type="button">Delete event</button></div>
+          </form>
+        </dialog>
+      </div>
+    </div>
+  </section>
+
 </div>
-
-<dialog class="dialog" id="dlg" closedby="any">
-  <form method="dialog">
-    <div class="dialog-head"><h2>Close registration?</h2><p>42 people are registered. They keep their seats; nobody new can join.</p></div>
-    <div class="dialog-body"><label class="check"><input type="checkbox" checked>Email registered people</label></div>
-    <div class="dialog-foot"><button class="btn" value="cancel">Keep open</button><button class="btn primary" value="ok">Close registration</button></div>
-  </form>
-</dialog>
+</template>
 
 <script src="press.js"></script>
-
-<div class="toast-region" aria-live="polite"><div class="toast">Event saved <button>Undo</button></div></div>
-
 <script>
   const root = document.documentElement;
-  document.getElementById('chips').addEventListener('click', (e) => {
-    const chip = e.target.closest('.chip');
+  const template = document.getElementById('board');
+  const SWATCHES = ['bg-page', 'bg-surface', 'bg-raised', 'bg-sunken', 'bg-hover', 'bg-selected', 'bg-inverse', 'fg-primary', 'fg-secondary', 'fg-tertiary', 'border-separator', 'border-default', 'border-control', 'border-focus', 'accent-solid', 'accent-text', 'accent-bg-subtle', 'success-solid', 'success-text', 'warning-solid', 'warning-text', 'danger-solid', 'danger-text', 'info-solid', 'info-text', 'series-1', 'series-2', 'series-3', 'series-4', 'series-5'];
+  const SPACES = ['1', '2', '3', '4', '6', '8', '12', '16'];
+  const BARS = [[40, 70, 55, 30, 20], [60, 45, 80, 50, 35], [75, 90, 60, 65, 45]];
+
+  // One copy of the board per pane. Ids get the pane's name so labels still point at their own input.
+  for (const pane of document.querySelectorAll('.pane')) {
+    const board = template.content.cloneNode(true);
+    const p = pane.dataset.pane;
+    board.querySelectorAll('[id]').forEach((el) => { el.id = `${p}-${el.id}`; });
+    board.querySelectorAll('label[for]').forEach((el) => { el.htmlFor = `${p}-${el.htmlFor}`; });
+    board.querySelectorAll('input[type="radio"]').forEach((el) => { el.name = `${p}-${el.name}`; });
+    const sw = board.querySelector('[data-swatches]');
+    for (const t of SWATCHES) {
+      const d = document.createElement('div'); d.className = 'swatch';
+      const i = document.createElement('i'); i.style.background = `var(--gr-${t})`;
+      const c = document.createElement('code'); c.textContent = t;
+      d.append(i, c); sw.append(d);
+    }
+    const sp = board.querySelector('[data-spaces]');
+    for (const s of SPACES) {
+      const d = document.createElement('div'); const i = document.createElement('i');
+      i.style.width = `var(--gr-space-${s})`; d.append(i, `space-${s}`); sp.append(d);
+    }
+    const bars = board.querySelector('[data-bars]');
+    BARS.forEach((group, g) => group.forEach((h, s) => {
+      const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      Object.entries({ x: 30 + g * 106 + s * 17, y: 120 - h, width: 13, height: h, rx: 2, class: `s${s + 1}` }).forEach(([k, v]) => r.setAttribute(k, v));
+      bars.append(r);
+    }));
+    pane.append(board);
+  }
+
+  document.addEventListener('click', (e) => {
+    const chip = e.target.closest('[data-chips] .chip');
     if (chip) chip.setAttribute('aria-pressed', String(chip.getAttribute('aria-pressed') !== 'true'));
+    const row = e.target.closest('[data-changed]');
+    if (row) { row.classList.remove('just-changed'); void row.offsetWidth; row.classList.add('just-changed'); }
+    const add = e.target.closest('[data-nudge]');
+    if (add) {
+      const field = add.parentElement.querySelector('[data-nudge-field]');
+      if (!field.value) { field.focus(); field.classList.add('nudge'); field.addEventListener('animationend', () => field.classList.remove('nudge'), { once: true }); }
+    }
+    if (e.target.closest('[data-fold]')) setFold(root.dataset.sidebar !== 'collapsed');
+    const dot = e.target.closest('[data-dots] button');
+    if (dot) { const pager = dot.parentElement.previousElementSibling; pager.scrollTo({ left: [...dot.parentElement.children].indexOf(dot) * pager.clientWidth, behavior: 'smooth' }); }
   });
-  document.querySelectorAll('[data-flash]').forEach((row) => row.addEventListener('click', () => {
-    row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
-  }));
-  const pager = document.getElementById('pager'), dots = [...document.querySelectorAll('#dots button')];
-  pager.addEventListener('scroll', () => {
+  document.querySelectorAll('[data-pager]').forEach((pager) => pager.addEventListener('scroll', () => {
     const i = Math.round(pager.scrollLeft / pager.clientWidth);
-    dots.forEach((d, j) => d.setAttribute('aria-current', String(i === j)));
-  });
-  dots.forEach((d, i) => d.addEventListener('click', () => pager.scrollTo({ left: i * pager.clientWidth, behavior: 'smooth' })));
-  const region = document.querySelector('.toast-region');
-  document.getElementById('del').addEventListener('click', () => {
-    region.innerHTML = '<div class="toast">Event deleted <button>Undo</button></div>';
-    region.querySelector('button').addEventListener('click', () => { region.innerHTML = '<div class="toast">Event restored</div>'; });
-  });
-  document.querySelectorAll('input[name="theme"]').forEach((r) => r.addEventListener('change', () => {
-    if (r.value) root.dataset.theme = r.value; else delete root.dataset.theme;
+    [...pager.nextElementSibling.children].forEach((d, j) => d.setAttribute('aria-current', String(i === j)));
   }));
-  for (const [id, prop] of [['hue', '--gr-accent-h'], ['chroma', '--gr-accent-c']]) {
+
+  const fold = document.getElementById('fold');
+  function setFold(on) {
+    if (on) root.dataset.sidebar = 'collapsed'; else delete root.dataset.sidebar;
+    fold.checked = on;
+  }
+  fold.addEventListener('change', () => setFold(fold.checked));
+  addEventListener('keydown', (e) => { if (e.key === '[' && !e.target.closest('input, textarea, select')) setFold(root.dataset.sidebar !== 'collapsed'); });
+
+  document.querySelectorAll('input[name="view"]').forEach((r) => r.addEventListener('change', () => { document.getElementById('panes').dataset.view = r.value; }));
+  for (const [id, prop] of [['hue', '--gr-accent-h'], ['chroma', '--gr-accent-c'], ['tint', '--gr-tint']]) {
     const input = document.getElementById(id), out = document.getElementById(`${id}-out`);
     input.addEventListener('input', () => { root.style.setProperty(prop, input.value); out.value = input.value; });
   }
   document.getElementById('rtl').addEventListener('change', (e) => { root.dir = e.target.checked ? 'rtl' : 'ltr'; });
-  const tokens = ['bg-page', 'bg-surface', 'bg-raised', 'bg-sunken', 'bg-hover', 'bg-inverse', 'fg-primary', 'fg-secondary', 'fg-tertiary', 'border-separator', 'border-default', 'border-control', 'accent-solid', 'accent-text', 'accent-bg-subtle', 'success-solid', 'warning-solid', 'danger-solid', 'info-solid', 'series-1', 'series-2', 'series-3', 'series-4', 'series-5'];
-  document.getElementById('swatches').innerHTML = tokens.map((t) => `<div class="swatch"><i style="background:var(--gr-${t})"></i><code>--gr-${t}</code></div>`).join('');
 </script>
 </body>
 </html>

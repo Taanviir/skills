@@ -35,8 +35,8 @@
   --gr-bg-page:     light-dark(var(--gr-gray-2), var(--gr-gray-1));
   --gr-bg-surface:  light-dark(var(--gr-white), var(--gr-gray-2));
   --gr-bg-raised:   light-dark(var(--gr-white), var(--gr-gray-3));  /* menus, popovers, dialogs */
-  --gr-bg-sunken:   light-dark(var(--gr-gray-3), var(--gr-gray-1)); /* wells, segmented tracks, code */
-  --gr-bg-hover:    light-dark(var(--gr-gray-3), var(--gr-gray-4));
+  --gr-bg-sunken:   light-dark(var(--gr-gray-3), oklch(14.5% calc(0.004 * var(--gr-tint)) var(--gr-accent-h))); /* wells, segmented tracks, code. Below the page in dark */
+  --gr-bg-hover:    light-dark(var(--gr-gray-4), var(--gr-gray-4));  /* one step past sunken, so a hover inside a well still shows */
   --gr-bg-selected: var(--gr-accent-bg-subtle);
   --gr-bg-inverse:  var(--gr-gray-12);                               /* toasts, tooltips */
   --gr-scrim:       light-dark(oklch(23.5% 0.012 var(--gr-accent-h) / 0.32), oklch(0% 0 0 / 0.6));
@@ -44,7 +44,7 @@
   /* ---- semantic: text ---- */
   --gr-fg-primary:   var(--gr-gray-12);
   --gr-fg-secondary: var(--gr-gray-11);
-  --gr-fg-tertiary:  var(--gr-gray-9);  /* placeholders, icons, meta. 3:1, never body copy */
+  --gr-fg-tertiary:  var(--gr-gray-9);  /* decorative icons, disabled text. 3:1, so never text people need to read */
   --gr-fg-inverse:   var(--gr-gray-1);
   --gr-fg-on-accent: var(--gr-white);
 
@@ -70,16 +70,17 @@
   --gr-warning-solid:     light-dark(oklch(66.0% 0.150 65),  oklch(78.0% 0.150 70));
   --gr-danger-text:       light-dark(oklch(50.0% 0.170 25),  oklch(78.0% 0.110 25));
   --gr-danger-bg-subtle:  light-dark(oklch(95.5% 0.022 25),  oklch(27.0% 0.055 25));
-  --gr-danger-solid:      light-dark(oklch(57.0% 0.200 25),  oklch(65.0% 0.190 25));
+  --gr-danger-solid:      light-dark(oklch(57.0% 0.200 25),  oklch(57.0% 0.190 25));  /* white text sits on it: 4.5:1 in both themes */
   --gr-info-text:         light-dark(oklch(49.0% 0.150 290), oklch(80.0% 0.090 290));
   --gr-info-bg-subtle:    light-dark(oklch(95.5% 0.025 290), oklch(27.0% 0.055 290));
   --gr-info-solid:        light-dark(oklch(57.0% 0.170 290), oklch(68.0% 0.150 290));
 
-  /* ---- data series: ordered for adjacent contrast. Pair with a second cue (dash, marker, label) ---- */
+  /* ---- data series: ordered for adjacent contrast. Pair with a second cue (dash, marker, label).
+     2 to 4 turn with the accent hue, so no series lands on the brand; at the default hue they are orange, teal, pink ---- */
   --gr-series-1: var(--gr-accent-solid);
-  --gr-series-2: light-dark(oklch(68.0% 0.140 50),  oklch(72.0% 0.140 50));
-  --gr-series-3: light-dark(oklch(55.0% 0.100 185), oklch(70.0% 0.110 185));
-  --gr-series-4: light-dark(oklch(58.0% 0.150 330), oklch(70.0% 0.140 330));
+  --gr-series-2: light-dark(oklch(64.0% 0.130 calc(var(--gr-accent-h) + 154)), oklch(72.0% 0.130 calc(var(--gr-accent-h) + 154)));
+  --gr-series-3: light-dark(oklch(55.0% 0.100 calc(var(--gr-accent-h) + 289)), oklch(70.0% 0.100 calc(var(--gr-accent-h) + 289)));
+  --gr-series-4: light-dark(oklch(58.0% 0.130 calc(var(--gr-accent-h) + 74)),  oklch(70.0% 0.130 calc(var(--gr-accent-h) + 74)));
   --gr-series-5: var(--gr-gray-9);
 
   /* ---- elevation. Shadow doubles as the border, so surfaces need no border declaration ---- */
@@ -100,7 +101,6 @@
     0 24px 56px -8px light-dark(oklch(0% 0 0 / 0.18), oklch(0% 0 0 / 0.55));
   --gr-shadow-inset: inset 0 0 0 1px var(--gr-border-separator);  /* wells, kbd, avatar edge */
   --gr-shadow-knob: 0 1px 2px light-dark(oklch(0% 0 0 / 0.2), oklch(0% 0 0 / 0.5));
-  --gr-shadow-focus: 0 0 0 2px var(--gr-bg-surface), 0 0 0 4px var(--gr-border-focus);
 
   /* ---- type. Roles, not sizes. UI text is body; caption is the floor for anything people read ---- */
   --gr-font-sans: "Instrument Sans Variable", "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -172,7 +172,6 @@
   --gr-z-sticky:   10;
   --gr-z-dropdown: 30;
   --gr-z-overlay:  40;
-  --gr-z-modal:    50;
   --gr-z-toast:    60;
   --gr-z-tooltip:  70;
 }

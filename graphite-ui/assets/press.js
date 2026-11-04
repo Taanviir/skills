@@ -29,6 +29,8 @@
     if (e.button !== 0) return;
     const el = e.target instanceof Element ? e.target.closest(TARGET) : null;
     if (!el || isDisabled(el)) return;
+    // A second finger can land before the first lifts; release the first so it never stays pressed.
+    if (pressed && pressed !== el) pressed.removeAttribute('data-pressed');
     pressed = el;
     since = performance.now();
     el.setAttribute('data-pressed', '');

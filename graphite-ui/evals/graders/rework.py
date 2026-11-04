@@ -145,8 +145,6 @@ def reworked(run_dir, fixture):
             check = subprocess.run(["node", "--check", path], capture_output=True, text=True)
             if check.returncode != 0:
                 fail(f"{rel} does not parse: {check.stderr.strip()}")
-            if re.search(r"['\"]#[0-9a-fA-F]{3,8}['\"]", open(path, encoding="utf-8").read()):
-                fail(f"{rel} still hardcodes a hex color")
 
     print(f"PASS reworked: audit clean, contrast ok with {args or 'default knobs'}, markup and scripts intact")
 

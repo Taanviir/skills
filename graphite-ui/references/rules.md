@@ -16,7 +16,7 @@ Apply every rule to every screen you touch. Each rule says what to do; the audit
 - Radius follows size: `control` (8) on things you click, `surface` (12) on things that hold content, `group` (10) on tracks that hold controls, `pill` on badges and avatars. A full-bleed element gets no radius.
 
 ## Type
-- `body` (14px) for all UI text in a desktop tool; bigger body copy makes dense screens feel like marketing pages. A phone-first app sets `--gr-text-body: 1rem` (16px) on `:root`, the size a phone is read at. One body size per app.
+- `body` (14px) for all UI text in a desktop tool; bigger body copy makes dense screens feel like marketing pages. A phone-first app sets `--gr-text-body: 1rem` (16px), `--gr-text-caption: 0.875rem` and `--gr-text-label: 0.8125rem` on `:root`, so the small text grows with the body. One set of sizes per app.
 - Weight 600 for headings and stat values, 500 for buttons, labels, nav and the first line of a row. Bold elsewhere is noise.
 - Numbers in tables, stats and counts use `font-variant-numeric: tabular-nums` (`.nums`, `.table` has it).
 - Uppercase only for `.overline` section labels, with `--gr-tracking-caps`.
@@ -30,7 +30,7 @@ Apply every rule to every screen you touch. Each rule says what to do; the audit
 - Every screen works at 375px wide: the sidebar becomes a drawer, `.fields-2` stacks, tables scroll inside `.table-wrap`, dialogs become bottom sheets that slide up from the edge.
 
 ## Motion
-- Transitions only on `color`, `background-color`, `box-shadow`, `opacity`, `translate`, `scale`. Never `all`. The one layout transition is the folded sidebar's `grid-template-columns`.
+- Transitions only on `color`, `background-color`, `border-color`, `box-shadow`, `opacity`, `translate`, `scale`. Never `all`. The one layout transition is the folded sidebar's `grid-template-columns`.
 - Durations: `--gr-dur-fast` for hover, `--gr-dur` for menus, toggles and a press fading out, `--gr-dur-slow` for dialogs, sheets and toasts. Easing `--gr-ease-out` for anything entering, `--gr-ease-in-out` for anything moving between two places.
 - The sidebar folds in `--gr-dur-fold` with `--gr-ease-fold`, the same both ways. Its labels fade out at once and come back only once the column has nearly opened.
 - `base.css` already handles reduced motion. Hover effects sit inside `@media (hover: hover)`.
@@ -49,7 +49,7 @@ A phone has no hover, and `base.css` turns off the browser's tap highlight, so a
 - A press comes on at once and fades out after release: `transition: none` on the pressed state, the fade on the base rule. A press that eases in never shows on a quick tap.
 - Load `assets/press.js` once and style every press as `:is(:active, [data-pressed])`. Chrome on Android holds `:active` back inside a scroller until it knows the touch is not a scroll, so a quick tap paints nothing; press.js sets `[data-pressed]` on pointerdown and keeps it for 120ms.
 - Pick the press by fill. No fill: the `--gr-bg-hover` tint. A fill: scale to `--gr-press-scale`. A solid accent fill: scale and darken, since its `-hover` shade is too close to see under a thumb. Nothing bounces. In Tailwind these are the `tap`, `press` and `press-solid` utilities.
-- Every tap gets an answer. A finished action confirms in a toast, and a row it changed gets `.flash` where it lands. A submit the form isn't ready for stays enabled: the tap focuses the missing field and shakes it by adding the `.nudge` recipe (remove it on `animationend` so it can play again). A disabled button gives a thumb nothing to go on.
+- Every tap gets an answer. A finished action confirms in a toast, and a row it changed gets `.just-changed` where it lands. A submit the form isn't ready for stays enabled: the tap focuses the missing field and shakes it by adding the `.nudge` recipe (remove it on `animationend` so it can play again). A disabled button gives a thumb nothing to go on.
 - Vibration marks a state change only: a toggle (press.js does this) or a toast, 8 to 12ms. A buzz on every tap stops meaning anything.
 - Anything pinned to the bottom (a tab bar, an action bar, the toast region) clears the gesture bar with `env(safe-area-inset-bottom)`.
 - A phone-first app navigates with `.tabbar` at the bottom in place of the sidebar.
