@@ -1,4 +1,4 @@
-// Run with: node --test graphite-ui/tests/*.test.mjs
+// Run with: node --test skills/graphite-ui/tests/*.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';

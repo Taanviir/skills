@@ -31,8 +31,8 @@ graphite-ui/
 Install the skill:
 
 ```sh
-ln -s "$PWD/graphite-ui" ~/.claude/skills/graphite-ui   # Claude Code
-ln -s "$PWD/graphite-ui" ~/.agents/skills/graphite-ui   # Codex
+ln -s "$PWD/skills/graphite-ui" ~/.claude/skills/graphite-ui   # Claude Code
+ln -s "$PWD/skills/graphite-ui" ~/.agents/skills/graphite-ui   # Codex
 ```
 
 Then, inside the app's repo:

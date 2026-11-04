@@ -94,6 +94,8 @@ def phone(run_dir):
         with open(page, "w", encoding="utf-8") as f:
             f.write(PHONE_PAGE % ("file://" + os.path.abspath(decks[0])))
         dom = subprocess.run([chrome(), "--headless=new", "--no-sandbox", "--allow-file-access-from-files",
+                              # Its own profile, or a parallel Chrome takes the page and this one prints nothing.
+                              f"--user-data-dir={os.path.join(tmp, 'profile')}",
                               "--virtual-time-budget=4000", "--dump-dom", "file://" + page],
                              capture_output=True, text=True, timeout=120).stdout
     m = re.search(r'<pre id="o">(.*?)</pre>', dom)

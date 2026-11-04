@@ -25,7 +25,7 @@ FALLBACK_BYTES_PER_TOKEN = 4.0
 
 def load_skills(root):
     skills = {}
-    for skill_md in sorted(glob.glob(os.path.join(root, "*", "SKILL.md"))):
+    for skill_md in sorted(glob.glob(os.path.join(root, "skills", "*", "SKILL.md"))):
         d = os.path.dirname(skill_md)
         files = {"SKILL.md": os.path.getsize(skill_md)}
         for part in SKILL_PARTS:
@@ -42,7 +42,7 @@ def load_skills(root):
 def load_cases(root, skills):
     cases = {}
     for name in skills:
-        path = os.path.join(root, name, "evals", "cases.json")
+        path = os.path.join(root, "skills", name, "evals", "cases.json")
         if not os.path.exists(path):
             continue
         with open(path, encoding="utf-8") as f:

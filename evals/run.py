@@ -24,12 +24,13 @@ import tempfile
 import time
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SKILLS = os.path.join(REPO, "skills")
 TOOLS = ["Bash", "Read", "Write", "Edit", "Glob", "Grep", "Skill", "WebFetch", "TodoWrite"]
 JUDGE_MODEL = "haiku"
 
 
 def skills():
-    return sorted(os.path.basename(os.path.dirname(p)) for p in glob.glob(os.path.join(REPO, "*", "SKILL.md")))
+    return sorted(os.path.basename(os.path.dirname(p)) for p in glob.glob(os.path.join(SKILLS, "*", "SKILL.md")))
 
 
 def load_cases(only_skill, pattern):
@@ -37,7 +38,7 @@ def load_cases(only_skill, pattern):
     for skill in skills():
         if only_skill and skill != only_skill:
             continue
-        path = os.path.join(REPO, skill, "evals", "cases.json")
+        path = os.path.join(SKILLS, skill, "evals", "cases.json")
         if not os.path.exists(path):
             continue
         for case in json.load(open(path, encoding="utf-8")):
@@ -52,14 +53,14 @@ def workspace(case):
     ws = tempfile.mkdtemp(prefix=f"eval-{case['name']}-")
     fixture = case.get("fixture")
     if fixture:
-        src = os.path.join(REPO, case["skill"], "evals", fixture)
+        src = os.path.join(SKILLS, case["skill"], "evals", fixture)
         if os.path.isdir(src):
             shutil.copytree(src, ws, dirs_exist_ok=True)
         else:
             shutil.copy(src, ws)
     os.makedirs(os.path.join(ws, ".claude", "skills"))
     for s in skills():
-        os.symlink(os.path.join(REPO, s), os.path.join(ws, ".claude", "skills", s))
+        os.symlink(os.path.join(SKILLS, s), os.path.join(ws, ".claude", "skills", s))
     return ws
 
 
@@ -142,8 +143,8 @@ def grade(case, ws, turns):
     fd, replies = tempfile.mkstemp(suffix=".txt", prefix="eval-replies-")
     with os.fdopen(fd, "w", encoding="utf-8") as f:
         f.write("\n\n".join(t["text"] for t in turns))
-    subs = {"{ws}": ws, "{skill_dir}": os.path.join(REPO, case["skill"]),
-            "{evals}": os.path.join(REPO, case["skill"], "evals"), "{replies}": replies}
+    subs = {"{ws}": ws, "{skill_dir}": os.path.join(SKILLS, case["skill"]),
+            "{evals}": os.path.join(SKILLS, case["skill"], "evals"), "{replies}": replies}
     last = turns[-1]["text"] if turns else ""
     for g in case["graders"]:
         kind = g["type"]

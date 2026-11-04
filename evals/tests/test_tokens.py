@@ -17,15 +17,15 @@ def write(path, text):
 
 def make_root():
     root = tempfile.mkdtemp()
-    write(os.path.join(root, "demo", "SKILL.md"), "---\nname: demo\ndescription: A demo skill.\n---\n" + "x" * 400)
-    write(os.path.join(root, "demo", "references", "a.md"), "a" * 300)
-    write(os.path.join(root, "demo", "references", "b.md"), "b" * 200)
-    write(os.path.join(root, "demo", "assets", "t.html"), "<p>" * 100)
+    write(os.path.join(root, "skills", "demo", "SKILL.md"), "---\nname: demo\ndescription: A demo skill.\n---\n" + "x" * 400)
+    write(os.path.join(root, "skills", "demo", "references", "a.md"), "a" * 300)
+    write(os.path.join(root, "skills", "demo", "references", "b.md"), "b" * 200)
+    write(os.path.join(root, "skills", "demo", "assets", "t.html"), "<p>" * 100)
     cases = [
         {"name": "demo-task", "turns": ["go"], "graders": [{"name": "fired", "type": "skill_used"}]},
         {"name": "demo-skip", "turns": ["no"], "graders": [{"name": "quiet", "type": "skill_used", "expect": False}]},
     ]
-    write(os.path.join(root, "demo", "evals", "cases.json"), json.dumps(cases))
+    write(os.path.join(root, "skills", "demo", "evals", "cases.json"), json.dumps(cases))
     return root
 
 
