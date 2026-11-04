@@ -63,8 +63,11 @@ def chrome():
 
 
 def run(args):
-    base = [chrome(), "--headless=new", "--no-sandbox", "--hide-scrollbars", "--window-size=1200,3400"]
-    return subprocess.run(base + args, capture_output=True, text=True, timeout=120).stdout
+    # With a shared profile, a second Chrome hands its page to the first and exits with no output.
+    with tempfile.TemporaryDirectory(prefix="check-chrome-") as profile:
+        base = [chrome(), "--headless=new", "--no-sandbox", "--hide-scrollbars", "--window-size=1200,3400",
+                f"--user-data-dir={profile}"]
+        return subprocess.run(base + args, capture_output=True, text=True, timeout=120).stdout
 
 
 def inject(page, js):
