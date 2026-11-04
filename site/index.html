@@ -11,46 +11,20 @@
 <link rel="stylesheet" href="graphite-ui/tokens.css">
 <link rel="stylesheet" href="graphite-ui/base.css">
 <link rel="stylesheet" href="graphite-ui/components.css">
+<link rel="stylesheet" href="site.css">
 <style>
-  .topbar { padding: 0; }
-  .topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: 0 var(--gr-space-6); }
-  .brand { display: inline-flex; align-items: center; gap: var(--gr-space-2); font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
-  .brand img { width: 20px; height: 20px; }
-  .topbar nav { display: flex; gap: var(--gr-space-1); overflow-x: auto; }
-
-  .content { gap: var(--gr-space-12); }
-  .hero { display: grid; gap: var(--gr-space-4); padding-block: var(--gr-space-8) 0; max-width: 720px; }
-  .hero h1 { font-size: var(--gr-text-display); line-height: 1.1; }
-  .hero p { font-size: 1rem; color: var(--gr-fg-secondary); }
-
   .skills { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--gr-space-4); }
   .skill { display: grid; grid-template-rows: auto 1fr auto; }
   .skill .card-head { justify-content: flex-start; }
-  .skill .tile { display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--gr-radius-control); background: var(--gr-accent-bg-subtle); color: var(--gr-accent-text); }
-  .skill .tile svg { width: var(--gr-icon-md); height: var(--gr-icon-md); }
   .skill .card-body { align-content: start; }
   .skill .card-foot { justify-content: space-between; align-items: center; }
-
   .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--gr-space-4); }
   .step .num-dot { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--gr-bg-sunken); font-size: var(--gr-text-label); font-weight: var(--gr-weight-semibold); }
   .install { margin: 0; overflow-x: auto; font-size: var(--gr-text-caption); }
-  footer { color: var(--gr-fg-secondary); font-size: var(--gr-text-caption); border-top: 1px solid var(--gr-border-separator); padding-top: var(--gr-space-4); }
-
-  @media (max-width: 640px) {
-    .topbar .bar { padding: 0 var(--gr-space-4); }
-    .topbar .brand span { display: none; }
-    .content { padding-inline: var(--gr-space-4); gap: var(--gr-space-8); }
-    .hero { padding-top: var(--gr-space-2); }
-    .hero h1 { font-size: var(--gr-text-page); }
-  }
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2a10 10 0 0 0 0 20c.9 0 1.6-.7 1.6-1.6 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.6 1.6-1.6H16a6 6 0 0 0 6-6c0-4.9-4.5-8.6-10-8.6Z"/></symbol>
-  <symbol id="i-slides" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4M7 12l3-3 3 3 4-4"/></symbol>
-  <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></symbol>
-</svg>
+{{icons}}
 
 <header class="topbar"><div class="bar">
   <a class="brand" href="./"><img src="favicon.svg" alt=""><span>Taanviir's skills</span></a>
@@ -85,7 +59,7 @@
     <div class="section-head"><h2 id="skills-title">Skills</h2></div>
     <div class="skills">
       <article class="card skill">
-        <div class="card-head"><span class="tile"><svg aria-hidden="true"><use href="#i-palette"/></svg></span><h3>graphite-ui</h3></div>
+        <div class="card-head titled"><span class="tile"><svg aria-hidden="true"><use href="#i-palette"/></svg></span><h3>graphite-ui</h3></div>
         <div class="card-body">
           <p>A design system as a skill. Reworks an app's UI onto Graphite UI tokens and component recipes, then runs an audit that proves nothing hardcoded is left.</p>
           <span class="status {{skills.graphite-ui.tone}}">{{skills.graphite-ui.passed}}/{{skills.graphite-ui.runs}} eval runs passed</span>
@@ -96,7 +70,7 @@
         </div>
       </article>
       <article class="card skill">
-        <div class="card-head"><span class="tile"><svg aria-hidden="true"><use href="#i-slides"/></svg></span><h3>project-presentation</h3></div>
+        <div class="card-head titled"><span class="tile"><svg aria-hidden="true"><use href="#i-slides"/></svg></span><h3>project-presentation</h3></div>
         <div class="card-body">
           <p>Turns a repository into one self-contained HTML slide deck for stakeholders, using the repo's own content and brand colors.</p>
           <span class="status {{skills.project-presentation.tone}}">{{skills.project-presentation.passed}}/{{skills.project-presentation.runs}} eval runs passed</span>
@@ -107,7 +81,7 @@
         </div>
       </article>
       <article class="card skill">
-        <div class="card-head"><span class="tile"><svg aria-hidden="true"><use href="#i-image"/></svg></span><h3>create-info-cards</h3></div>
+        <div class="card-head titled"><span class="tile"><svg aria-hidden="true"><use href="#i-image"/></svg></span><h3>create-info-cards</h3></div>
         <div class="card-body">
           <p>Turns a YouTube video, article or PDF into 1080×1350 image cards on a collage page. Each card exports as a PNG.</p>
           <span class="status {{skills.create-info-cards.tone}}">{{skills.create-info-cards.passed}}/{{skills.create-info-cards.runs}} eval runs passed</span>

@@ -22,18 +22,17 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import tokens  # noqa: E402
 
 GRAPHITE = os.path.join(tokens.ROOT, "skills", "graphite-ui", "assets")
+SITE = os.path.join(tokens.ROOT, "site")
 GITHUB = "https://github.com/Taanviir/skills"
+ICONS = {"graphite-ui": "i-palette", "project-presentation": "i-slides", "create-info-cards": "i-image"}
 
 CSS = """
-.brand { font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
-.topbar { padding: 0; }
-.topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: 0 var(--gr-space-6); }
-.topbar nav { display: flex; gap: var(--gr-space-1); overflow-x: auto; }
 .runs { display: flex; flex-wrap: wrap; gap: var(--gr-space-1-5); }
 .runs a { text-decoration: none; }
 .turn { display: grid; gap: var(--gr-space-3); }
 .bubble { justify-self: end; max-width: 80%; padding: var(--gr-space-3) var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-accent-bg-subtle); }
 .text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.text code { font-size: 0.92em; }
 .reply { max-height: 480px; overflow-y: auto; }
 .tools { display: grid; gap: var(--gr-space-1); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
 .tools code { overflow-wrap: anywhere; }
@@ -42,13 +41,7 @@ details > summary { cursor: pointer; }
 pre.report { margin: 0; overflow-x: auto; font-size: var(--gr-text-label); line-height: 1.5; }
 .up { color: var(--gr-danger-text); } .down { color: var(--gr-success-text); }
 .graders .list-row { grid-template-columns: minmax(0, 1fr) auto; }
-.text code { font-size: 0.92em; }
-@media (max-width: 640px) {
-  .topbar .bar { padding: 0 var(--gr-space-4); }
-  .topbar .brand { display: none; }
-  .content { padding-inline: var(--gr-space-4); }
-  .bubble { max-width: 100%; }
-}
+@media (max-width: 640px) { .bubble { max-width: 100%; } }
 """
 
 
@@ -108,29 +101,41 @@ def chip(r, href):
     return f'<a class="badge {tone}" href="{esc(href)}" title="Run {r["run"]}: {word}">{word} {r["run"]}</a>'
 
 
-def shell(title, body, css, site, up=""):
-    """css: base URL of the Graphite assets. site: link the site's nav. up: path back to the evals index."""
-    links = "".join(f'<link rel="stylesheet" href="{css}{name}">' for name in ("tokens.css", "base.css", "components.css"))
+def shell(title, body, site, up=""):
+    """site: the published copy, with the site's nav. up: path from this page back to the evals index."""
     if site:
         home = up + "../"
-        nav = (f'<a class="brand" href="{home}">Taanviir\'s skills</a><span class="spacer"></span><nav aria-label="Site">'
-               f'<a class="btn ghost" href="{home}#skills">Skills</a>'
+        css, site_css, icon = home + "graphite-ui/", home + "site.css", home + "favicon.svg"
+        nav = (f'<a class="btn ghost" href="{home}#skills">Skills</a>'
                f'<a class="btn ghost" href="{up or "./"}" aria-current="page">Eval results</a>'
                f'<a class="btn ghost" href="{home}graphite-ui/preview.html">Graphite UI board</a>'
-               f'<a class="btn ghost" href="{GITHUB}">GitHub</a></nav>')
-        icon = f'<link rel="icon" href="{home}favicon.svg" type="image/svg+xml">'
+               f'<a class="btn ghost" href="{GITHUB}">GitHub</a>')
+        brand = f'<a class="brand" href="{home}"><img src="{icon}" alt=""><span>Taanviir\'s skills</span></a>'
     else:
-        nav = f'<a class="brand" href="{up or "./"}">Eval report</a>'
-        icon = ""
+        css = "file://" + quote(GRAPHITE) + "/"
+        site_css, icon = "file://" + quote(os.path.join(SITE, "site.css")), "file://" + quote(os.path.join(SITE, "favicon.svg"))
+        nav = ""
+        brand = f'<a class="brand" href="{up or "./"}"><img src="{icon}" alt=""><span>Eval report</span></a>'
+    links = "".join(f'<link rel="stylesheet" href="{css}{name}">' for name in ("tokens.css", "base.css", "components.css"))
+    with open(os.path.join(SITE, "icons.svg"), encoding="utf-8") as f:
+        icons = f.read()
     return (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
-        f'<title>{esc(title)}</title>{icon}'
+        f'<title>{esc(title)}</title><link rel="icon" href="{icon}" type="image/svg+xml">'
         '<link rel="preconnect" href="https://fonts.googleapis.com">'
         '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap">'
-        f'{links}<style>{CSS}</style></head><body>'
-        f'<header class="topbar"><div class="bar">{nav}</div></header>'
-        f'<main class="content">{body}</main></body></html>')
+        f'{links}<link rel="stylesheet" href="{site_css}"><style>{CSS}</style></head><body>{icons}'
+        f'<header class="topbar"><div class="bar">{brand}<span class="spacer"></span><nav aria-label="Site">{nav}</nav></div></header>'
+        f'<main class="content">{body}'
+        f'<footer class="split"><span>Taanviir\'s skills</span><a href="{GITHUB}">github.com/Taanviir/skills</a></footer>'
+        '</main></body></html>')
+
+
+def skill_title(skill, tag="h2"):
+    icon = ICONS.get(skill)
+    tile = f'<span class="tile"><svg aria-hidden="true"><use href="#{icon}"/></svg></span>' if icon else ""
+    return f'<div class="titled">{tile}<{tag}>{esc(skill)}</{tag}></div>'
 
 
 def stat(label, value):
@@ -143,8 +148,8 @@ def index_page(results_dir, runs, now, older, token_text, compare_name):
     name = os.path.basename(os.path.normpath(results_dir))
     sub = f"Run {esc(name)}" + (f", with costs compared to run {esc(compare_name)}" if compare_name else "") + "."
     body = [
-        f'<div class="page-head"><div class="titles"><h1>Eval results</h1><p>{sub} Each case runs the agent in a fresh '
-        'folder with a scripted user; graders check what it did.</p></div></div>',
+        f'<section class="hero"><span class="overline">Evals</span><h1>Eval results</h1><p>{sub} Each case runs the agent '
+        'in a fresh folder with a scripted user, and graders check what it did.</p></section>',
         '<div class="stats">' + stat("Runs passed", f"{passed}/{len(runs)}") + stat("Cases", len(group(runs, "case")))
         + stat("Total cost", f'${sum(r["cost"] for r in runs):.2f}') + stat("Median run", f"{seconds:.0f}s") + "</div>",
     ]
@@ -171,7 +176,7 @@ def index_page(results_dir, runs, now, older, token_text, compare_name):
         head = ('<tr><th>Case</th><th>Runs</th><th class="num">Median cost</th>'
                 + ('<th class="num">Before</th>' if older is not None else "") + '<th class="num">Median time</th></tr>')
         body.append(
-            f'<section class="section"><div class="section-head"><h2>{esc(skill)}</h2>'
+            f'<section class="section"><div class="section-head">{skill_title(skill)}'
             f'<span class="status {tone}">{ok}/{len(skill_runs)} runs passed</span></div>'
             f'<div class="table-wrap"><table class="table"><thead>{head}</thead><tbody>{"".join(rows)}</tbody></table></div></section>')
     body.append(
@@ -185,11 +190,11 @@ def run_page(results_dir, r, show_outputs):
     status = '<span class="badge success">Passed</span>' if r["pass"] else '<span class="badge danger">Failed</span>'
     turns = len(r["turns"])
     body = [
-        f'<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Eval results</a><span>/</span>'
-        f'<span>{esc(r["skill"])}</span><span>/</span><span aria-current="page">{esc(r["case"])} run {r["run"]}</span></nav>',
-        f'<div class="page-head"><div class="titles"><h1>{esc(r["case"])}, run {r["run"]}</h1>'
-        f'<p class="nums">${r["cost"]:.2f} · {r["seconds"]}s · {turns} turn{"s" if turns != 1 else ""}</p></div>'
-        f'<div class="actions">{status}</div></div>',
+        f'<section class="hero"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Eval results</a><span>/</span>'
+        f'<span aria-current="page">{esc(r["case"])} run {r["run"]}</span></nav>'
+        f'{skill_title(r["skill"], "span")}<h1>{esc(r["case"])}, run {r["run"]}</h1>'
+        f'<div class="cluster">{status}<span class="text-secondary nums">${r["cost"]:.2f} · {r["seconds"]}s · '
+        f'{turns} turn{"s" if turns != 1 else ""}</span></div></section>',
     ]
     rows = []
     for g in r["graders"]:
@@ -227,16 +232,14 @@ def write_site(results_dir, out_dir, older_dir=None, root=tokens.ROOT, site=Fals
     if os.path.exists(out_dir):
         shutil.rmtree(out_dir)
     os.makedirs(os.path.join(out_dir, "runs"))
-    css = "../graphite-ui/" if site else "file://" + quote(GRAPHITE) + "/"
     scrub = (lambda s: s.replace(os.path.expanduser("~"), "~")) if site else (lambda s: s)
     older = agent_costs(older_dir, root) if older_dir else None
     compare_name = os.path.basename(os.path.normpath(older_dir)) if older_dir else None
     body = index_page(results_dir, runs, agent_costs(results_dir, root), older, tokens.report(results_dir, root), compare_name)
     with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
-        f.write(scrub(shell("Eval results", body, css, site)))
-    run_css = "../" + css if site else css
+        f.write(scrub(shell("Eval results", body, site)))
     for r in runs:
-        page = shell(f'{r["case"]} run {r["run"]}', run_page(results_dir, r, not site), run_css, site, up="../")
+        page = shell(f'{r["case"]} run {r["run"]}', run_page(results_dir, r, not site), site, up="../")
         with open(os.path.join(out_dir, "runs", f"{run_id(r)}.html"), "w", encoding="utf-8") as f:
             f.write(scrub(page))
     if site:
