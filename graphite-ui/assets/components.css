@@ -522,6 +522,7 @@ body:has(.tabbar) .toast-region { bottom: calc(var(--gr-tabbar-h) + var(--gr-spa
   text-decoration: none;
   transition: background-color var(--gr-dur-fast) var(--gr-ease-out), color var(--gr-dur-fast) var(--gr-ease-out);
 }
+button.nav-item { width: 100%; border: 0; background: none; font: inherit; font-weight: var(--gr-weight-medium); text-align: start; }
 .nav-item svg { width: var(--gr-icon-md); height: var(--gr-icon-md); }
 .nav-item .count { margin-inline-start: auto; color: var(--gr-fg-secondary); font-size: var(--gr-text-label); font-variant-numeric: tabular-nums; }
 .nav-item[aria-current="page"] { background: var(--gr-bg-surface); color: var(--gr-fg-primary); box-shadow: var(--gr-shadow-border); }
