@@ -1,4 +1,4 @@
-"""Run with: python3 -I -m unittest discover -s graphite-ui/tests -p 'test_*.py'"""
+"""Run with: python3 -I -m unittest discover -s skills/graphite-ui/tests -p 'test_*.py'"""
 import os
 import shutil
 import subprocess

@@ -1,4 +1,4 @@
-"""Run with: python3 -I -m unittest discover -s project-presentation/tests"""
+"""Run with: python3 -I -m unittest discover -s skills/project-presentation/tests"""
 import os
 import re
 import subprocess
