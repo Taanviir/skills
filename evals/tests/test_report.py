@@ -48,5 +48,21 @@ class Report(unittest.TestCase):
         self.assertIn('href="demo-task-1/out/cards.html"', self.page)
 
 
+class Publish(unittest.TestCase):
+    def test_writes_page_summary_and_built_files_without_the_home_dir(self):
+        root, now, site = make_root(), tempfile.mkdtemp(), tempfile.mkdtemp()
+        save(now, 1, 0.10, True, note=os.path.expanduser("~/secret/path"))
+        write(os.path.join(now, "demo-task-1", "cards.html"), "<p>x</p>")
+        write(os.path.join(now, "demo-task-1", "._check_tmp.html"), "x")
+        out = os.path.join(site, "evals")
+        report.publish(now, out, root=root)
+        page = open(os.path.join(out, "index.html"), encoding="utf-8").read()
+        self.assertNotIn(os.path.expanduser("~"), page)
+        self.assertIn('href="../"', page)
+        self.assertEqual(json.load(open(os.path.join(out, "summary.json")))["passed"], 1)
+        self.assertTrue(os.path.exists(os.path.join(out, "demo-task-1", "cards.html")))
+        self.assertFalse(os.path.exists(os.path.join(out, "demo-task-1", "._check_tmp.html")))
+
+
 if __name__ == "__main__":
     unittest.main()

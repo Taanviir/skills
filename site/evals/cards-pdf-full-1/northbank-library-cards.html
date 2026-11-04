@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northbank Libraries 2025, in 7 cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;700&family=Libre+Franklin:wght@400;600&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+/* Library catalogue card: ruled index-card ground with a red margin line, a date-due slip strip on top, stats stamped like a due-date grid. */
+:root {
+  --paper: #F6F3E8;
+  --ink: #1F2A38;
+  --muted: #586273;
+  --rule: #B9CCE0;
+  --accent: #B8322A;
+  --accent-ink: #FFFFFF;
+  --page: #22362C;
+  --page-fg: #E9EFE9;
+  --display: "Zilla Slab", Georgia, serif;
+  --body: "Libre Franklin", system-ui, sans-serif;
+  --mono: "Courier Prime", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--page); color: var(--page-fg); font-family: var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+
+.wrap { max-width: 1160px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
+header.page { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; }
+header.page h1 { font-family: var(--display); font-weight: 700; font-size: 2.2rem; margin: 0; text-wrap: balance; }
+header.page p { margin: 6px 0 0; opacity: .7; max-width: 60ch; line-height: 1.5; }
+button { font: 600 0.95rem var(--body); color: var(--ink); background: var(--paper); border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); color: var(--accent-ink); }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 32px 24px; }
+figure { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.frame { position: relative; overflow: hidden; border-radius: 6px; box-shadow: 0 10px 30px rgb(0 0 0 / .35); }
+.frame .card { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+figcaption { display: flex; justify-content: space-between; align-items: center; gap: 12px; font: 400 0.85rem var(--mono); opacity: .8; }
+
+/* card shell */
+.card { width: 1080px; height: 1350px; display: flex; flex-direction: column; overflow: hidden; position: relative;
+  color: var(--ink); font-family: var(--body);
+  background:
+    linear-gradient(90deg, transparent 52px, var(--accent) 52px, var(--accent) 54px, transparent 54px),
+    repeating-linear-gradient(180deg, transparent 0 53px, rgb(185 204 224 / .55) 53px 54px),
+    var(--paper); }
+.card-top { height: 64px; flex: none; background: var(--ink); color: var(--paper);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 80px;
+  font: 700 20px var(--mono); letter-spacing: .2em; text-transform: uppercase; }
+.card-top span:last-child { border: 2px solid var(--paper); padding: 2px 12px; transform: rotate(-3deg); }
+.card-body { flex: 1; min-height: 0; padding: 64px 80px 48px; display: flex; flex-direction: column; gap: 52px; }
+.card-foot { flex: none; display: flex; justify-content: space-between; padding: 24px 80px; background: var(--paper);
+  border-top: 2px solid var(--ink); font: 400 21px var(--mono); color: var(--muted); letter-spacing: .02em; }
+.card-foot b { color: var(--ink); font-weight: 700; }
+.spacer { flex: 1; }
+
+.eyebrow { font: 700 23px var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--accent); }
+.card h2 { font: 700 84px/1 var(--display); letter-spacing: -0.015em; margin: -16px 0 0; text-wrap: balance; }
+.card h2 em { font-style: normal; color: var(--accent); }
+.lede { font-size: 36px; line-height: 1.42; margin: 0; }
+.small { font-size: 28px; line-height: 1.4; margin: 0; color: var(--muted); }
+.tag { font: 700 21px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+
+/* stats as a date-due grid with stamped numbers */
+.stats { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); background: var(--paper); }
+.stat { padding: 40px 40px; display: flex; flex-direction: column; gap: 10px; }
+.stat:nth-child(odd) { border-right: 2px solid var(--ink); }
+.stat:nth-child(-n+2) { border-bottom: 2px solid var(--ink); }
+.stat .n { font: 700 104px/1 var(--mono); letter-spacing: -0.04em; color: var(--accent); transform: rotate(-2deg); transform-origin: left; }
+.stat .l { font-size: 29px; color: var(--ink); line-height: 1.3; }
+
+.tl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-top: 2px solid var(--ink); background: var(--paper); }
+.tl li { display: grid; grid-template-columns: 210px 1fr; gap: 24px; padding: 34px 0; border-bottom: 1px solid var(--rule); }
+.tl .d { font: 700 27px/1.4 var(--mono); color: var(--accent); }
+.tl .t { font-size: 31px; line-height: 1.38; }
+
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 22px; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 56px 1fr; gap: 22px; align-items: baseline; font-size: 31px; line-height: 1.36; counter-increment: s; }
+.steps li::before { content: counter(s); font: 700 24px/52px var(--mono); text-align: center; width: 52px; height: 52px; background: var(--ink); color: var(--paper); border-radius: 4px; }
+
+.pts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 32px; }
+.pts li { font-size: 35px; line-height: 1.4; padding-left: 44px; position: relative; }
+.pts li::before { content: ""; position: absolute; left: 0; top: 16px; width: 18px; height: 18px; background: var(--accent); }
+.pts li b { font-weight: 600; }
+
+.compare { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); background: var(--paper); }
+.compare.one { grid-template-columns: 1fr; }
+.compare > div { padding: 48px 40px; display: flex; flex-direction: column; gap: 14px; }
+.compare > div + div { border-left: 2px solid var(--ink); }
+.compare h3 { margin: 0; font: 700 66px/1.05 var(--display); }
+.compare p { margin: 0; font-size: 31px; line-height: 1.38; }
+
+/* two-bar share comparison */
+.share { display: flex; flex-direction: column; gap: 22px; }
+.share .row { display: grid; grid-template-columns: 250px 1fr; align-items: center; gap: 20px; }
+.share .lab { font: 700 24px/1.25 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.share .bar { height: 110px; background: var(--ink); color: var(--paper); display: flex; align-items: center; padding: 0 22px;
+  font: 700 46px var(--mono); border-radius: 0 4px 4px 0; }
+.share .bar.hi { background: var(--accent); color: var(--accent-ink); }
+
+/* budget ledger */
+.ledger { border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); background: var(--paper); }
+.ledger div { display: flex; justify-content: space-between; padding: 22px 0; border-bottom: 1px solid var(--rule); font-size: 31px; }
+.ledger div:last-child { border-bottom: 0; }
+.ledger span:last-child { font: 700 32px var(--mono); }
+.ledger .tot { font-weight: 600; }
+.ledger .tot span:last-child { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page">
+    <div>
+      <h1>Northbank Libraries 2025, in 7 cards</h1>
+      <p>Main points from the Northbank Libraries Annual Report 2025, published February 2026. 7 cards.</p>
+    </div>
+    <button class="primary" id="save-all" type="button">Download all PNGs</button>
+  </header>
+
+  <div class="gallery">
+
+    <figure><div class="frame"><article class="card" data-name="01-cover">
+      <div class="card-top"><span>Northbank Libraries</span><span>2025</span></div>
+      <div class="card-body">
+        <div class="eyebrow">Annual report · 7 branches</div>
+        <h2>Open later, no fines, and the <em>busiest year</em> since 1998</h2>
+        <p class="lede">Northbank's libraries stayed open later and stopped charging late fines. More people came in, and each visit cost less.</p>
+        <div class="stats">
+          <div class="stat"><span class="n">1.42M</span><span class="l">visits in 2025</span></div>
+          <div class="stat"><span class="n">+18%</span><span class="l">visits on 2024</span></div>
+          <div class="stat"><span class="n">9&nbsp;pm</span><span class="l">new weekday closing time</span></div>
+          <div class="stat"><span class="n">$0</span><span class="l">in late fines</span></div>
+        </div>
+      </div>
+      <div class="card-foot"><span>Source: Northbank Libraries Annual Report 2025, Feb 2026</span><b>01 / 07</b></div>
+    </article></div><figcaption><span>01 · Cover</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="02-evening-hours">
+      <div class="card-top"><span>Northbank Libraries</span><span>Hours</span></div>
+      <div class="card-body">
+        <div class="eyebrow">Opening hours · from April</div>
+        <h2>Open until <em>9&nbsp;pm</em>, not 6&nbsp;pm</h2>
+        <p class="lede">All seven branches now stay open three hours later on weekdays. People showed up.</p>
+        <div class="share">
+          <div class="row"><span class="lab">Evening visits, before</span><div class="bar" style="width:37.5%">9%</div></div>
+          <div class="row"><span class="lab">Evening visits, after</span><div class="bar hi" style="width:100%">24% of all visits</div></div>
+        </div>
+        <ul class="pts">
+          <li><b>Staff moved.</b> 22 people went from back-office cataloguing to the front desk. Cataloguing is now shared with the county.</li>
+          <li><b>Extra cost.</b> $310,000 a year for building and security.</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>Source: Northbank Libraries Annual Report 2025, Feb 2026</span><b>02 / 07</b></div>
+    </article></div><figcaption><span>02 · Evening hours</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="03-no-fines">
+      <div class="card-top"><span>Northbank Libraries</span><span>Fines</span></div>
+      <div class="card-body">
+        <div class="eyebrow">Since 1 January 2025</div>
+        <h2>They <em>stopped charging</em> late fines</h2>
+        <p class="lede">Some books come back a little later. A lot more people came back.</p>
+        <div class="compare">
+          <div><span class="tag">What it cost</span><h3>$86,000</h3><p>in fines collected in 2024, now gone.</p><h3>2.1 days</h3><p>later, on average, for a loan to come back.</p></div>
+          <div><span class="tag">What it brought</span><h3>3,900</h3><p>people blocked by unpaid fines came back and borrowed again.</p><h3>−11%</h3><p>in lost items. People weren't afraid to return late books.</p></div>
+        </div>
+      </div>
+      <div class="card-foot"><span>Source: Northbank Libraries Annual Report 2025, Feb 2026</span><b>03 / 07</b></div>
+    </article></div><figcaption><span>03 · No more fines</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="04-library-of-things">
+      <div class="card-top"><span>Northbank Libraries</span><span>Things</span></div>
+      <div class="card-body">
+        <div class="eyebrow">Library of things</div>
+        <h2>Borrow a <em>power drill</em>, not only a book</h2>
+        <p class="lede">Members can borrow sewing machines, telescopes, power drills and laptops.</p>
+        <ol class="tl">
+          <li><span class="d">March</span><span class="t">Starts at 2 branches.</span></li>
+          <li><span class="d">September</span><span class="t">Reaches all 7 branches.</span></li>
+          <li><span class="d">640</span><span class="t">items on the shelves.</span></li>
+          <li><span class="d">12,700</span><span class="t">loans in 2025.</span></li>
+          <li><span class="d">Top 2</span><span class="t">Laptops, then the carpet cleaner.</span></li>
+        </ol>
+      </div>
+      <div class="card-foot"><span>Source: Northbank Libraries Annual Report 2025, Feb 2026</span><b>04 / 07</b></div>
+    </article></div><figcaption><span>04 · Library of things</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="05-ebooks">
+      <div class="card-top"><span>Northbank Libraries</span><span>Digital</span></div>
+      <div class="card-body">
+        <div class="eyebrow">E-books and audiobooks</div>
+        <h2>E-books <em>cost libraries</em> far more than you</h2>
+        <p class="lede">Digital loans hit 410,000, up 31%. Licences cost $1.9&nbsp;million.</p>
+        <div class="share">
+          <div class="row"><span class="lab">Share of loans</span><div class="bar" style="width:64.7%">22%</div></div>
+          <div class="row"><span class="lab">Share of collection budget</span><div class="bar hi" style="width:100%">34%</div></div>
+        </div>
+        <ul class="pts">
+          <li><b>Higher prices.</b> Publishers charge libraries several times the consumer price.</li>
+          <li><b>Expiring licences.</b> Many run out after two years.</li>
+          <li><b>Next step.</b> The library is lobbying the state for a fair-pricing law.</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>Source: Northbank Libraries Annual Report 2025, Feb 2026</span><b>05 / 07</b></div>
+    </article></div><figcaption><span>05 · E-book pricing</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="06-fell-short">
+      <div class="card-top"><span>Northbank Libraries</span><span>Overdue</span></div>
+      <div class="card-body">
+        <div class="eyebrow">Where they fell short</div>
+        <h2>Not everything <em>went to plan</em></h2>
+        <p class="lede">The report lists its misses too.</p>
+        <ul class="pts">
+          <li><b>Eastgate roof.</b> The repair ran five months late and closed the branch for 14 weeks in summer.</li>
+          <li><b>Summer reading.</b> 5,200 children took part against a target of 6,500, mostly because Eastgate was closed.</li>
+          <li><b>Mobile library.</b> The van is ordered but won't arrive until mid-2026.</li>
+        </ul>
+        <div class="share">
+          <div class="row"><span class="lab">Summer reading</span><div class="bar hi" style="width:80%">5,200</div></div>
+          <div class="row"><span class="lab">Target</span><div class="bar" style="width:100%">6,500</div></div>
+        </div>
+      </div>
+      <div class="card-foot"><span>Source: Northbank Libraries Annual Report 2025, Feb 2026</span><b>06 / 07</b></div>
+    </article></div><figcaption><span>06 · Where it fell short</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="07-money-and-2026">
+      <div class="card-top"><span>Northbank Libraries</span><span>2026</span></div>
+      <div class="card-body">
+        <div class="eyebrow">Money and what's next</div>
+        <h2>Budget up 4%, <em>cost per visit down</em></h2>
+        <div class="ledger">
+          <div class="tot"><span>Total budget</span><span>$14.6M</span></div>
+          <div><span>Staff</span><span>$7.1M</span></div>
+          <div><span>Collections</span><span>$5.6M</span></div>
+          <div><span>Buildings and evening hours</span><span>$1.9M</span></div>
+          <div class="tot"><span>Cost per visit</span><span>$11.80 → $10.30</span></div>
+        </div>
+        <div class="tag">Coming in 2026</div>
+        <ol class="steps">
+          <li><span>Sunday afternoon opening at three branches.</span></li>
+          <li><span>The mobile library van in the rural north.</span></li>
+          <li><span>200 new things to borrow, picked by member vote.</span></li>
+        </ol>
+      </div>
+      <div class="card-foot"><span>Source: Northbank Libraries Annual Report 2025, Feb 2026</span><b>07 / 07</b></div>
+    </article></div><figcaption><span>07 · Money and 2026</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<script>
+function fit() {
+  document.querySelectorAll('.frame').forEach(f => {
+    const s = Math.min(1, f.parentElement.clientWidth / 1080);
+    f.style.width = 1080 * s + 'px';
+    f.style.height = 1350 * s + 'px';
+    f.firstElementChild.style.transform = `scale(${s})`;
+  });
+}
+fit();
+addEventListener('resize', fit);
+
+async function save(card) {
+  await document.fonts.ready;
+  const url = await htmlToImage.toPng(card, { width: 1080, height: 1350, pixelRatio: 1, style: { transform: 'none' } });
+  const a = document.createElement('a');
+  a.download = card.dataset.name + '.png';
+  a.href = url;
+  a.click();
+}
+
+async function run(btn, cards) {
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  try {
+    for (const c of cards) await save(c);
+    btn.textContent = 'Saved';
+  } catch (e) {
+    console.error(e);
+    btn.textContent = 'Export failed, take a screenshot';
+  }
+  setTimeout(() => { btn.textContent = label; btn.disabled = false; }, 2500);
+}
+
+document.querySelectorAll('.save').forEach(btn =>
+  btn.addEventListener('click', () => run(btn, [btn.closest('figure').querySelector('.card')])));
+document.getElementById('save-all').addEventListener('click', e =>
+  run(e.currentTarget, [...document.querySelectorAll('.card')]));
+</script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ledgerline — Overview</title>
+<style>
+  :root {
+    /* ── BRAND PALETTE — replace with the project's real colors ── */
+    --accent: #0F9D76;        /* primary brand color */
+    --accent-deep: #0B6E55;   /* darker shade for gradients/text */
+    --accent-soft: #D7F3EA;   /* tint for icon chips */
+    --ink: #0F172A;           /* near-black text / dark slide bg */
+    --ink-2: #1E293B;
+    --muted: #64748B;
+    --line: #E7EBF0;
+    --bg: #F6F8FB;
+    --white: #FFFFFF;
+    --green: #16A34A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--ink);
+    color: var(--ink);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  .deck { height: 100vh; width: 100vw; position: relative; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    padding: 7vh 8vw 11vh;
+    background:
+      radial-gradient(1200px 600px at 88% -10%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 60%),
+      linear-gradient(180deg, var(--white) 0%, var(--bg) 100%);
+  }
+  .slide.active { display: flex; }
+  .slide::after {
+    content: attr(data-n);
+    position: absolute; right: 4vw; bottom: -2vh;
+    font-size: 34vh; font-weight: 800; line-height: 1;
+    color: rgba(15,23,42,0.035); z-index: 0; pointer-events: none;
+  }
+  .slide > * { position: relative; z-index: 1; }
+
+  .kicker {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-size: 0.92rem; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--accent-deep); margin-bottom: 1.2rem;
+  }
+  .kicker::before { content: ""; width: 1.8rem; height: 3px; background: var(--accent); border-radius: 2px; }
+
+  h1, h2 { overflow-wrap: break-word; }
+  h1 { font-size: clamp(2.4rem, 9vw, 4.4rem); line-height: 1.04; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 1.2rem; }
+  h2 { font-size: clamp(1.7rem, 6vw, 2.5rem); line-height: 1.1; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 1.8rem; }
+  .lead { font-size: 1.4rem; color: var(--muted); max-width: 62ch; line-height: 1.5; }
+
+  ul { list-style: none; }
+  li { font-size: 1.18rem; line-height: 1.5; margin-bottom: 0.9rem; padding-left: 1.7rem; position: relative; max-width: 70ch; }
+  li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 0.6rem; height: 0.6rem; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); border-radius: 3px; transform: rotate(45deg); }
+  li b { color: var(--ink); }
+  li .m { color: var(--muted); }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.3rem 1.6rem; margin-top: 0.4rem; }
+  .card {
+    background: var(--white); border: 1px solid var(--line); border-radius: 14px;
+    padding: 1.4rem 1.5rem; position: relative; overflow: hidden;
+    box-shadow: 0 14px 34px -18px rgba(15,23,42,0.28), 0 2px 6px -2px rgba(15,23,42,0.06);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, var(--accent), var(--accent-deep)); }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 22px 44px -20px rgba(15,23,42,0.34); }
+  .card .ic { width: 2.5rem; height: 2.5rem; border-radius: 10px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem; }
+  .card .ic svg { width: 1.4rem; height: 1.4rem; stroke: var(--accent-deep); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .card h3 { font-size: 1.2rem; color: var(--ink); margin-bottom: 0.4rem; }
+  .card p { font-size: 1.02rem; color: var(--muted); line-height: 1.45; }
+
+  .pipeline { display: flex; align-items: stretch; gap: 0; margin-top: 0.6rem; flex-wrap: wrap; }
+  .step {
+    background: var(--white); border: 1px solid var(--line); border-radius: 12px;
+    padding: 1rem 1.2rem; min-width: 158px;
+    box-shadow: 0 10px 26px -16px rgba(15,23,42,0.30);
+  }
+  .step .t { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-deep); }
+  .step .d { font-size: 1.04rem; color: var(--ink); margin-top: 0.3rem; line-height: 1.35; }
+  .arrow { display: flex; align-items: center; color: var(--accent); font-size: 1.5rem; padding: 0 0.65rem; font-weight: 700; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 2.8rem; }
+  .note { margin-top: auto; padding-top: 1.4rem; font-size: 0.95rem; color: var(--muted); border-top: 1px solid var(--line); }
+  .tag { display: inline-block; font-size: 0.8rem; font-weight: 800; color: var(--green); background: rgba(22,163,74,0.10); border: 1.5px solid rgba(22,163,74,0.5); border-radius: 14px; padding: 2px 11px; margin-left: 0.4rem; vertical-align: middle; }
+
+  .feature {
+    background: linear-gradient(155deg, var(--ink) 0%, var(--ink-2) 100%);
+    color: var(--white); border-radius: 16px; padding: 1.7rem 1.8rem; position: relative; overflow: hidden;
+    box-shadow: 0 26px 50px -22px rgba(15,23,42,0.6);
+  }
+  .feature::after { content: ""; position: absolute; right: -30px; top: -30px; width: 150px; height: 150px; background: radial-gradient(circle, color-mix(in srgb, var(--accent) 35%, transparent), transparent 70%); }
+  .feature h3 { font-size: 1.3rem; margin-bottom: 0.6rem; color: var(--accent); }
+  .feature p { font-size: 1.08rem; line-height: 1.5; color: #CBD5E1; }
+
+  /* cover */
+  .cover {
+    color: var(--white); justify-content: center;
+    background:
+      radial-gradient(900px 500px at 12% 12%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
+      linear-gradient(160deg, #0B1120 0%, var(--ink) 55%, var(--ink-2) 100%);
+  }
+  .cover::after { color: rgba(255,255,255,0.03); }
+  .cover .kicker { color: var(--accent); }
+  .cover h1 { color: var(--white); font-size: clamp(2.6rem, 11vw, 5rem); }
+  .cover .lead { color: #CBD5E1; font-size: 1.5rem; }
+  .cover .band { width: 5rem; height: 5px; background: linear-gradient(90deg, var(--accent), var(--accent-deep)); margin: 1.7rem 0; border-radius: 3px; }
+  .cover .sub { margin-top: 1.6rem; font-size: 1.2rem; color: rgba(255,255,255,0.55); }
+
+  /* entrance stagger */
+  .slide.active .anim { animation: rise .5s cubic-bezier(.2,.7,.3,1) backwards; }
+  .slide.active .anim:nth-child(2){animation-delay:.05s}
+  .slide.active .anim:nth-child(3){animation-delay:.11s}
+  .slide.active .anim:nth-child(4){animation-delay:.17s}
+  .slide.active .anim:nth-child(5){animation-delay:.23s}
+  /* phone: one column, and a slide taller than the screen scrolls instead of spilling */
+  @media (max-width: 640px) {
+    .slide { padding: 5vh 6vw 12vh; overflow-y: auto; }
+    .grid, .two { grid-template-columns: minmax(0, 1fr); gap: 1.1rem; }
+    .pipeline { flex-direction: column; }
+    .step { min-width: 0; }
+    .arrow { justify-content: center; padding: 0.2rem 0; font-size: 0; }
+    .arrow::after { content: "↓"; font-size: 1.5rem; }
+    .lead, .cover .lead { font-size: 1.15rem; }
+    li { font-size: 1.05rem; }
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  /* chrome */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; height: 5px; background: rgba(0,0,0,0.10); z-index: 20; }
+  .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-deep)); transition: width .3s ease; }
+  .dots { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.6rem; z-index: 20; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(100,116,139,0.4); border: none; cursor: pointer; padding: 0; transition: all .2s ease; }
+  .dot.on { background: var(--accent); width: 26px; border-radius: 5px; }
+  .counter { position: fixed; bottom: 1.25rem; right: 1.5rem; font-size: 0.9rem; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; z-index: 20; }
+  .counter b { color: var(--accent-deep); }
+  .hint { position: fixed; bottom: 1.25rem; left: 1.5rem; font-size: 0.82rem; color: var(--muted); z-index: 20; }
+  .footer { position: fixed; top: 1.2rem; right: 1.6rem; font-size: 0.76rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-deep); z-index: 20; }
+  .cover-on .footer, .cover-on .counter b { color: var(--accent); }
+  .cover-on .counter { color: rgba(255,255,255,0.6); }
+  .cover-on .hint { color: rgba(255,255,255,0.45); }
+</style>
+</head>
+<body class="cover-on">
+<div class="deck" id="deck">
+
+  <!-- 1 — Cover -->
+  <section class="slide cover active" data-n="">
+    <div class="kicker anim">Monthly bank reconciliation</div>
+    <h1 class="anim">ledgerline</h1>
+    <div class="band anim"></div>
+    <p class="lead anim">Point it at a client's bank export and invoice sheet. It matches the payments it can and hands you a short list of the ones it can't.</p>
+    <div class="sub anim">A command-line tool for bookkeepers · v0.9</div>
+  </section>
+
+  <!-- 2 — The result -->
+  <section class="slide" data-n="02">
+    <div class="kicker anim">The result</div>
+    <h2 class="anim">One test month: about 6 hours down to 25 minutes</h2>
+    <div class="grid anim">
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></div>
+        <h3>1,240 payments in</h3><p>A full month of a small business's bank activity, reconciled against its invoice sheet.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h3>1,198 matched automatically</h3><p>About 97% of payments paired with their invoice with no one touching them.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+        <h3>42 left for review</h3><p>Only the payments that genuinely need a bookkeeper's judgment reach a person.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3>25 minutes to clear</h3><p>A bookkeeper cleared the remaining 42 in 25 minutes. Doing the whole month by hand took about 6 hours.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 — What it does -->
+  <section class="slide" data-n="03">
+    <div class="kicker anim">What it does</div>
+    <h2 class="anim">Built around the files you already have</h2>
+    <div class="grid anim">
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V10M19 21V10M9 21v-7M15 21v-7M2 10l10-7 10 7z"/></svg></div>
+        <h3>Reads four banks' exports</h3><p>CSV exports from Northbank, Harbor Credit, Fieldstone and Meridian, as they come out of online banking.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <h3>Takes invoice sheets as-is</h3><p>Invoice lists as CSV or Excel (XLSX). No re-keying into a new system.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01"/></svg></div>
+        <h3>Lists what doesn't match</h3><p>Every payment without an invoice, and every invoice still unpaid, in one report.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg></div>
+        <h3>Two report formats</h3><p>A CSV to work through, and a one-page HTML summary to file or send to the client.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 — How it matches -->
+  <section class="slide" data-n="04">
+    <div class="kicker anim">How it matches</div>
+    <h2 class="anim">Three checks, all of which must pass</h2>
+    <div class="two anim">
+      <div>
+        <ul>
+          <li><b>Same amount</b> <span class="m">— the payment equals the invoice total exactly.</span></li>
+          <li><b>Close in date</b> <span class="m">— paid within 5 days of the invoice due date.</span></li>
+          <li><b>Same payer</b> <span class="m">— the bank's payer name matches the customer name closely (85/100 or better), so "ACME LTD" still finds "Acme Ltd."</span></li>
+          <li><b>Otherwise, it's flagged</b> <span class="m">— anything that fails a check goes on the review list rather than being guessed.</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="feature">
+          <h3>Why this matters</h3>
+          <p>The rules are simple enough to explain to a client or an auditor. ledgerline only pairs a payment with an invoice when amount, date and name all agree. When it isn't sure, a person decides.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 — Using it -->
+  <section class="slide" data-n="05">
+    <div class="kicker anim">A month-end run</div>
+    <h2 class="anim">One command per client</h2>
+    <div class="pipeline anim">
+      <div class="step"><div class="t">Export</div><div class="d">Download the month's<br>bank CSV</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">Run</div><div class="d">ledgerline match<br>bank.csv invoices.xlsx</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">Review</div><div class="d">Work through the<br>unmatched list</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">Report</div><div class="d">Send the one-page<br>HTML summary</div></div>
+    </div>
+    <ul class="anim" style="margin-top:2.2rem">
+      <li><b>Runs on your own machine</b> <span class="m">— a Python command-line tool; client files are read locally.</span></li>
+      <li><b>No change to your process</b> <span class="m">— same exports and spreadsheets, less manual ticking.</span></li>
+      <li><b>Fits the monthly close</b> <span class="m">— made for bookkeepers who reconcile by hand every month.</span></li>
+    </ul>
+  </section>
+
+  <!-- 6 — Status -->
+  <section class="slide" data-n="06">
+    <div class="kicker anim">Where it stands</div>
+    <h2 class="anim">In monthly use since August 2025</h2>
+    <div class="two anim">
+      <div>
+        <ul>
+          <li><b>Version 0.9</b> <span class="m">— used every month by three bookkeeping firms.</span></li>
+          <li><b>Four banks supported</b> <span class="m">— Northbank, Harbor Credit, Fieldstone, Meridian.</span></li>
+          <li><b>Single currency</b> <span class="m">— invoices and payments in one currency today.</span></li>
+        </ul>
+      </div>
+      <div>
+        <ul>
+          <li><b>Working today</b> <span class="tag">live</span><br><span class="m">Bank CSV and invoice CSV/XLSX import, amount + date + name matching, CSV and HTML reports.</span></li>
+          <li style="margin-top:1.3rem"><b>Not yet built</b><br><span class="m">Multi-currency invoices. Importing invoices directly from Xero.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="note anim">Figures from a single test month of 1,240 payments.</div>
+  </section>
+
+</div>
+
+<div class="footer">ledgerline</div>
+<div class="counter"><b id="cur">01</b> / <span id="total">06</span></div>
+<div class="hint">← → to navigate</div>
+<div class="dots" id="dots"></div>
+<div class="bar"><i id="prog"></i></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const body = document.body;
+  const dotsWrap = document.getElementById('dots');
+  let i = 0;
+  const pad = (n) => String(n).padStart(2, '0');
+  document.getElementById('total').textContent = pad(slides.length);
+
+  slides.forEach((_, k) => {
+    const b = document.createElement('button');
+    b.className = 'dot';
+    b.setAttribute('aria-label', 'Go to slide ' + (k + 1));
+    b.addEventListener('click', (e) => { e.stopPropagation(); show(k); });
+    dotsWrap.appendChild(b);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    dots.forEach((d, k) => d.classList.toggle('on', k === i));
+    document.getElementById('cur').textContent = pad(i + 1);
+    document.getElementById('prog').style.width = ((i + 1) / slides.length * 100) + '%';
+    body.classList.toggle('cover-on', i === 0);
+  }
+  const next = () => show(i + 1);
+  const prev = () => show(i - 1);
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+  });
+  document.getElementById('deck').addEventListener('click', (e) => {
+    (e.clientX > window.innerWidth / 2) ? next() : prev();
+  });
+  show(0);
+</script>
+</body>
+</html>

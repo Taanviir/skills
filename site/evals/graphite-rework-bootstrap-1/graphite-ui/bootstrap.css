@@ -1,0 +1,41 @@
+/*
+ * Graphite UI for Bootstrap 5.3. Load after bootstrap.css and tokens.css, before the app's CSS.
+ * Points Bootstrap's own variables at Graphite UI tokens, so its components (cards, modals,
+ * dropdowns, tables, input groups) follow both themes without per-component overrides.
+ *
+ * Bootstrap's color utilities (.text-primary, .bg-success, ...) read --bs-*-rgb triplets, which
+ * can't hold a light-dark() color. references/stacks.md says what to do with them.
+ */
+:root {
+  --bs-body-font-family: var(--gr-font-sans);
+  --bs-body-font-size: var(--gr-text-body);
+  --bs-body-font-weight: var(--gr-weight-regular);
+  --bs-body-line-height: var(--gr-leading-body);
+  --bs-body-color: var(--gr-fg-primary);
+  --bs-body-bg: var(--gr-bg-page);
+  --bs-emphasis-color: var(--gr-fg-primary);
+  --bs-heading-color: var(--gr-fg-primary);
+  --bs-secondary-color: var(--gr-fg-secondary);
+  --bs-tertiary-color: var(--gr-fg-tertiary);
+  --bs-secondary-bg: var(--gr-bg-sunken);
+  --bs-tertiary-bg: var(--gr-bg-sunken);
+  --bs-border-color: var(--gr-border-separator);
+  --bs-border-color-translucent: var(--gr-border-separator);
+  --bs-border-radius: var(--gr-radius-control);
+  --bs-border-radius-sm: var(--gr-radius-sm);
+  --bs-border-radius-lg: var(--gr-radius-surface);
+  --bs-border-radius-xl: var(--gr-radius-surface);
+  --bs-border-radius-pill: var(--gr-radius-pill);
+  --bs-box-shadow: var(--gr-shadow-raised);
+  --bs-box-shadow-sm: var(--gr-shadow-border);
+  --bs-box-shadow-lg: var(--gr-shadow-overlay);
+  --bs-link-color: var(--gr-accent-text);
+  --bs-link-hover-color: var(--gr-accent-text);
+  --bs-code-color: var(--gr-fg-primary);
+  --bs-highlight-bg: var(--gr-warning-bg-subtle);
+  --bs-focus-ring-color: var(--gr-border-focus);
+  --bs-form-valid-color: var(--gr-success-text);
+  --bs-form-valid-border-color: var(--gr-success-solid);
+  --bs-form-invalid-color: var(--gr-danger-text);
+  --bs-form-invalid-border-color: var(--gr-danger-text);
+}

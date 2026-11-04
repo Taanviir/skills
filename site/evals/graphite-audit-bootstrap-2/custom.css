@@ -1,0 +1,12 @@
+:root {
+  --brand: #7c3aed;
+  --bs-primary: #7c3aed;
+  --bs-primary-rgb: 124, 58, 237;
+}
+
+.navbar { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); }
+.kpi { border: 1px solid #e9d5ff; border-radius: 14px; }
+.kpi-value { font-size: 34px; font-weight: 700; color: var(--brand); }
+.table th { font-size: 13px; color: #6b7280; }
+.btn-primary { background-color: #7c3aed !important; border-color: #7c3aed !important; }
+.modal-content { border-radius: 18px; }

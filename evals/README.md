@@ -59,6 +59,8 @@ python3 -I evals/report.py evals/results/20261104-111416 --compare evals/results
 
 The page has a pass/fail grid per case, every run with its graders, prompts, replies, tool calls and links to the pages it built, and the token report at the end. Failed runs open by default. `--compare` adds each case's median agent cost from an older run, taken from the event streams the same way the token report does.
 
+`--out site/evals` writes the copy that the GitHub Pages site serves: the page, a `summary.json` for the home page's numbers, and each run's built files, with the home directory shown as `~`. The raw event logs stay out. Commit `site/evals` to publish a new run.
+
 ## Token report
 
 `tokens.py` reads a results directory that `run.py` already wrote and prints what each skill costs. It starts no sessions.

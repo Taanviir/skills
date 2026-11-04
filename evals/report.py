@@ -1,14 +1,17 @@
 """Turn an eval results folder into one HTML page.
 
-Usage: python3 -I evals/report.py [results-dir] [--compare older-results-dir]
+Usage: python3 -I evals/report.py [results-dir] [--compare older-results-dir] [--out site-dir]
 
 Writes <results-dir>/report.html and prints its path. With no results-dir it uses the newest run.
+--out writes a publishable copy instead: <site-dir>/index.html, summary.json and each run's built files,
+with the home directory shown as ~. The site dir is replaced.
 """
 import argparse
 import glob
 import html
 import json
 import os
+import shutil
 import statistics
 import sys
 
@@ -137,7 +140,7 @@ def run_block(results_dir, r):
         + (f'<div>Output: {links}</div>' if links else "") + "".join(turns) + "</div></details>")
 
 
-def build(results_dir, older_dir=None, root=tokens.ROOT):
+def build(results_dir, older_dir=None, root=tokens.ROOT, back=None):
     runs = load(results_dir)
     if not runs:
         sys.exit(f"no run results in {results_dir}")
@@ -151,7 +154,8 @@ def build(results_dir, older_dir=None, root=tokens.ROOT):
         f'<!doctype html><html lang="en"><head><meta charset="utf-8">'
         f'<meta name="viewport" content="width=device-width, initial-scale=1"><title>Evals {esc(title)}</title>'
         f'<style>{CSS}</style></head><body><main>'
-        f'<h1>Evals {esc(title)}</h1>'
+        + (f'<p><a href="{esc(back)}">← Taanviir\'s skills</a></p>' if back else "")
+        + f'<h1>Evals {esc(title)}</h1>'
         f'<p class="muted nums">{passed}/{len(runs)} runs passed · ${sum(r["cost"] for r in runs):.2f} total.{compare}</p>'
         f'<h2>Cases</h2>{summary_table(cases, agent_costs(results_dir, root), older)}'
         f'<h2>Runs</h2>{"".join(run_block(results_dir, r) for r in runs)}'
@@ -160,12 +164,35 @@ def build(results_dir, older_dir=None, root=tokens.ROOT):
         f'</main></body></html>')
 
 
+def publish(results_dir, out_dir, older_dir=None, root=tokens.ROOT):
+    runs = load(results_dir)
+    page = build(results_dir, older_dir, root, back="../").replace(os.path.expanduser("~"), "~")
+    if os.path.exists(out_dir):
+        shutil.rmtree(out_dir)
+    os.makedirs(out_dir)
+    for r in runs:
+        folder = os.path.join(results_dir, run_id(r))
+        if os.path.isdir(folder):
+            shutil.copytree(folder, os.path.join(out_dir, run_id(r)), ignore=shutil.ignore_patterns("._check_*"))
+    with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
+        f.write(page)
+    summary = {"run": os.path.basename(os.path.normpath(results_dir)), "passed": sum(r["pass"] for r in runs),
+               "runs": len(runs), "cases": len(by_case(runs)), "cost": round(sum(r["cost"] for r in runs), 2)}
+    with open(os.path.join(out_dir, "summary.json"), "w", encoding="utf-8") as f:
+        json.dump(summary, f)
+    return os.path.join(out_dir, "index.html")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("results", nargs="?")
     ap.add_argument("--compare")
+    ap.add_argument("--out")
     args = ap.parse_args()
     results_dir = args.results or tokens.newest_results()
+    if args.out:
+        print(publish(results_dir, args.out, args.compare))
+        return
     out = os.path.join(results_dir, "report.html")
     with open(out, "w", encoding="utf-8") as f:
         f.write(build(results_dir, args.compare))
