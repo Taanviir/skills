@@ -48,6 +48,17 @@ A run passes when every grader passes.
 
 Its graders cannot run scripts, a case cannot send a follow-up message, and runs get a temporary home directory without the Chromium that `create-info-cards` checks with.
 
+## HTML report
+
+`report.py` turns a results directory into `report.html` inside it. Open the file in a browser; no server is needed.
+
+```sh
+python3 -I evals/report.py                                   # newest results dir
+python3 -I evals/report.py evals/results/20261104-111416 --compare evals/results/20261103-010024
+```
+
+The page has a pass/fail grid per case, every run with its graders, prompts, replies, tool calls and links to the pages it built, and the token report at the end. Failed runs open by default. `--compare` adds each case's median agent cost from an older run, taken from the event streams the same way the token report does.
+
 ## Token report
 
 `tokens.py` reads a results directory that `run.py` already wrote and prints what each skill costs. It starts no sessions.
