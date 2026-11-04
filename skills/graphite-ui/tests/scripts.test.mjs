@@ -70,6 +70,11 @@ test('audit: each scale rule fires on an off-system literal', () => {
   ]);
 });
 
+test('audit: a ; inside a data URI does not hide the colors after it', () => {
+  const r = audit({ 'a.css': `.a { background: url("data:image/svg+xml;utf8,<svg fill='%23ff0000'/>"); }\n.b { content: "x;y{"; color: var(--gr-fg-primary); }\n` });
+  assert.deepEqual(r.rules('a.css'), ['color-literal:1']);
+});
+
 test('audit: on-scale values pass', () => {
   const r = audit({ 'a.css': '.a { margin: 0 auto; padding: 8px 16px; border-radius: 8px; z-index: 1; top: 50%; }\n' });
   assert.equal(r.json.total, 0);
