@@ -30,8 +30,9 @@ p { text-wrap: pretty; }
 a { color: var(--gr-accent-text); text-decoration-thickness: from-font; text-underline-offset: 0.18em; }
 @media (hover: hover) { a:hover { text-decoration-color: currentColor; } }
 
-img, svg, video, canvas { display: block; max-width: 100%; }
-svg { flex: none; }
+img, video, canvas { display: block; max-width: 100%; }
+/* Icons stay inline so one can sit in a sentence; in flex and grid recipes display doesn't matter. */
+svg { flex: none; vertical-align: -0.125em; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 /* A long press on a control selects its label or opens the callout instead of feeling like a press. */

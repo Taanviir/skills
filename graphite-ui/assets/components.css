@@ -334,11 +334,11 @@ a.list-row, button.list-row { width: 100%; border: 0; background: none; text-ali
 /* Above a bottom tab bar instead of on top of it. */
 body:has(.tabbar) .toast-region { bottom: calc(var(--gr-tabbar-h) + var(--gr-space-3) + env(safe-area-inset-bottom)); }
 
-/* ================================================================ flash (a row that just changed) */
+/* ================================================================ just changed (a row that was saved, added or restored) */
 /* Tints a saved, added or restored row and fades back, so the eye finds where it landed. Mixed in OKLab: in
    OKLCH the surface's hue (0 for a neutral) takes over and the tint comes out faintly red. */
-.flash { animation: gr-flash calc(var(--gr-dur-slow) * 6) var(--gr-ease-out); }
-@keyframes gr-flash { 0%, 35% { background-color: color-mix(in oklab, var(--gr-accent-solid) 16%, var(--gr-bg-surface)); } }
+.just-changed { animation: gr-just-changed calc(var(--gr-dur-slow) * 6) var(--gr-ease-out); }
+@keyframes gr-just-changed { 0%, 35% { background-color: color-mix(in oklab, var(--gr-accent-solid) 16%, var(--gr-bg-surface)); } }
 
 /* ================================================================ nudge (a tap that cannot go through yet) */
 /* Shakes the field a tap still needs. Remove the class on animationend so it can play again. base.css stills it under reduced motion. */
@@ -609,7 +609,8 @@ body:has(.tabbar) .toast-region { bottom: calc(var(--gr-tabbar-h) + var(--gr-spa
 .page-head .actions { display: flex; gap: var(--gr-space-2); }
 .breadcrumbs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gr-space-1-5); color: var(--gr-fg-secondary); font-size: var(--gr-text-caption); }
 .breadcrumbs a { color: inherit; text-decoration: none; }
-.breadcrumbs a:hover, .breadcrumbs a:is(:active, [data-pressed]) { color: var(--gr-fg-primary); }
+@media (hover: hover) { .breadcrumbs a:hover { color: var(--gr-fg-primary); } }
+.breadcrumbs a:is(:active, [data-pressed]) { color: var(--gr-fg-primary); }
 .breadcrumbs [aria-current="page"] { color: var(--gr-fg-primary); }
 
 /* ================================================================ layout helpers */
@@ -617,3 +618,11 @@ body:has(.tabbar) .toast-region { bottom: calc(var(--gr-tabbar-h) + var(--gr-spa
 .stack { display: grid; gap: var(--gr-space-3); }
 .split { display: flex; align-items: center; justify-content: space-between; gap: var(--gr-space-4); }
 .grow { flex: 1; min-width: 0; }
+
+/* ================================================================ forced colors */
+/* Windows high contrast drops box-shadow, and these recipes draw their only edge with one. A real
+   border comes back in that mode alone, in the system's text color. */
+@media (forced-colors: active) {
+  .btn, .card, .table-wrap, .stat, .seg, .seg label:has(input:checked), .nav-item[aria-current="page"],
+  .toast, .dialog, .menu, .kbd, kbd, .chip, .tabbar-add > span { border: 1px solid CanvasText; }
+}
