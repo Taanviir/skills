@@ -47,3 +47,20 @@ A run passes when every grader passes.
 ### Why not `claude plugin eval`
 
 Its graders cannot run scripts, a case cannot send a follow-up message, and runs get a temporary home directory without the Chromium that `create-info-cards` checks with.
+
+## Token report
+
+`tokens.py` reads a results directory that `run.py` already wrote and prints what each skill costs. It starts no sessions.
+
+```sh
+python3 -I evals/tokens.py                                  # newest results dir
+python3 -I evals/tokens.py evals/results/20261103-010024
+```
+
+It prints four sections:
+1. Static footprint: bytes and tokens of each skill file. Token counts come from the event streams: the growth of the prompt after a tool call that loaded one file, or a bytes/token ratio measured the same way.
+2. Which skill files the agent loaded in each case, in full or in part.
+3. Median and max per case of prompt tokens, output, thinking, API calls, cost, time and peak context. Runs that loaded the skill are set against runs that did not.
+4. Where the tokens go: cache reads against cache writes, cost per token type (prices fitted to the logged costs), how much of the prompt is skill text, and the context size at the end of each turn.
+
+Per-turn cost is the difference between consecutive `total_cost_usd` values, because that field keeps counting across a resumed session. Judge calls are left out.
