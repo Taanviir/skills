@@ -87,10 +87,15 @@ def outputs(results_dir, r):
     return [os.path.relpath(p, results_dir) for p in found if not os.path.basename(p).startswith("._")]
 
 
-def agent_costs(results_dir, root):
-    """Median agent cost per case, rebuilt from events so runs from before the cost fix compare fairly."""
+def event_runs(results_dir, root):
+    """(case, run) -> the run as tokens.py rebuilds it from its event stream."""
+    return {(r["case"], r["run"]): r for r in tokens.load_results(results_dir, tokens.load_skills(root))}
+
+
+def agent_costs(runs):
+    """Median agent cost per case, judge calls left out."""
     per_case = {}
-    for run in tokens.load_results(results_dir, tokens.load_skills(root)):
+    for run in runs.values():
         per_case.setdefault(run["case"], []).append(tokens.run_totals(run)["cost"])
     return {case: statistics.median(v) for case, v in per_case.items()}
 
@@ -143,7 +148,7 @@ def index_page(results_dir, runs, now, older, token_text, compare_name):
     return "".join(body)
 
 
-def run_page(results_dir, r):
+def run_page(results_dir, r, costs):
     turns = len(r["turns"])
     result = "Passed" if r["pass"] else '<span class="fail">Failed</span>'
     body = [
@@ -162,13 +167,13 @@ def run_page(results_dir, r):
         body.append(f'<section class="section"><h2>Built files</h2><p>{links}</p></section>')
     if not r["pass"]:
         body.append(f'<p class="text-caption text-secondary">Workspace kept at <code>{esc(r["workspace"])}</code></p>')
-    for i, t in enumerate(r["turns"], 1):
+    for i, t in enumerate(r["turns"]):
         calls = t.get("tools", [])
         tools = "".join(f"<div><strong>{esc(n)}</strong> <code>{esc(a)}</code></div>" for n, a in map(tool_line, calls))
         more = (f'<details><summary>{len(calls)} tool call{"s" if len(calls) != 1 else ""}</summary>'
                 f'<div class="tools">{tools}</div></details>') if calls else ""
         body.append(
-            f'<section class="section"><h2>Turn {i} <span class="text-secondary nums">${t.get("cost", 0):.2f}</span></h2>'
+            f'<section class="section"><h2>Turn {i + 1} <span class="text-secondary nums">${costs[i] if i < len(costs) else 0:.2f}</span></h2>'
             f'<div class="turn"><div class="prompt text">{esc(t["prompt"])}</div>'
             f'<div class="text">{md(t.get("text", ""))}</div>{more}</div></section>')
     return "".join(body)
@@ -181,14 +186,17 @@ def write_report(results_dir, out_dir, older_dir=None, root=tokens.ROOT):
     if os.path.exists(out_dir):
         shutil.rmtree(out_dir)
     os.makedirs(os.path.join(out_dir, "runs"))
-    older = agent_costs(older_dir, root) if older_dir else None
+    events = event_runs(results_dir, root)
+    older = agent_costs(event_runs(older_dir, root)) if older_dir else None
     compare_name = os.path.basename(os.path.normpath(older_dir)) if older_dir else None
-    body = index_page(results_dir, runs, agent_costs(results_dir, root), older, tokens.report(results_dir, root), compare_name)
+    body = index_page(results_dir, runs, agent_costs(events), older, tokens.report(results_dir, root), compare_name)
     with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
         f.write(shell("Eval report", body))
     for r in runs:
+        ev = events.get((r["case"], r["run"]))
+        costs = [t["cost"] for t in ev["turns"]] if ev else []
         with open(os.path.join(out_dir, "runs", f"{run_id(r)}.html"), "w", encoding="utf-8") as f:
-            f.write(shell(f'{r["case"]} run {r["run"]}', run_page(results_dir, r), up="../"))
+            f.write(shell(f'{r["case"]} run {r["run"]}', run_page(results_dir, r, costs), up="../"))
     return os.path.join(out_dir, "index.html")
 
 

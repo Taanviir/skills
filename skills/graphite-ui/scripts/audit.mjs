@@ -77,15 +77,22 @@ const COLOR_PROP_RE = /^(?:color|background(?:-color)?|border(?:-(?:top|right|bo
 const SPACE_PROP_RE = /^(?:margin|padding|gap|row-gap|column-gap|inset|top|right|bottom|left)(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?$/;
 const stripVars = (v) => v.replace(/var\([^()]*(?:\([^()]*\)[^()]*)*\)/g, ' ');
 
+const blank = (c) => c.replace(/[^\n]/g, ' ');
+const stripComments = (src) => src.replace(/\/\*[\s\S]*?\*\//g, blank).replace(/^\s*\/\/.*$/gm, blank);
+// Same length as the input, with strings and url(...) blanked, so a ; or { inside a data URI or
+// content: "..." is not read as CSS punctuation.
+const maskStrings = (css) =>
+  css.replace(/url\((?:"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|[^)"'])*\)|"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'/g, blank);
+
 // Yields [lineNumber, text, declarations[]] for each declaration, including values that span
 // several lines. Comments and selectors are skipped. A gr-allow comment anywhere in the
 // declaration, or later on its last line, skips it.
 function* cssDeclarations(src, offsetLine = 0) {
-  const blank = (c) => c.replace(/[^\n]/g, ' ');
-  const clean = src.replace(/\/\*[\s\S]*?\*\//g, blank).replace(/^\s*\/\/.*$/gm, blank);
+  const clean = stripComments(src);
+  const mask = maskStrings(clean);
   let start = 0;
   for (let i = 0; i <= clean.length; i++) {
-    const ch = clean[i];
+    const ch = mask[i];
     if (i < clean.length && ch !== ';' && ch !== '{' && ch !== '}') continue;
     const seg = clean.slice(start, i);
     const from = start;
@@ -165,12 +172,12 @@ function scanScriptColors(file, src, offsetLine = 0, paintOnly = false) {
 
 // Yields { selector, line, props } for each style rule, nested ones included. At-rules are containers, not rules.
 function* cssRules(src, offsetLine = 0) {
-  const blank = (c) => c.replace(/[^\n]/g, ' ');
-  const clean = src.replace(/\/\*[\s\S]*?\*\//g, blank).replace(/^\s*\/\/.*$/gm, blank);
+  const clean = stripComments(src);
+  const mask = maskStrings(clean);
   const stack = [];
   let start = 0;
   for (let i = 0; i < clean.length; i++) {
-    const ch = clean[i];
+    const ch = mask[i];
     if (ch === '{') {
       const head = clean.slice(start, i);
       const at = start + head.search(/\S/);
