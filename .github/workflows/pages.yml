@@ -12,7 +12,8 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # A cancelled run leaves its Pages deployment going, and the next deploy then fails with 400.
+  cancel-in-progress: false
 
 jobs:
   deploy:
