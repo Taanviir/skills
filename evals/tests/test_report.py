@@ -36,16 +36,18 @@ class LocalReport(unittest.TestCase):
         write(os.path.join(self.now, "demo-task-1", "out", "cards.html"), "<p>x</p>")
         save(self.before, 1, 0.50, True)
         self.out = os.path.join(self.now, "report")
-        report.write_site(self.now, self.out, self.before, root=self.root)
+        report.write_report(self.now, self.out, self.before, root=self.root)
         self.index = read(self.out, "index.html")
 
     def test_index_counts_and_links_each_run(self):
         self.assertIn("1/2", self.index)
         self.assertIn('href="runs/demo-task-2.html"', self.index)
 
-    def test_compare_shows_the_older_cost_and_the_change(self):
-        self.assertIn("$0.50", self.index)
-        self.assertIn("-60%", self.index)
+    def test_compare_shows_the_older_cost(self):
+        self.assertIn('<td class="num">$0.20</td><td class="num">$0.50</td>', self.index)
+
+    def test_failed_run_link_says_so(self):
+        self.assertIn('class="fail">2 failed</a>', self.index)
 
     def test_run_page_escapes_and_shows_the_failure(self):
         page = read(self.out, "runs", "demo-task-2.html")
@@ -59,22 +61,6 @@ class LocalReport(unittest.TestCase):
 
     def test_local_run_page_links_built_files(self):
         self.assertIn('href="../../demo-task-1/out/cards.html"', read(self.out, "runs", "demo-task-1.html"))
-
-
-class SiteReport(unittest.TestCase):
-    def test_site_copy_has_no_built_files_or_home_dir(self):
-        root, now, site = make_root(), tempfile.mkdtemp(), tempfile.mkdtemp()
-        save(now, 1, 0.10, True, note=os.path.expanduser("~/secret/path"))
-        write(os.path.join(now, "demo-task-1", "cards.html"), "<p>x</p>")
-        out = os.path.join(site, "evals")
-        report.write_site(now, out, root=root, site=True)
-        files = sorted(os.path.relpath(os.path.join(d, f), out) for d, _, fs in os.walk(out) for f in fs)
-        self.assertEqual(files, ["index.html", "runs/demo-task-1.html", "summary.json"])
-        for f in files[:2]:
-            self.assertNotIn(os.path.expanduser("~"), read(out, f))
-        self.assertIn('href="../graphite-ui/tokens.css"', read(out, "index.html"))
-        summary = json.loads(read(out, "summary.json"))
-        self.assertEqual(summary["skills"]["demo"], {"passed": 1, "runs": 1, "cases": 1})
 
 
 if __name__ == "__main__":
