@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap">
+  <link rel="stylesheet" href="graphite-ui/tokens.css">
+  <link rel="stylesheet" href="graphite-ui/base.css">
+  <link rel="stylesheet" href="graphite-ui/components.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="graphite-ui/press.js" defer></script>
+</head>
+<body>
+  <main class="content narrow">
+    <div class="page-head">
+      <div class="titles">
+        <h1>Settings</h1>
+        <p>Your profile and how we contact you.</p>
+      </div>
+    </div>
+
+    <form class="card" id="settings" novalidate>
+      <div class="card-body fields">
+        <div class="field">
+          <label for="name">Name</label>
+          <input class="input" id="name" name="name" autocomplete="name" placeholder="Ada Lovelace" aria-describedby="name-error">
+          <span class="error" id="name-error" hidden>Enter your name to save.</span>
+        </div>
+        <label class="check">
+          <input type="checkbox" role="switch" class="switch" name="email_notifications" checked>
+          Email notifications
+        </label>
+      </div>
+      <div class="card-foot">
+        <button class="btn lg primary" type="submit">Save settings</button>
+      </div>
+    </form>
+  </main>
+
+  <div class="toast-region" aria-live="polite"></div>
+
+  <script>
+    const form = document.getElementById('settings');
+    const name = document.getElementById('name');
+    const nameError = document.getElementById('name-error');
+    const toasts = document.querySelector('.toast-region');
+    let toastTimer;
+
+    function toast(text) {
+      clearTimeout(toastTimer);
+      toasts.innerHTML = '';
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.textContent = text;
+      toasts.append(el);
+      toastTimer = setTimeout(() => el.remove(), 3000);
+    }
+
+    name.addEventListener('input', () => {
+      name.removeAttribute('aria-invalid');
+      nameError.hidden = true;
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!name.value.trim()) {
+        name.setAttribute('aria-invalid', 'true');
+        nameError.hidden = false;
+        name.focus();
+        name.classList.add('nudge');
+        name.addEventListener('animationend', () => name.classList.remove('nudge'), { once: true });
+        return;
+      }
+      toast('Settings saved');
+    });
+  </script>
+</body>
+</html>

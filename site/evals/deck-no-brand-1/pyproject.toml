@@ -1,0 +1,9 @@
+[project]
+name = "ledgerline"
+version = "0.9.0"
+description = "Reconcile bank exports against invoices"
+requires-python = ">=3.11"
+dependencies = ["openpyxl>=3.1", "rapidfuzz>=3.9"]
+
+[project.scripts]
+ledgerline = "ledgerline.cli:main"

@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Port Calloway reopens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- crossorigin="anonymous" lets the PNG export read the font CSS. Keep it when swapping families. -->
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;800&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Shipping container and berth plan: corrugated steel strip on top, chart-grid ground, safety-orange accent, stencil-like condensed numbers. */
+:root {
+  --paper: #E4E9EC;
+  --ink: #0F2433;
+  --muted: #4F6170;
+  --rule: #B9C4CC;
+  --accent: #E2571C;
+  --accent-ink: #FFFFFF;
+  --page: #0B1A25;
+  --page-fg: #E4E9EC;
+  --display: "Barlow Condensed", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--page); color: var(--page-fg); font-family: var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+
+/* ---------- gallery page, the collage view ---------- */
+.wrap { max-width: 1160px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
+header.page { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; }
+header.page h1 { font-family: var(--display); font-weight: 800; font-size: 2.2rem; margin: 0; text-wrap: balance; }
+header.page p { margin: 6px 0 0; opacity: .7; max-width: 60ch; line-height: 1.5; }
+button { font: 600 0.95rem var(--body); color: var(--ink); background: var(--paper); border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); color: var(--accent-ink); }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 32px 24px; }
+figure { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.frame { position: relative; overflow: hidden; border-radius: 6px; box-shadow: 0 10px 30px rgb(0 0 0 / .35); }
+.frame .card { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+figcaption { display: flex; justify-content: space-between; align-items: center; gap: 12px; font: 500 0.85rem var(--mono); opacity: .8; }
+
+/* ---------- card shell, 1080x1350, sizes in px at full scale ---------- */
+.card { width: 1080px; height: 1350px; display: flex; flex-direction: column; overflow: hidden;
+  background-color: var(--paper); color: var(--ink); font-family: var(--body);
+  background-image:
+    linear-gradient(to right, rgb(15 36 51 / .06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(15 36 51 / .06) 1px, transparent 1px);
+  background-size: 60px 60px; }
+.card-top { height: 64px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 80px;
+  background: repeating-linear-gradient(90deg, var(--ink) 0 22px, #1B3446 22px 30px);
+  font: 500 20px var(--mono); letter-spacing: .14em; color: var(--paper); text-transform: uppercase; }
+.card-top span { background: var(--ink); padding: 4px 12px; }
+.card-top b { font-weight: 500; background: var(--accent); color: var(--accent-ink); padding: 4px 12px; }
+.card-body { flex: 1; min-height: 0; padding: 72px 80px 56px; display: flex; flex-direction: column; gap: 48px; }
+.card-foot { flex: none; display: flex; justify-content: space-between; padding: 26px 80px;
+  border-top: 2px solid var(--ink); font: 500 20px var(--mono); color: var(--muted); letter-spacing: .04em; background: var(--paper); }
+.card-foot b { color: var(--ink); font-weight: 500; }
+.spacer { flex: 1; }
+
+.eyebrow { font: 500 22px var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--accent); }
+.card h2 { font: 800 104px/0.94 var(--display); letter-spacing: -0.01em; margin: -20px 0 0; text-wrap: balance; text-transform: uppercase; }
+.card h2 em { font-style: normal; color: var(--accent); }
+.lede { font-size: 37px; line-height: 1.4; margin: 0; }
+.small { font-size: 28px; line-height: 1.4; margin: 0; color: var(--muted); }
+.chip { font: 500 0.8em var(--mono); padding: 2px 10px; border-radius: 4px; white-space: nowrap; background: var(--ink); color: var(--paper); }
+.tag { font: 500 21px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+
+/* ---------- components ---------- */
+.stats { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); background: var(--paper); }
+.stat { padding: 40px 40px; display: flex; flex-direction: column; gap: 6px; }
+.stat:nth-child(odd) { border-right: 2px solid var(--ink); }
+.stat:nth-child(-n+2) { border-bottom: 2px solid var(--ink); }
+.stat .n { font: 800 132px/1 var(--display); letter-spacing: -0.01em; }
+.stat .l { font-size: 29px; color: var(--muted); line-height: 1.3; }
+.stat.lead { background: var(--accent); color: var(--accent-ink); }
+.stat.lead .l { color: var(--accent-ink); }
+
+.tl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-top: 2px solid var(--ink); }
+.tl li { display: grid; grid-template-columns: 220px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid var(--rule); }
+.tl .d { font: 500 26px/1.5 var(--mono); color: var(--accent); }
+.tl .t { font-size: 30px; line-height: 1.38; }
+
+.pts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 32px; }
+.pts li { font-size: 34px; line-height: 1.38; padding-left: 44px; position: relative; }
+.pts li::before { content: ""; position: absolute; left: 0; top: 16px; width: 18px; height: 18px; background: var(--accent); }
+.pts li b { font-weight: 600; }
+
+.quote { font: 500 64px/1.08 var(--display); margin: 0; text-wrap: balance; }
+.quote::before { content: "\201C"; color: var(--accent); }
+.quote::after { content: "\201D"; color: var(--accent); }
+.who { font: 500 22px var(--mono); color: var(--muted); margin-top: -24px; letter-spacing: .04em; }
+
+.compare { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); background: var(--paper); }
+.compare.one { grid-template-columns: 1fr; }
+.compare > div { padding: 36px; display: flex; flex-direction: column; gap: 12px; }
+.compare > div + div { border-left: 2px solid var(--ink); }
+.compare h3 { margin: 0; font: 800 54px/1.05 var(--display); text-transform: uppercase; }
+.compare p { margin: 0; font-size: 29px; line-height: 1.38; }
+.compare .big { font: 800 150px/1 var(--display); }
+.compare > div.hi { background: var(--ink); color: var(--paper); }
+.compare > div.hi .tag { color: var(--accent); }
+.compare > div.hi .big { color: var(--accent); }
+
+/* bars drawn as stacked containers */
+.bars { display: flex; align-items: end; gap: 20px; height: 300px; flex: none; }
+.bars div { flex: 1; color: var(--paper); padding: 18px 22px; font: 500 26px/1.3 var(--mono); display: flex; flex-direction: column; justify-content: end;
+  background: repeating-linear-gradient(90deg, var(--ink) 0 18px, #1B3446 18px 24px); }
+.bars div b { font: 800 84px/1 var(--display); }
+.bars div:last-child { background: repeating-linear-gradient(90deg, var(--accent) 0 18px, #C94A14 18px 24px); color: var(--accent-ink); }
+
+/* per-card sizing from the fit check */
+[data-name="02-jobs"] .bars { height: 430px; }
+[data-name="03-berths"] .compare > div { padding: 44px 40px; gap: 20px; }
+[data-name="03-berths"] .compare .big { font-size: 200px; }
+[data-name="03-berths"] .compare h3 { font-size: 64px; }
+[data-name="03-berths"] .compare p { font-size: 34px; }
+[data-name="04-cranes"] .pts li { font-size: 41px; }
+[data-name="04-cranes"] .card-body { gap: 60px; }
+[data-name="04-cranes"] .pts { gap: 40px; }
+[data-name="04-cranes"] .quote { font-size: 84px; }
+[data-name="05-timeline"] .tl li { padding: 30px 0; }
+[data-name="05-timeline"] .tl .t { font-size: 37px; }
+[data-name="05-timeline"] .tl .d { font-size: 30px; }
+[data-name="06-town"] .lede { font-size: 42px; }
+[data-name="06-town"] .quote { font-size: 86px; }
+[data-name="06-town"] .compare p { font-size: 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page">
+    <div>
+      <h1>Port Calloway reopens its rebuilt harbor</h1>
+      <p>Six cards from the Calloway Ledger, 6 March 2026, by Mira Okafor.</p>
+    </div>
+    <button class="primary" id="save-all" type="button">Download all PNGs</button>
+  </header>
+
+  <div class="gallery">
+
+    <figure><div class="frame"><article class="card" data-name="01-cover">
+      <div class="card-top"><span>Port Calloway</span><b>Reopened</b></div>
+      <div class="card-body">
+        <div class="eyebrow">Port Calloway · 4 March 2026</div>
+        <h2>Harbor rebuilt. <em>620 permanent jobs</em> ahead.</h2>
+        <p class="lede">The harbor is open to cargo ships again after 19 months shut for a full rebuild.</p>
+        <div class="stats">
+          <div class="stat lead"><span class="n">620</span><span class="l">permanent jobs at full traffic, up from 410</span></div>
+          <div class="stat"><span class="n">14 m</span><span class="l">draft at every berth, was 9 m</span></div>
+          <div class="stat"><span class="n">3</span><span class="l">berths, up from 2</span></div>
+          <div class="stat"><span class="n">19</span><span class="l">months closed</span></div>
+        </div>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>01 / 06</b></div>
+    </article></div><figcaption><span>01 · Cover</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="02-jobs">
+      <div class="card-top"><span>Port Calloway</span><b>Jobs</b></div>
+      <div class="card-body">
+        <div class="eyebrow">Jobs</div>
+        <h2>From 410 jobs to <em>620</em></h2>
+        <div class="bars">
+          <div style="height:66%"><b>410</b>before the closure</div>
+          <div style="height:100%"><b>620</b>at full traffic</div>
+        </div>
+        <ul class="pts">
+          <li><b>Rebuild peak.</b> 1,850 people worked on the project, most of them from Calloway County.</li>
+          <li><b>The catch.</b> The 620 figure depends on the port reaching full traffic.</li>
+          <li><b>Tracking.</b> The council will publish monthly traffic figures so residents can check.</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>02 / 06</b></div>
+    </article></div><figcaption><span>02 · Jobs</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="03-berths">
+      <div class="card-top"><span>Port Calloway</span><b>Berths</b></div>
+      <div class="card-body">
+        <div class="eyebrow">Draft and berths</div>
+        <h2>Now deep enough for <em>modern container ships</em></h2>
+        <div class="compare">
+          <div><span class="tag">Old harbor, 1971</span><span class="big">9 m</span><h3>2 berths</h3><p>The deepest berth took ships drawing only 9 metres. That kept most modern container ships away.</p></div>
+          <div class="hi"><span class="tag">Rebuilt, 2026</span><span class="big">14 m</span><h3>3 berths</h3><p>Every berth takes ships drawing 14 metres of water.</p></div>
+        </div>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>03 / 06</b></div>
+    </article></div><figcaption><span>03 · Berths</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="04-cranes">
+      <div class="card-top"><span>Port Calloway</span><b>Quay</b></div>
+      <div class="card-body">
+        <div class="eyebrow">Cranes and power</div>
+        <h2>Diesel out, <em>electric in</em></h2>
+        <ul class="pts">
+          <li><b>Cranes.</b> Six electric cranes replace the four diesel cranes on the old quay.</li>
+          <li><b>Emissions.</b> The switch cuts the port's direct emissions by 38 percent.</li>
+          <li><b>Shore power.</b> Ships can plug in at two of three berths instead of running engines to unload.</li>
+        </ul>
+        <p class="quote">The cranes were our biggest single source.</p>
+        <div class="who">Tomas Lindqvist, harbor master</div>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>04 / 06</b></div>
+    </article></div><figcaption><span>04 · Cranes</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="05-timeline">
+      <div class="card-top"><span>Port Calloway</span><b>Schedule</b></div>
+      <div class="card-body">
+        <div class="eyebrow">Build and traffic</div>
+        <h2>Under budget, <em>busier by 2030</em></h2>
+        <ol class="tl">
+          <li><span class="d">2024</span><span class="t">Town council approves the budget.</span></li>
+          <li><span class="d">Nov 2025</span><span class="t">A storm floods the new quay wall. Opening slips six weeks. Rennick Marine pays for the repair.</span></li>
+          <li><span class="d">4 Mar 2026</span><span class="t">Reopens for $412 million, about $38 million under budget.</span></li>
+          <li><span class="d">Year one</span><span class="t">140 cargo ship calls expected.</span></li>
+          <li><span class="d">2030</span><span class="t">300 calls a year expected.</span></li>
+        </ol>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>05 / 06</b></div>
+    </article></div><figcaption><span>05 · Timeline</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="06-town">
+      <div class="card-top"><span>Port Calloway</span><b>Town</b></div>
+      <div class="card-body">
+        <div class="eyebrow">Fishing fleet and town</div>
+        <h2>The fishing fleet <em>gained</em> space</h2>
+        <p class="lede">The fleet moved to its own basin on the north side, with 48 berths. That is eight more than before.</p>
+        <p class="quote">We were braced for losing space, and we gained it.</p>
+        <div class="who">Ana Sorell, Calloway Fishermen's Association</div>
+        <div class="compare one"><div><span class="tag">Mayor Delphine Achebe</span><p>“The most important day for this town's economy in fifty years.”</p></div></div>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>06 / 06</b></div>
+    </article></div><figcaption><span>06 · Town</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<script>
+function fit() {
+  document.querySelectorAll('.frame').forEach(f => {
+    const s = Math.min(1, f.parentElement.clientWidth / 1080);
+    f.style.width = 1080 * s + 'px';
+    f.style.height = 1350 * s + 'px';
+    f.firstElementChild.style.transform = `scale(${s})`;
+  });
+}
+fit();
+addEventListener('resize', fit);
+
+async function save(card) {
+  await document.fonts.ready;
+  const url = await htmlToImage.toPng(card, { width: 1080, height: 1350, pixelRatio: 1, style: { transform: 'none' } });
+  const a = document.createElement('a');
+  a.download = card.dataset.name + '.png';
+  a.href = url;
+  a.click();
+}
+
+async function run(btn, cards) {
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  try {
+    for (const c of cards) await save(c);
+    btn.textContent = 'Saved';
+  } catch (e) {
+    console.error(e);
+    btn.textContent = 'Export failed, take a screenshot';
+  }
+  setTimeout(() => { btn.textContent = label; btn.disabled = false; }, 2500);
+}
+
+document.querySelectorAll('.save').forEach(btn =>
+  btn.addEventListener('click', () => run(btn, [btn.closest('figure').querySelector('.card')])));
+document.getElementById('save-all').addEventListener('click', e =>
+  run(e.currentTarget, [...document.querySelectorAll('.card')]));
+</script>
+</body>
+</html>

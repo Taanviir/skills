@@ -1,0 +1,8 @@
+:root {
+  --brand: #0f766e;
+  --brand-dark: #115e59;
+  --ink: #0b1f1e;
+  --paper: #f4fbfa;
+}
+body { background: var(--paper); color: var(--ink); font-family: system-ui, sans-serif; }
+.berth-chart path { stroke: var(--brand); }

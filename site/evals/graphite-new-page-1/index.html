@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap">
+<link rel="stylesheet" href="graphite-ui/tokens.css">
+<link rel="stylesheet" href="graphite-ui/base.css">
+<link rel="stylesheet" href="graphite-ui/components.css">
+<link rel="stylesheet" href="style.css">
+<script src="graphite-ui/press.js" defer></script>
+</head>
+<body>
+<main class="content">
+  <div class="page-head">
+    <div class="titles">
+      <h1>Settings</h1>
+      <p>Your profile and how we contact you.</p>
+    </div>
+  </div>
+
+  <form class="card" id="settings" novalidate>
+    <div class="card-body fields">
+      <div class="field">
+        <label for="name">Name</label>
+        <input class="input" id="name" name="name" autocomplete="name" placeholder="Jane Doe" aria-describedby="name-error">
+        <span class="error" id="name-error" hidden>Enter your name.</span>
+      </div>
+      <label class="check"><input type="checkbox" role="switch" class="switch" name="email_notifications" checked>Email notifications</label>
+    </div>
+    <div class="card-foot">
+      <button class="btn primary" type="submit">Save settings</button>
+    </div>
+  </form>
+</main>
+
+<div class="toast-region" aria-live="polite"></div>
+
+<script>
+  const form = document.getElementById('settings');
+  const name = document.getElementById('name');
+  const nameError = document.getElementById('name-error');
+  const toastRegion = document.querySelector('.toast-region');
+  let toastTimer;
+
+  function showToast(text) {
+    clearTimeout(toastTimer);
+    toastRegion.innerHTML = '';
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = text;
+    toastRegion.append(toast);
+    toastTimer = setTimeout(() => toast.remove(), 3000);
+  }
+
+  function setNameInvalid(invalid) {
+    if (invalid) name.setAttribute('aria-invalid', 'true');
+    else name.removeAttribute('aria-invalid');
+    nameError.hidden = !invalid;
+  }
+
+  name.addEventListener('input', () => setNameInvalid(false));
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!name.value.trim()) {
+      setNameInvalid(true);
+      name.focus();
+      name.classList.add('nudge');
+      name.addEventListener('animationend', () => name.classList.remove('nudge'), { once: true });
+      return;
+    }
+    showToast('Settings saved');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Port Calloway's rebuilt harbor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;800&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Nautical chart: chart-paper ground with a faint lat/long grid, a graduated chart-border strip on top, magenta for nav marks, and the draft card drawn as depth soundings. */
+:root {
+  --paper: #EDEFE6;
+  --ink: #13283D;
+  --muted: #4F6072;
+  --rule: #BCC6C9;
+  --accent: #B0196E;
+  --accent-ink: #FFFFFF;
+  --water: #CFE0E6;
+  --page: #0E1F2F;
+  --page-fg: #E6ECEF;
+  --display: "Big Shoulders Display", system-ui, sans-serif;
+  --body: "Source Sans 3", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--page); color: var(--page-fg); font-family: var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+
+.wrap { max-width: 1160px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
+header.page { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; }
+header.page h1 { font-family: var(--display); font-weight: 800; font-size: 2.6rem; margin: 0; text-wrap: balance; }
+header.page p { margin: 6px 0 0; opacity: .7; max-width: 60ch; line-height: 1.5; }
+button { font: 600 0.95rem var(--body); color: var(--ink); background: var(--paper); border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); color: var(--accent-ink); }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 32px 24px; }
+figure { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.frame { position: relative; overflow: hidden; border-radius: 6px; box-shadow: 0 10px 30px rgb(0 0 0 / .35); }
+.frame .card { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+figcaption { display: flex; justify-content: space-between; align-items: center; gap: 12px; font: 500 0.85rem var(--mono); opacity: .8; }
+
+.card { width: 1080px; height: 1350px; display: flex; flex-direction: column; overflow: hidden;
+  background-color: var(--paper); color: var(--ink); font-family: var(--body);
+  background-image:
+    linear-gradient(to right, rgb(19 40 61 / .055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(19 40 61 / .055) 1px, transparent 1px);
+  background-size: 120px 120px; background-position: 79px 0; }
+.card-top { height: 44px; flex: none; background:
+  repeating-linear-gradient(to right, var(--ink) 0 60px, var(--paper) 60px 120px) top / 100% 16px no-repeat,
+  repeating-linear-gradient(to right, var(--ink) 0 2px, transparent 2px 12px) 0 16px / 100% 14px no-repeat;
+  border-bottom: 2px solid var(--ink); }
+.card-body { flex: 1; min-height: 0; padding: 72px 80px 56px; display: flex; flex-direction: column; gap: 48px; }
+.card-foot { flex: none; display: flex; justify-content: space-between; padding: 26px 80px;
+  border-top: 2px solid var(--ink); font: 500 20px var(--mono); color: var(--muted); letter-spacing: .04em; }
+.card-foot b { color: var(--ink); font-weight: 500; }
+.spacer { flex: 1; }
+
+.eyebrow { font: 500 22px var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--accent); }
+.card h2 { font: 800 104px/0.92 var(--display); letter-spacing: -0.01em; margin: -20px 0 0; text-wrap: balance; text-transform: uppercase; }
+.card h2 em { font-style: normal; color: var(--accent); }
+.lede { font-size: 37px; line-height: 1.4; margin: 0; }
+.small { font-size: 28px; line-height: 1.4; margin: 0; color: var(--muted); }
+.chip { font: 500 0.8em var(--mono); padding: 2px 10px; border-radius: 4px; white-space: nowrap; background: var(--ink); color: var(--paper); }
+.tag { font: 500 21px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+
+.stats { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); background: var(--paper); }
+.stat { padding: 40px 40px; display: flex; flex-direction: column; gap: 6px; }
+.stat:nth-child(odd) { border-right: 2px solid var(--ink); }
+.stat:nth-child(-n+2) { border-bottom: 2px solid var(--ink); }
+.stat .n { font: 800 132px/1 var(--display); letter-spacing: -0.01em; }
+.stat .l { font-size: 29px; color: var(--muted); line-height: 1.3; }
+
+.tl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-top: 2px solid var(--ink); }
+.tl li { display: grid; grid-template-columns: 220px 1fr; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--rule); }
+.tl .d { font: 500 26px/1.5 var(--mono); color: var(--accent); }
+.tl .t { font-size: 33px; line-height: 1.38; }
+
+.pts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 32px; }
+.pts li { font-size: 40px; line-height: 1.38; padding-left: 48px; position: relative; }
+.pts li::before { content: ""; position: absolute; left: 0; top: 14px; width: 22px; height: 22px; border: 4px solid var(--accent); border-radius: 50%; }
+.pts li b { font-weight: 600; }
+
+.quote { font: 500 80px/1.02 var(--display); margin: 0; text-wrap: balance; }
+.quote::before { content: "\201C"; color: var(--accent); }
+.quote::after { content: "\201D"; color: var(--accent); }
+.who { font: 500 22px var(--mono); color: var(--muted); margin-top: -24px; letter-spacing: .04em; }
+
+.compare { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); background: var(--paper); }
+.compare.one { grid-template-columns: 1fr; border-left: 10px solid var(--accent); }
+.compare > div { padding: 36px; display: flex; flex-direction: column; gap: 12px; }
+.compare > div + div { border-left: 2px solid var(--ink); }
+.compare h3 { margin: 0; font: 800 58px/1 var(--display); text-transform: uppercase; }
+.compare p { margin: 0; font-size: 31px; line-height: 1.38; }
+
+.bars { display: flex; align-items: end; gap: 18px; height: 560px; flex: none; border-bottom: 2px solid var(--ink); }
+.bars div { flex: 1; background: var(--ink); color: var(--paper); border-radius: 4px 4px 0 0; padding: 18px 20px; display: flex; flex-direction: column; justify-content: start; gap: 4px; }
+.bars div b { font: 800 64px/1 var(--display); }
+.bars div span { font: 500 21px/1.3 var(--mono); }
+.bars div:last-child { background: var(--accent); color: var(--accent-ink); }
+
+/* depth soundings: water line at top, berths drawn downward to scale (1 m = 30px) */
+.depth { position: relative; height: 470px; flex: none; display: flex; gap: 40px; padding-left: 110px;
+  background: linear-gradient(var(--water), rgb(207 224 230 / .35)); border-top: 4px solid var(--ink); }
+.depth .scale { position: absolute; left: 0; top: 0; width: 90px; height: 100%;
+  background: repeating-linear-gradient(to bottom, var(--ink) 0 2px, transparent 2px 30px) right / 22px 100% no-repeat;
+  font: 500 20px var(--mono); color: var(--muted); }
+.depth .scale span { position: absolute; left: 6px; transform: translateY(-50%); }
+.depth .col { flex: 1; display: flex; flex-direction: column; }
+.depth .bar { border-radius: 0 0 6px 6px; padding: 20px 26px; display: flex; flex-direction: column; justify-content: end; gap: 4px; color: var(--paper); }
+.depth .bar b { font: 800 88px/1 var(--display); }
+.depth .bar span { font: 500 22px/1.3 var(--mono); }
+.depth .old { background: var(--muted); height: 270px; }
+.depth .new { background: var(--accent); height: 420px; }
+
+.berths { display: flex; gap: 10px; flex-wrap: wrap; }
+.berths i { width: 66px; height: 54px; border: 3px solid var(--ink); border-top: 0; }
+.berths i.add { background: var(--accent); border-color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page">
+    <div>
+      <h1>Port Calloway's rebuilt harbor</h1>
+      <p>Seven cards on the Calloway Ledger's report of 6 March 2026, by Mira Okafor.</p>
+    </div>
+    <button class="primary" id="save-all" type="button">Download all PNGs</button>
+  </header>
+
+  <div class="gallery">
+
+    <figure><div class="frame"><article class="card" data-name="01-cover">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="eyebrow">Port Calloway · Harbor rebuild</div>
+        <h2>The harbor is back. <em>Bigger and under budget.</em></h2>
+        <p class="lede">Port Calloway reopened its harbor to cargo ships on 4 March 2026, after a full rebuild.</p>
+        <div class="stats">
+          <div class="stat"><span class="n">19</span><span class="l">months closed for the rebuild</span></div>
+          <div class="stat"><span class="n">$412M</span><span class="l">final cost of the project</span></div>
+          <div class="stat"><span class="n">$38M</span><span class="l">under the budget approved in 2024</span></div>
+          <div class="stat"><span class="n">3</span><span class="l">berths, all deep enough for 14&nbsp;m ships</span></div>
+        </div>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>01 / 07</b></div>
+    </article></div><figcaption><span>01 · Cover</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="02-deeper-berths">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="eyebrow">Berths · Draft</div>
+        <h2>Deep enough for <em>modern ships</em></h2>
+        <p class="lede">The old harbor had two berths, both built in 1971. The deepest took ships drawing only 9 metres, which kept most modern container ships away.</p>
+        <div class="depth">
+          <div class="scale"><span style="top:14px">0 m</span><span style="top:150px">5 m</span><span style="top:300px">10 m</span><span style="top:450px">15 m</span></div>
+          <div class="col"><div class="bar old"><b>9 m</b><span>Old deepest berth · 1971</span></div></div>
+          <div class="col"><div class="bar new"><b>14 m</b><span>Each of the 3 new berths</span></div></div>
+        </div>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>02 / 07</b></div>
+    </article></div><figcaption><span>02 · Deeper berths</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="03-cleaner-quay">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="eyebrow">Cranes · Emissions</div>
+        <h2>Direct emissions <em>down 38%</em></h2>
+        <p class="lede">Swapping diesel cranes for electric ones cuts the port's direct emissions by 38 percent, the harbor master says.</p>
+        <div class="compare">
+          <div><span class="tag">Old quay</span><h3>4 diesel cranes</h3><p>Ships ran their engines while they unloaded.</p></div>
+          <div><span class="tag">New quay</span><h3>6 electric cranes</h3><p>Shore power at 2 of the 3 berths, so ships can plug in.</p></div>
+        </div>
+        <div class="spacer"></div>
+        <p class="quote">The cranes were our biggest single source.</p>
+        <div class="who">Tomas Lindqvist, harbor master</div>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>03 / 07</b></div>
+    </article></div><figcaption><span>03 · Cleaner quay</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="04-jobs">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="eyebrow">Jobs · Calloway County</div>
+        <h2>More work, <em>for good</em></h2>
+        <p class="lede">At its peak the rebuild employed 1,850 people, most of them from Calloway County. Once the harbor reaches full traffic, the town expects 620 permanent jobs.</p>
+        <div class="spacer"></div>
+        <div class="bars">
+          <div style="height:46%"><b>410</b><span>Permanent jobs before the closure</span></div>
+          <div style="height:70%"><b>620</b><span>Permanent jobs at full traffic</span></div>
+        </div>
+        <p class="small">That is 210 more permanent jobs than before.</p>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>04 / 07</b></div>
+    </article></div><figcaption><span>04 · Jobs</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="05-storm">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="eyebrow">Setback · Construction</div>
+        <h2>A storm cost <em>six weeks</em>, not money</h2>
+        <ol class="tl">
+          <li><span class="d">2024</span><span class="t">Town council approves the budget.</span></li>
+          <li><span class="d">Nov 2025</span><span class="t">A storm floods the new quay wall during construction.</span></li>
+          <li><span class="d">+6 weeks</span><span class="t">The opening is pushed back.</span></li>
+          <li><span class="d">4 Mar 2026</span><span class="t">The harbor reopens to cargo ships.</span></li>
+        </ol>
+        <div class="compare one">
+          <div><span class="tag">Who paid for the repair</span><h3>Rennick Marine</h3><p>The contractor covered the repair under its contract, so the delay did not raise the price for the town.</p></div>
+        </div>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>05 / 07</b></div>
+    </article></div><figcaption><span>05 · Storm setback</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="06-fishing-fleet">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="eyebrow">Fishing fleet · North basin</div>
+        <h2>The fishers <em>gained space</em></h2>
+        <p class="lede">Fishing crews worried the rebuild would squeeze them out. Instead, the fleet moved to its own basin on the north side, with 48 berths. That is eight more than before.</p>
+        <div class="berths" aria-label="48 berths, 8 of them new">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i><i class="add"></i><i class="add"></i><i class="add"></i><i class="add"></i><i class="add"></i><i class="add"></i><i class="add"></i><i class="add"></i>
+        </div>
+        <div class="spacer"></div>
+        <p class="quote">We were braced for losing space, and we gained it.</p>
+        <div class="who">Ana Sorell, chair, Calloway Fishermen's Association</div>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>06 / 07</b></div>
+    </article></div><figcaption><span>06 · Fishing fleet</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="07-what-next">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="eyebrow">Traffic · What comes next</div>
+        <h2>Now the town has to <em>prove it</em></h2>
+        <ul class="pts">
+          <li><b>140 ship calls.</b> That is how many cargo ships the port expects in its first year.</li>
+          <li><b>300 a year by 2030.</b> Traffic is expected to more than double.</li>
+          <li><b>Monthly figures.</b> The council will publish traffic numbers so residents can check whether the forecasts hold.</li>
+        </ul>
+        <div class="spacer"></div>
+        <p class="quote">The most important day for this town's economy in fifty years</p>
+        <div class="who">Mayor Delphine Achebe</div>
+      </div>
+      <div class="card-foot"><span>Source: Calloway Ledger, 6 Mar 2026</span><b>07 / 07</b></div>
+    </article></div><figcaption><span>07 · What comes next</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<script>
+function fit() {
+  document.querySelectorAll('.frame').forEach(f => {
+    const s = Math.min(1, f.parentElement.clientWidth / 1080);
+    f.style.width = 1080 * s + 'px';
+    f.style.height = 1350 * s + 'px';
+    f.firstElementChild.style.transform = `scale(${s})`;
+  });
+}
+fit();
+addEventListener('resize', fit);
+
+async function save(card) {
+  await document.fonts.ready;
+  const url = await htmlToImage.toPng(card, { width: 1080, height: 1350, pixelRatio: 1, style: { transform: 'none' } });
+  const a = document.createElement('a');
+  a.download = card.dataset.name + '.png';
+  a.href = url;
+  a.click();
+}
+
+async function run(btn, cards) {
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  try {
+    for (const c of cards) await save(c);
+    btn.textContent = 'Saved';
+  } catch (e) {
+    console.error(e);
+    btn.textContent = 'Export failed, take a screenshot';
+  }
+  setTimeout(() => { btn.textContent = label; btn.disabled = false; }, 2500);
+}
+
+document.querySelectorAll('.save').forEach(btn =>
+  btn.addEventListener('click', () => run(btn, [btn.closest('figure').querySelector('.card')])));
+document.getElementById('save-all').addEventListener('click', e =>
+  run(e.currentTarget, [...document.querySelectorAll('.card')]));
+</script>
+</body>
+</html>

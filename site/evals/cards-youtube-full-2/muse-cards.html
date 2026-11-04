@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Meta built Muse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* The eval spreadsheet: column letters in the top strip, a faint cell grid ground, pass/fail cells. */
+:root {
+  --paper: #F7F9F7;
+  --ink: #14241A;
+  --muted: #53665A;
+  --rule: #C9D5CC;
+  --accent: #107C41;
+  --accent-ink: #FFFFFF;
+  --fail: #C4314B;
+  --page: #0F1D15;
+  --page-fg: #E5EEE8;
+  --display: "Archivo", system-ui, sans-serif;
+  --body: "Source Sans 3", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--page); color: var(--page-fg); font-family: var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+
+.wrap { max-width: 1160px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
+header.page { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; }
+header.page h1 { font-family: var(--display); font-weight: 800; font-size: 2.2rem; margin: 0; text-wrap: balance; }
+header.page p { margin: 6px 0 0; opacity: .7; max-width: 60ch; line-height: 1.5; }
+button { font: 600 0.95rem var(--body); color: var(--ink); background: var(--paper); border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); color: var(--accent-ink); }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 32px 24px; }
+figure { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.frame { position: relative; overflow: hidden; border-radius: 6px; box-shadow: 0 10px 30px rgb(0 0 0 / .35); }
+.frame .card { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+figcaption { display: flex; justify-content: space-between; align-items: center; gap: 12px; font: 500 0.85rem var(--mono); opacity: .8; }
+
+.card { width: 1080px; height: 1350px; display: flex; flex-direction: column; overflow: hidden;
+  background-color: var(--paper); color: var(--ink); font-family: var(--body);
+  background-image:
+    linear-gradient(to right, #E6ECE7 1px, transparent 1px),
+    linear-gradient(to bottom, #E6ECE7 1px, transparent 1px);
+  background-size: 135px 45px; background-position: 0 44px; }
+.card-top { height: 44px; flex: none; background: #E3EAE5; display: grid; grid-template-columns: 56px repeat(8, 1fr);
+  border-bottom: 2px solid var(--ink); font: 500 18px/42px var(--mono); color: var(--muted); text-align: center; }
+.card-top span { border-right: 1px solid var(--rule); }
+.card-top span:first-child { background: var(--ink); }
+.card-top span.on { background: var(--accent); color: var(--accent-ink); }
+.card-body { flex: 1; min-height: 0; padding: 72px 80px 56px; display: flex; flex-direction: column; gap: 48px; }
+.card-foot { flex: none; display: flex; justify-content: space-between; padding: 26px 80px;
+  border-top: 2px solid var(--ink); font: 500 20px var(--mono); color: var(--muted); letter-spacing: .04em; background: var(--paper); }
+.card-foot b { color: var(--ink); font-weight: 500; }
+.spacer { flex: 1; }
+
+.eyebrow { font: 500 22px var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--accent); }
+.card h2 { font: 800 84px/0.98 var(--display); letter-spacing: -0.025em; margin: -20px 0 0; text-wrap: balance; }
+.card h2 em { font-style: normal; color: var(--accent); }
+.lede { font-size: 37px; line-height: 1.4; margin: 0; }
+.small { font-size: 28px; line-height: 1.4; margin: 0; color: var(--muted); }
+.chip { font: 500 0.8em var(--mono); padding: 2px 10px; border-radius: 4px; white-space: nowrap; background: var(--ink); color: var(--paper); }
+.tag { font: 500 21px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+
+.stats { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); background: var(--paper); }
+.stat { padding: 52px 44px; display: flex; flex-direction: column; gap: 6px; }
+.stat:nth-child(odd) { border-right: 2px solid var(--ink); }
+.stat:nth-child(-n+2) { border-bottom: 2px solid var(--ink); }
+.stat .n { font: 800 140px/1 var(--display); letter-spacing: -0.03em; }
+.stat:first-child .n { color: var(--accent); }
+.stat .l { font-size: 29px; color: var(--muted); line-height: 1.3; }
+
+.tl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-top: 2px solid var(--ink); background: var(--paper); }
+.tl li { display: grid; grid-template-columns: 220px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid var(--rule); }
+.tl .d { font: 500 26px/1.5 var(--mono); color: var(--accent); }
+.tl .t { font-size: 30px; line-height: 1.38; }
+
+.pts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 32px; }
+.pts li { font-size: 34px; line-height: 1.38; padding-left: 44px; position: relative; }
+.pts li::before { content: ""; position: absolute; left: 0; top: 16px; width: 18px; height: 18px; background: var(--accent); }
+.pts li b { font-weight: 600; }
+
+.quote { font: 500 60px/1.1 var(--display); letter-spacing: -0.015em; margin: 0; text-wrap: balance; }
+.quote::before { content: "\201C"; color: var(--accent); }
+.quote::after { content: "\201D"; color: var(--accent); }
+.who { font: 500 22px var(--mono); color: var(--muted); margin-top: -24px; letter-spacing: .04em; }
+
+.compare { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); background: var(--paper); }
+.compare > div { padding: 36px; display: flex; flex-direction: column; gap: 12px; }
+.compare > div + div { border-left: 2px solid var(--ink); }
+.compare > div.win { background: var(--accent); color: var(--accent-ink); }
+.compare > div.win .tag { color: #CDEBD9; }
+.compare h3 { margin: 0; font: 800 46px/1.05 var(--display); }
+.compare p { margin: 0; font-size: 29px; line-height: 1.38; }
+
+.bars { display: flex; align-items: end; gap: 14px; height: 260px; flex: none; }
+.bars div { flex: 1; background: var(--ink); color: var(--paper); border-radius: 4px 4px 0 0; padding: 16px 18px; font: 500 22px/1.3 var(--mono); display: flex; align-items: end; }
+.bars div:last-child { background: var(--accent); color: var(--accent-ink); }
+
+/* pass/fail eval sheet */
+.sheet { border: 2px solid var(--ink); background: var(--paper); display: flex; flex-direction: column; }
+.sheet .row { display: grid; grid-template-columns: 300px 1fr; border-bottom: 1px solid var(--rule); }
+.sheet .row:last-child { border-bottom: 0; }
+.sheet .name { padding: 22px 24px; font: 500 24px/1.3 var(--mono); border-right: 2px solid var(--ink); display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.sheet .name small { font-size: 19px; color: var(--muted); }
+.sheet .cells { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; padding: 18px; }
+.sheet .cells i { height: 34px; border-radius: 2px; background: var(--accent); }
+.sheet .cells i.f { background: var(--fail); }
+.sheet .verdict { grid-column: 1 / -1; padding: 14px 24px; font: 500 22px var(--mono); background: #EDF2EE; border-top: 1px solid var(--rule); }
+.sheet .verdict.bad { color: var(--fail); }
+.sheet .verdict.good { color: var(--accent); }
+
+/* per-card sizing */
+.big .pts li { font-size: 38px; }
+.big .quote { font-size: 70px; }
+.big .tl li { padding: 30px 0; }
+.big .tl .t { font-size: 35px; }
+.big .compare h3 { font-size: 58px; }
+.big .compare p { font-size: 34px; }
+.big .compare > div { padding: 44px 40px; gap: 18px; }
+.big .bars { height: 360px; }
+.big .bars div { font-size: 26px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page">
+    <div>
+      <h1>How Meta built Muse</h1>
+      <p>8 cards from Alexandr Wang's interview on building Muse at Meta Superintelligence Labs (YouTube, Oct 2026).</p>
+    </div>
+    <button class="primary" id="save-all" type="button">Download all PNGs</button>
+  </header>
+
+  <div class="gallery">
+
+    <figure><div class="frame"><article class="card" data-name="01-cover">
+      <div class="card-top" data-col="1"></div>
+      <div class="card-body">
+        <div class="eyebrow">Alexandr Wang · Meta Superintelligence Labs</div>
+        <h2>How Meta built <em>Muse</em></h2>
+        <p class="lede">A rough agent prototype in February. A polished launch seven months later. Here is what happened in between.</p>
+        <div class="stats">
+          <div class="stat"><span class="n">1–2</span><span class="l">weeks to build the first prototype and demo it to the board</span></div>
+          <div class="stat"><span class="n">7</span><span class="l">months from prototype to launch</span></div>
+          <div class="stat"><span class="n">100+</span><span class="l">agent behaviours, each with its own eval</span></div>
+          <div class="stat"><span class="n">&lt;200</span><span class="l">people across model and product</span></div>
+        </div>
+      </div>
+      <div class="card-foot"><span>Source: Alexandr Wang interview, YouTube · Oct 2026</span><b>01 / 08</b></div>
+    </article></div><figcaption><span>01 · Cover</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card big" data-name="02-memo">
+      <div class="card-top" data-col="2"></div>
+      <div class="card-body">
+        <div class="eyebrow">June 2025 · The mission</div>
+        <h2>It started with a <em>memo</em>, not a model</h2>
+        <p class="quote">How do we build powerful AI that actually makes all of our lives better?</p>
+        <div class="who">Alexandr Wang, on the "Personal Super Intelligence" memo</div>
+        <ul class="pts">
+          <li><b>Who wrote it.</b> Mark Zuckerberg, working closely with Wang, Nat Friedman and others.</li>
+          <li><b>When.</b> Summer 2025, before agents had happened in any meaningful way.</li>
+          <li><b>Then the slow part.</b> A frontier model takes many months: data sets, pre-training, post-training.</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>Source: Alexandr Wang interview, YouTube · Oct 2026</span><b>02 / 08</b></div>
+    </article></div><figcaption><span>02 · The memo</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="03-spark">
+      <div class="card-top" data-col="3"></div>
+      <div class="card-body">
+        <div class="eyebrow">Early 2026 · The spark</div>
+        <h2>An open-source agent lit the <em>fuse</em></h2>
+        <p class="lede">Opus 4.5 and OpenClaw showed what agents could be. Nat Friedman was the first at MSL to go all in.</p>
+        <ul class="pts">
+          <li><b>The water test.</b> Friedman told his agent he wanted to drink more water. It watched him on security footage and told him "good job".</li>
+          <li><b>The therapy prompt.</b> Wang's first session was a deep psychoanalysis. He called it "maybe the equivalent of like 3 years of therapy".</li>
+        </ul>
+        <div class="spacer"></div>
+        <p class="quote">Somewhere between terrifying and euphoric.</p>
+        <div class="who">Wang, on Friedman's first weeks with OpenClaw</div>
+      </div>
+      <div class="card-foot"><span>Source: Alexandr Wang interview, YouTube · Oct 2026</span><b>03 / 08</b></div>
+    </article></div><figcaption><span>03 · The spark</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card big" data-name="04-timeline">
+      <div class="card-top" data-col="4"></div>
+      <div class="card-body">
+        <div class="eyebrow">Feb → Sep 2026</div>
+        <h2>A prototype in 2 weeks. A product in <em>7 months</em>.</h2>
+        <ol class="tl">
+          <li><span class="d">Feb 2026</span><span class="t">Wang's memo calls the super agent "the final consumer product". Friedman writes "The Claw is the Law" and "Trust is a Must".</span></li>
+          <li><span class="d">Feb 2026</span><span class="t">A prototype is built in 1–2 weeks and demoed to the board. The Jolly mascot and an early Muse Charm are already in it.</span></li>
+          <li><span class="d">Feb–Sep</span><span class="t">The hard part. A prototype that "most of the time didn't work" becomes a reliable consumer product.</span></li>
+          <li><span class="d">Sep 2026</span><span class="t">Launch. "Seven months in AI time, which maybe like a decade."</span></li>
+        </ol>
+      </div>
+      <div class="card-foot"><span>Source: Alexandr Wang interview, YouTube · Oct 2026</span><b>04 / 08</b></div>
+    </article></div><figcaption><span>04 · Timeline</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card big" data-name="05-bet">
+      <div class="card-top" data-col="5"></div>
+      <div class="card-body">
+        <div class="eyebrow">The bet</div>
+        <h2>Everyone chased coding. Meta went <em>personal</em>.</h2>
+        <div class="compare">
+          <div><span class="tag">Industry, early 2026</span><h3>Coding agents</h3><p>The conventional wisdom: coding agents were the only form factor that mattered. Anthropic had a clear lead.</p></div>
+          <div class="win"><span class="tag">Meta</span><h3>Personal agents</h3><p>Meta's apps hold the things people want to do. 3.5 billion people use them every day.</p></div>
+        </div>
+        <p class="lede">Wang's pitch to Zuckerberg: AI takes over the things we <i>have</i> to do, so we spend our time on the things we <i>want</i> to do. That is Meta's turf.</p>
+      </div>
+      <div class="card-foot"><span>Source: Alexandr Wang interview, YouTube · Oct 2026</span><b>05 / 08</b></div>
+    </article></div><figcaption><span>05 · The bet</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card" data-name="06-evals">
+      <div class="card-top" data-col="6"></div>
+      <div class="card-body">
+        <div class="eyebrow">How they knew it was ready</div>
+        <h2>A spreadsheet with <em>100+ rows</em></h2>
+        <p class="lede">Every behaviour a personal agent needs got a row, an eval and a launch-blocking threshold. Reviews hunted down the red rows.</p>
+        <div class="sheet">
+          <div class="row">
+            <div class="name">Earlier checkpoints<small>many of them</small></div>
+            <div class="cells"><i></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="verdict bad">80% green · 20% red → "not good enough"</div>
+          </div>
+          <div class="row">
+            <div class="name">Muse Spark 1.3<small>specially trained</small></div>
+            <div class="cells"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="verdict good">Green across the board → ship</div>
+          </div>
+        </div>
+        <p class="small">Then the experiential check: the team tried it and could tell it was better than anything before.</p>
+      </div>
+      <div class="card-foot"><span>Source: Alexandr Wang interview, YouTube · Oct 2026</span><b>06 / 08</b></div>
+    </article></div><figcaption><span>06 · The evals</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card big" data-name="07-team">
+      <div class="card-top" data-col="7"></div>
+      <div class="card-body">
+        <div class="eyebrow">The team</div>
+        <h2>Under 200 people. <em>One</em> point of view.</h2>
+        <p class="lede">Meta's leaders knew Muse would be one of its biggest launches of the year. They kept the team small anyway.</p>
+        <div class="compare">
+          <div><span class="tag">Big-company default</span><h3>PM smoothie</h3><p>Every PM jams their own idea into the product. Users can feel it.</p></div>
+          <div class="win"><span class="tag">Muse</span><h3>One vision</h3><p>A small, focused team. Nat Friedman's taste shaped what the product became.</p></div>
+        </div>
+        <div class="spacer"></div>
+        <p class="quote">We knew it was a single work of art.</p>
+        <div class="who">Alexandr Wang</div>
+      </div>
+      <div class="card-foot"><span>Source: Alexandr Wang interview, YouTube · Oct 2026</span><b>07 / 08</b></div>
+    </article></div><figcaption><span>07 · The team</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+    <figure><div class="frame"><article class="card big" data-name="08-growth">
+      <div class="card-top" data-col="8"></div>
+      <div class="card-body">
+        <div class="eyebrow">After launch</div>
+        <h2>Growth is a <em>trust fall</em></h2>
+        <p class="lede">Users give the agent a small task, then a bigger one. Each success earns the next.</p>
+        <div class="bars">
+          <div style="height:35%">a little thing</div>
+          <div style="height:58%">a bit more</div>
+          <div style="height:80%">a bigger problem</div>
+          <div style="height:100%">bigger and bigger</div>
+        </div>
+        <ul class="pts">
+          <li><b>Jolly in every screenshot.</b> "It has to work on the screenshot." The mascot marks it as Muse.</li>
+          <li><b>Memes from the top.</b> Wang wrote every post himself. Users: "millions".</li>
+        </ul>
+      </div>
+      <div class="card-foot"><span>Source: Alexandr Wang interview, YouTube · Oct 2026</span><b>08 / 08</b></div>
+    </article></div><figcaption><span>08 · Growth</span><button type="button" class="save">Save PNG</button></figcaption></figure>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<script>
+document.querySelectorAll('.card-top').forEach(top => {
+  const on = +top.dataset.col;
+  top.innerHTML = '<span></span>' + 'ABCDEFGH'.split('').map((l, i) =>
+    `<span${i + 1 === on ? ' class="on"' : ''}>${l}</span>`).join('');
+});
+
+function fit() {
+  document.querySelectorAll('.frame').forEach(f => {
+    const s = Math.min(1, f.parentElement.clientWidth / 1080);
+    f.style.width = 1080 * s + 'px';
+    f.style.height = 1350 * s + 'px';
+    f.firstElementChild.style.transform = `scale(${s})`;
+  });
+}
+fit();
+addEventListener('resize', fit);
+
+async function save(card) {
+  await document.fonts.ready;
+  const url = await htmlToImage.toPng(card, { width: 1080, height: 1350, pixelRatio: 1, style: { transform: 'none' } });
+  const a = document.createElement('a');
+  a.download = card.dataset.name + '.png';
+  a.href = url;
+  a.click();
+}
+
+async function run(btn, cards) {
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  try {
+    for (const c of cards) await save(c);
+    btn.textContent = 'Saved';
+  } catch (e) {
+    console.error(e);
+    btn.textContent = 'Export failed, take a screenshot';
+  }
+  setTimeout(() => { btn.textContent = label; btn.disabled = false; }, 2500);
+}
+
+document.querySelectorAll('.save').forEach(btn =>
+  btn.addEventListener('click', () => run(btn, [btn.closest('figure').querySelector('.card')])));
+document.getElementById('save-all').addEventListener('click', e =>
+  run(e.currentTarget, [...document.querySelectorAll('.card')]));
+</script>
+</body>
+</html>
