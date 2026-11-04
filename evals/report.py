@@ -1,55 +1,65 @@
-"""Turn an eval results folder into one HTML page.
+"""Turn an eval results folder into a small HTML site styled with Graphite UI.
 
 Usage: python3 -I evals/report.py [results-dir] [--compare older-results-dir] [--out site-dir]
 
-Writes <results-dir>/report.html and prints its path. With no results-dir it uses the newest run.
---out writes a publishable copy instead: <site-dir>/index.html, summary.json and each run's built files,
-with the home directory shown as ~. The site dir is replaced.
+Writes <results-dir>/report/index.html plus one page per run, and prints the index path.
+With no results-dir it uses the newest run.
+--out writes the copy the GitHub Pages site serves instead: the same pages and a summary.json,
+with no built files and the home directory shown as ~. The site dir is replaced.
 """
 import argparse
 import glob
 import html
 import json
+import re
 import os
 import shutil
 import statistics
 import sys
+from urllib.parse import quote
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import tokens  # noqa: E402
 
+GRAPHITE = os.path.join(tokens.ROOT, "skills", "graphite-ui", "assets")
+GITHUB = "https://github.com/Taanviir/skills"
+
 CSS = """
-:root { color-scheme: light dark;
-  --page: light-dark(#f7f7f8, #111214); --surface: light-dark(#fff, #1a1b1e); --ring: light-dark(#e4e4e7, #2c2d31);
-  --fg: light-dark(#18181b, #ececee); --muted: light-dark(#5f5f68, #a1a1aa);
-  --pass: light-dark(#15803d, #4ade80); --pass-bg: light-dark(#dcfce7, #10291a);
-  --fail: light-dark(#b91c1c, #f87171); --fail-bg: light-dark(#fee2e2, #2d1515); }
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--page); color: var(--fg); font: 14px/1.5 system-ui, sans-serif; }
-main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
-h1 { font-size: 20px; margin: 0 0 4px; } h2 { font-size: 15px; margin: 32px 0 8px; }
-.muted { color: var(--muted); } .nums { font-variant-numeric: tabular-nums; }
-.box { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; }
-th, td { text-align: start; padding: 8px 12px; border-bottom: 1px solid var(--ring); vertical-align: top; }
-tr:last-child td { border-bottom: 0; } th { font-weight: 500; color: var(--muted); }
-.cells { display: flex; gap: 6px; flex-wrap: wrap; }
-.cell { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; text-decoration: none; }
-.cell.pass { background: var(--pass-bg); color: var(--pass); } .cell.fail { background: var(--fail-bg); color: var(--fail); }
-details.run { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; margin: 8px 0; }
-details.run > summary { padding: 10px 14px; cursor: pointer; display: flex; gap: 12px; align-items: center; }
-details.run > div { padding: 0 14px 14px; }
-.turn { border-top: 1px solid var(--ring); padding-top: 10px; margin-top: 10px; }
-.prompt { font-weight: 500; } pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 6px 0; font: 13px/1.5 ui-monospace, monospace; }
-.reply { max-height: 320px; overflow-y: auto; background: var(--page); border-radius: 8px; padding: 8px 10px; }
-.tools { color: var(--muted); font-size: 12px; }
-ul.graders { margin: 6px 0; padding-inline-start: 18px; } .x { color: var(--fail); } .ok { color: var(--pass); }
-.delta-up { color: var(--fail); } .delta-down { color: var(--pass); }
+.brand { font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
+.topbar { padding: 0; }
+.topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: 0 var(--gr-space-6); }
+.topbar nav { display: flex; gap: var(--gr-space-1); overflow-x: auto; }
+.runs { display: flex; flex-wrap: wrap; gap: var(--gr-space-1-5); }
+.runs a { text-decoration: none; }
+.turn { display: grid; gap: var(--gr-space-3); }
+.bubble { justify-self: end; max-width: 80%; padding: var(--gr-space-3) var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-accent-bg-subtle); }
+.text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.reply { max-height: 480px; overflow-y: auto; }
+.tools { display: grid; gap: var(--gr-space-1); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
+.tools code { overflow-wrap: anywhere; }
+.tools-foot { display: block; }
+details > summary { cursor: pointer; }
+pre.report { margin: 0; overflow-x: auto; font-size: var(--gr-text-label); line-height: 1.5; }
+.up { color: var(--gr-danger-text); } .down { color: var(--gr-success-text); }
+.graders .list-row { grid-template-columns: minmax(0, 1fr) auto; }
+.text code { font-size: 0.92em; }
+@media (max-width: 640px) {
+  .topbar .bar { padding: 0 var(--gr-space-4); }
+  .topbar .brand { display: none; }
+  .content { padding-inline: var(--gr-space-4); }
+  .bubble { max-width: 100%; }
+}
 """
 
 
 def esc(s):
     return html.escape(str(s), quote=True)
+
+
+def md(s):
+    """Escaped text with the agent's **bold** and `code` shown as such."""
+    out = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", esc(s))
+    return re.sub(r"`([^`\n]+)`", r"<code>\1</code>", out)
 
 
 def load(results_dir):
@@ -62,11 +72,11 @@ def load(results_dir):
     return sorted(runs, key=lambda r: (r["skill"], r["case"], r["run"]))
 
 
-def by_case(runs):
-    cases = {}
+def group(runs, key):
+    out = {}
     for r in runs:
-        cases.setdefault(r["case"], []).append(r)
-    return cases
+        out.setdefault(r[key], []).append(r)
+    return out
 
 
 def run_id(r):
@@ -76,7 +86,7 @@ def run_id(r):
 def tool_line(t):
     inp = t.get("input") or {}
     arg = inp.get("skill") or inp.get("file_path") or inp.get("command") or inp.get("pattern") or ""
-    return t["name"] + (f" {str(arg).splitlines()[0][:80]}" if arg else "")
+    return t["name"], str(arg).splitlines()[0][:120] if arg else ""
 
 
 def outputs(results_dir, r):
@@ -93,93 +103,150 @@ def agent_costs(results_dir, root):
     return {case: statistics.median(v) for case, v in per_case.items()}
 
 
-def summary_table(cases, now, older):
-    head = "<tr><th>Case</th><th>Skill</th><th>Runs</th><th>Median agent cost</th>"
-    head += "<th>Before</th>" if older else ""
-    rows = []
-    for name, runs in cases.items():
-        cost = now.get(name, 0)
-        cells = "".join(
-            f'<a class="cell {"pass" if r["pass"] else "fail"}" href="#{esc(run_id(r))}">'
-            f'{"pass" if r["pass"] else "fail"} {r["run"]}</a>' for r in runs)
-        row = f'<tr><td>{esc(name)}</td><td class="muted">{esc(runs[0]["skill"])}</td><td><div class="cells">{cells}</div></td>'
-        row += f'<td class="nums">${cost:.2f}</td>'
-        if older:
-            if name in older:
-                was = older[name]
-                cls = "delta-up" if cost > was * 1.05 else "delta-down" if cost < was * 0.95 else "muted"
-                row += f'<td class="nums {cls}">${was:.2f}</td>'
-            else:
-                row += '<td class="muted">new</td>'
-        rows.append(row + "</tr>")
-    return f'<div class="box"><table>{head}</tr>{"".join(rows)}</table></div>'
+def chip(r, href):
+    tone, word = ("success", "pass") if r["pass"] else ("danger", "fail")
+    return f'<a class="badge {tone}" href="{esc(href)}" title="Run {r["run"]}: {word}">{word} {r["run"]}</a>'
 
 
-def run_block(results_dir, r):
-    graders = "".join(
-        f'<li><span class="{"ok" if g["pass"] else "x"}">{"✓" if g["pass"] else "✗"}</span> {esc(g["name"])}'
-        + ("" if g["pass"] else f'<pre>{esc(g.get("note", ""))}</pre>') + "</li>" for g in r["graders"])
-    turns = []
-    for i, t in enumerate(r["turns"], 1):
-        tools = "<br>".join(esc(tool_line(x)) for x in t.get("tools", []))
-        turns.append(
-            f'<div class="turn"><div class="muted">Turn {i} · ${t.get("cost", 0):.2f}</div>'
-            f'<div class="prompt"><pre>{esc(t["prompt"])}</pre></div>'
-            f'<div class="reply"><pre>{esc(t.get("text", ""))}</pre></div>'
-            + (f'<details><summary class="tools">{len(t.get("tools", []))} tool calls</summary>'
-               f'<div class="tools">{tools}</div></details>' if t.get("tools") else "") + "</div>")
-    files = outputs(results_dir, r)
-    links = " · ".join(f'<a href="{esc(p)}">{esc(os.path.basename(p))}</a>' for p in files)
-    kept = "" if r["pass"] else f'<div class="muted">Workspace kept at <code>{esc(r["workspace"])}</code></div>'
-    status = "pass" if r["pass"] else "fail"
+def shell(title, body, css, site, up=""):
+    """css: base URL of the Graphite assets. site: link the site's nav. up: path back to the evals index."""
+    links = "".join(f'<link rel="stylesheet" href="{css}{name}">' for name in ("tokens.css", "base.css", "components.css"))
+    if site:
+        home = up + "../"
+        nav = (f'<a class="brand" href="{home}">Taanviir\'s skills</a><span class="spacer"></span><nav aria-label="Site">'
+               f'<a class="btn ghost" href="{home}#skills">Skills</a>'
+               f'<a class="btn ghost" href="{up or "./"}" aria-current="page">Eval results</a>'
+               f'<a class="btn ghost" href="{home}graphite-ui/preview.html">Graphite UI board</a>'
+               f'<a class="btn ghost" href="{GITHUB}">GitHub</a></nav>')
+        icon = f'<link rel="icon" href="{home}favicon.svg" type="image/svg+xml">'
+    else:
+        nav = f'<a class="brand" href="{up or "./"}">Eval report</a>'
+        icon = ""
     return (
-        f'<details class="run" id="{esc(run_id(r))}"{"" if r["pass"] else " open"}>'
-        f'<summary><span class="cell {status}">{status}</span><strong>{esc(r["case"])}</strong>'
-        f'<span class="muted nums">run {r["run"]} · ${r["cost"]:.2f} · {r["seconds"]}s</span></summary>'
-        f'<div><ul class="graders">{graders}</ul>{kept}'
-        + (f'<div>Output: {links}</div>' if links else "") + "".join(turns) + "</div></details>")
+        '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">'
+        f'<title>{esc(title)}</title>{icon}'
+        '<link rel="preconnect" href="https://fonts.googleapis.com">'
+        '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap">'
+        f'{links}<style>{CSS}</style></head><body>'
+        f'<header class="topbar"><div class="bar">{nav}</div></header>'
+        f'<main class="content">{body}</main></body></html>')
 
 
-def build(results_dir, older_dir=None, root=tokens.ROOT, back=None):
+def stat(label, value):
+    return f'<div class="stat"><span class="label">{esc(label)}</span><span class="value">{esc(value)}</span></div>'
+
+
+def index_page(results_dir, runs, now, older, token_text, compare_name):
+    passed = sum(r["pass"] for r in runs)
+    seconds = statistics.median(r["seconds"] for r in runs)
+    name = os.path.basename(os.path.normpath(results_dir))
+    sub = f"Run {esc(name)}" + (f", with costs compared to run {esc(compare_name)}" if compare_name else "") + "."
+    body = [
+        f'<div class="page-head"><div class="titles"><h1>Eval results</h1><p>{sub} Each case runs the agent in a fresh '
+        'folder with a scripted user; graders check what it did.</p></div></div>',
+        '<div class="stats">' + stat("Runs passed", f"{passed}/{len(runs)}") + stat("Cases", len(group(runs, "case")))
+        + stat("Total cost", f'${sum(r["cost"] for r in runs):.2f}') + stat("Median run", f"{seconds:.0f}s") + "</div>",
+    ]
+    for skill, skill_runs in group(runs, "skill").items():
+        ok = sum(r["pass"] for r in skill_runs)
+        tone = "success" if ok == len(skill_runs) else "warning"
+        rows = []
+        for case, case_runs in group(skill_runs, "case").items():
+            cost = now.get(case, 0)
+            before = ""
+            if older is not None:
+                if case in older:
+                    was = older[case]
+                    change = (cost - was) / was * 100 if was else 0
+                    cls = "up" if change > 5 else "down" if change < -5 else "text-secondary"
+                    before = (f'<td class="num"><span class="text-secondary">${was:.2f}</span> '
+                              f'<span class="{cls}">{change:+.0f}%</span></td>')
+                else:
+                    before = '<td class="num text-secondary">new</td>'
+            chips = "".join(chip(r, f"runs/{quote(run_id(r))}.html") for r in case_runs)
+            rows.append(f'<tr><td>{esc(case)}</td><td><div class="runs">{chips}</div></td>'
+                        f'<td class="num">${cost:.2f}</td>{before}'
+                        f'<td class="num">{statistics.median(r["seconds"] for r in case_runs):.0f}s</td></tr>')
+        head = ('<tr><th>Case</th><th>Runs</th><th class="num">Median cost</th>'
+                + ('<th class="num">Before</th>' if older is not None else "") + '<th class="num">Median time</th></tr>')
+        body.append(
+            f'<section class="section"><div class="section-head"><h2>{esc(skill)}</h2>'
+            f'<span class="status {tone}">{ok}/{len(skill_runs)} runs passed</span></div>'
+            f'<div class="table-wrap"><table class="table"><thead>{head}</thead><tbody>{"".join(rows)}</tbody></table></div></section>')
+    body.append(
+        '<section class="section"><div class="section-head"><h2>Tokens and cost</h2></div>'
+        '<details class="card"><summary class="card-body">Show the token report</summary>'
+        f'<div class="card-body"><pre class="report mono">{esc(token_text)}</pre></div></details></section>')
+    return "".join(body)
+
+
+def run_page(results_dir, r, show_outputs):
+    status = '<span class="badge success">Passed</span>' if r["pass"] else '<span class="badge danger">Failed</span>'
+    turns = len(r["turns"])
+    body = [
+        f'<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Eval results</a><span>/</span>'
+        f'<span>{esc(r["skill"])}</span><span>/</span><span aria-current="page">{esc(r["case"])} run {r["run"]}</span></nav>',
+        f'<div class="page-head"><div class="titles"><h1>{esc(r["case"])}, run {r["run"]}</h1>'
+        f'<p class="nums">${r["cost"]:.2f} · {r["seconds"]}s · {turns} turn{"s" if turns != 1 else ""}</p></div>'
+        f'<div class="actions">{status}</div></div>',
+    ]
+    rows = []
+    for g in r["graders"]:
+        tone = "success" if g["pass"] else "danger"
+        note = "" if g["pass"] else f'<span class="text">{esc(g.get("note", ""))}</span>'
+        rows.append(f'<div class="list-row"><div class="meta"><span>{esc(g["name"])}</span>{note}</div>'
+                    f'<span class="status {tone}">{"pass" if g["pass"] else "fail"}</span></div>')
+    body.append(f'<section class="section"><div class="section-head"><h2>Graders</h2></div>'
+                f'<div class="card"><div class="list graders">{"".join(rows)}</div></div></section>')
+    if show_outputs:
+        files = outputs(results_dir, r)
+        if files:
+            links = "".join(f'<a class="btn" href="../../{esc(p)}">{esc(os.path.basename(p))}</a>' for p in files)
+            body.append(f'<section class="section"><div class="section-head"><h2>Built files</h2></div>'
+                        f'<div class="cluster">{links}</div></section>')
+        if not r["pass"]:
+            body.append(f'<p class="text-caption text-secondary">Workspace kept at <code>{esc(r["workspace"])}</code></p>')
+    for i, t in enumerate(r["turns"], 1):
+        calls = t.get("tools", [])
+        tools = "".join(f"<div><strong>{esc(n)}</strong> <code>{esc(a)}</code></div>" for n, a in map(tool_line, calls))
+        foot = (f'<details class="card-foot tools-foot"><summary class="text-caption">{len(calls)} tool call'
+                f'{"s" if len(calls) != 1 else ""}</summary><div class="tools">{tools}</div></details>') if calls else ""
+        body.append(
+            f'<section class="section"><div class="section-head"><h2>Turn {i}</h2>'
+            f'<span class="text-caption text-secondary nums">${t.get("cost", 0):.2f}</span></div>'
+            f'<div class="turn"><div class="bubble text">{esc(t["prompt"])}</div>'
+            f'<div class="card"><div class="card-body reply"><div class="text">{md(t.get("text", ""))}</div></div>{foot}</div></div></section>')
+    return "".join(body)
+
+
+def write_site(results_dir, out_dir, older_dir=None, root=tokens.ROOT, site=False):
     runs = load(results_dir)
     if not runs:
         sys.exit(f"no run results in {results_dir}")
-    cases = by_case(runs)
-    older = agent_costs(older_dir, root) if older_dir else None
-    passed = sum(r["pass"] for r in runs)
-    title = os.path.basename(os.path.normpath(results_dir))
-    compare = f' Compared with <code>{esc(os.path.basename(os.path.normpath(older_dir)))}</code>.' if older_dir else ""
-    token_text = tokens.report(results_dir, root)
-    return (
-        f'<!doctype html><html lang="en"><head><meta charset="utf-8">'
-        f'<meta name="viewport" content="width=device-width, initial-scale=1"><title>Evals {esc(title)}</title>'
-        f'<style>{CSS}</style></head><body><main>'
-        + (f'<p><a href="{esc(back)}">← Taanviir\'s skills</a></p>' if back else "")
-        + f'<h1>Evals {esc(title)}</h1>'
-        f'<p class="muted nums">{passed}/{len(runs)} runs passed · ${sum(r["cost"] for r in runs):.2f} total.{compare}</p>'
-        f'<h2>Cases</h2>{summary_table(cases, agent_costs(results_dir, root), older)}'
-        f'<h2>Runs</h2>{"".join(run_block(results_dir, r) for r in runs)}'
-        f'<h2>Tokens</h2><details class="run"><summary>Token and cost report</summary>'
-        f'<div><pre>{esc(token_text)}</pre></div></details>'
-        f'</main></body></html>')
-
-
-def publish(results_dir, out_dir, older_dir=None, root=tokens.ROOT):
-    runs = load(results_dir)
-    page = build(results_dir, older_dir, root, back="../").replace(os.path.expanduser("~"), "~")
     if os.path.exists(out_dir):
         shutil.rmtree(out_dir)
-    os.makedirs(out_dir)
-    for r in runs:
-        folder = os.path.join(results_dir, run_id(r))
-        if os.path.isdir(folder):
-            shutil.copytree(folder, os.path.join(out_dir, run_id(r)), ignore=shutil.ignore_patterns("._check_*"))
+    os.makedirs(os.path.join(out_dir, "runs"))
+    css = "../graphite-ui/" if site else "file://" + quote(GRAPHITE) + "/"
+    scrub = (lambda s: s.replace(os.path.expanduser("~"), "~")) if site else (lambda s: s)
+    older = agent_costs(older_dir, root) if older_dir else None
+    compare_name = os.path.basename(os.path.normpath(older_dir)) if older_dir else None
+    body = index_page(results_dir, runs, agent_costs(results_dir, root), older, tokens.report(results_dir, root), compare_name)
     with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
-        f.write(page)
-    summary = {"run": os.path.basename(os.path.normpath(results_dir)), "passed": sum(r["pass"] for r in runs),
-               "runs": len(runs), "cases": len(by_case(runs)), "cost": round(sum(r["cost"] for r in runs), 2)}
-    with open(os.path.join(out_dir, "summary.json"), "w", encoding="utf-8") as f:
-        json.dump(summary, f)
+        f.write(scrub(shell("Eval results", body, css, site)))
+    run_css = "../" + css if site else css
+    for r in runs:
+        page = shell(f'{r["case"]} run {r["run"]}', run_page(results_dir, r, not site), run_css, site, up="../")
+        with open(os.path.join(out_dir, "runs", f"{run_id(r)}.html"), "w", encoding="utf-8") as f:
+            f.write(scrub(page))
+    if site:
+        skills = {s: {"passed": sum(r["pass"] for r in rs), "runs": len(rs), "cases": len(group(rs, "case"))}
+                  for s, rs in group(runs, "skill").items()}
+        summary = {"run": os.path.basename(os.path.normpath(results_dir)), "passed": sum(r["pass"] for r in runs),
+                   "runs": len(runs), "cases": len(group(runs, "case")),
+                   "cost": round(sum(r["cost"] for r in runs), 2), "skills": skills}
+        with open(os.path.join(out_dir, "summary.json"), "w", encoding="utf-8") as f:
+            json.dump(summary, f, indent=1)
     return os.path.join(out_dir, "index.html")
 
 
@@ -191,12 +258,9 @@ def main():
     args = ap.parse_args()
     results_dir = args.results or tokens.newest_results()
     if args.out:
-        print(publish(results_dir, args.out, args.compare))
-        return
-    out = os.path.join(results_dir, "report.html")
-    with open(out, "w", encoding="utf-8") as f:
-        f.write(build(results_dir, args.compare))
-    print(out)
+        print(write_site(results_dir, args.out, args.compare, site=True))
+    else:
+        print(write_site(results_dir, os.path.join(results_dir, "report"), args.compare))
 
 
 if __name__ == "__main__":

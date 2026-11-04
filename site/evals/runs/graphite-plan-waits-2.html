@@ -1,0 +1,83 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>graphite-plan-waits run 2</title><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap"><link rel="stylesheet" href="../../graphite-ui/tokens.css"><link rel="stylesheet" href="../../graphite-ui/base.css"><link rel="stylesheet" href="../../graphite-ui/components.css"><style>
+.brand { font-weight: var(--gr-weight-semibold); color: var(--gr-fg-primary); text-decoration: none; }
+.topbar { padding: 0; }
+.topbar .bar { display: flex; align-items: center; gap: var(--gr-space-3); width: 100%; max-width: var(--gr-content-max); margin: 0 auto; padding: 0 var(--gr-space-6); }
+.topbar nav { display: flex; gap: var(--gr-space-1); overflow-x: auto; }
+.runs { display: flex; flex-wrap: wrap; gap: var(--gr-space-1-5); }
+.runs a { text-decoration: none; }
+.turn { display: grid; gap: var(--gr-space-3); }
+.bubble { justify-self: end; max-width: 80%; padding: var(--gr-space-3) var(--gr-space-4); border-radius: var(--gr-radius-surface); background: var(--gr-accent-bg-subtle); }
+.text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.reply { max-height: 480px; overflow-y: auto; }
+.tools { display: grid; gap: var(--gr-space-1); font-size: var(--gr-text-caption); color: var(--gr-fg-secondary); }
+.tools code { overflow-wrap: anywhere; }
+.tools-foot { display: block; }
+details > summary { cursor: pointer; }
+pre.report { margin: 0; overflow-x: auto; font-size: var(--gr-text-label); line-height: 1.5; }
+.up { color: var(--gr-danger-text); } .down { color: var(--gr-success-text); }
+.graders .list-row { grid-template-columns: minmax(0, 1fr) auto; }
+.text code { font-size: 0.92em; }
+@media (max-width: 640px) {
+  .topbar .bar { padding: 0 var(--gr-space-4); }
+  .topbar .brand { display: none; }
+  .content { padding-inline: var(--gr-space-4); }
+  .bubble { max-width: 100%; }
+}
+</style></head><body><header class="topbar"><div class="bar"><a class="brand" href="../../">Taanviir's skills</a><span class="spacer"></span><nav aria-label="Site"><a class="btn ghost" href="../../#skills">Skills</a><a class="btn ghost" href="../" aria-current="page">Eval results</a><a class="btn ghost" href="../../graphite-ui/preview.html">Graphite UI board</a><a class="btn ghost" href="https://github.com/Taanviir/skills">GitHub</a></nav></div></header><main class="content"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Eval results</a><span>/</span><span>graphite-ui</span><span>/</span><span aria-current="page">graphite-plan-waits run 2</span></nav><div class="page-head"><div class="titles"><h1>graphite-plan-waits, run 2</h1><p class="nums">$0.37 · 46s · 1 turn</p></div><div class="actions"><span class="badge success">Passed</span></div></div><section class="section"><div class="section-head"><h2>Graders</h2></div><div class="card"><div class="list graders"><div class="list-row"><div class="meta"><span>skill fired</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>nothing changed before approval</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>token map covers every old token</span></div><span class="status success">pass</span></div><div class="list-row"><div class="meta"><span>brand knobs from brand.mjs</span></div><span class="status success">pass</span></div></div></div></section><section class="section"><div class="section-head"><h2>Turn 1</h2><span class="text-caption text-secondary nums">$0.37</span></div><div class="turn"><div class="bubble text">Rework this app&#x27;s design with graphite-ui.</div><div class="card"><div class="card-body reply"><div class="text">I&#x27;ve looked through the app and written a plan. Nothing is changed yet; I need your approval before I start.
+
+## What&#x27;s there now
+- <strong>Stack:</strong> plain HTML with one CSS file. It uses no build tool, Bootstrap, Sass or Tailwind. Install will follow the plain CSS steps.
+- <strong>Files:</strong> <code>index.html</code>, <code>style.css</code> and <code>app.js</code> (<code>app.js</code> draws the canvas chart and runs the modal).
+- <strong>Colors are defined in two places:</strong> the <code>:root</code> and <code>body.dark</code> blocks plus about 18 hardcoded colors in <code>style.css</code>, and a <code>CHART_COLORS</code> object in <code>app.js</code>.
+- <strong>Dark mode:</strong> the toggle adds a <code>.dark</code> class to <code>body</code>. There&#x27;s no RTL and no per-tenant branding.
+- <strong>Starting point:</strong> the audit finds 93 problems in the app&#x27;s own files. That&#x27;s 26 hardcoded colors, 11 legacy variable definitions, 14 reads of those variables, 17 off-scale spacing values, 10 font sizes, 7 radii, 2 shadows, and one each of font family, duration, easing, z-index, hover-without-press and color in JS.
+
+## Plan
+<strong>Install:</strong> copy <code>tokens.css</code>, <code>base.css</code> and <code>press.js</code> into <code>graphite-ui/</code> and link them before <code>style.css</code>. I&#x27;ll leave <code>components.css</code> out, because every component below is restyled in place. I&#x27;ll also add the Instrument Sans font link from Google Fonts.
+
+<strong>Brand color:</strong> the current blue <code>#2563eb</code> gives <code>--gr-accent-h: 263; --gr-accent-c: 0.95</code>. The contrast check passes for every color pair.
+
+<strong>Token map</strong>
+
+| Legacy | → |
+|---|---|
+| <code>--primary</code> | <code>--gr-accent-solid</code> (buttons), <code>--gr-accent-text</code> (active nav text), <code>--gr-border-focus</code> (input focus) |
+| <code>--primary-dark</code> | <code>--gr-accent-solid-hover</code> |
+| <code>--text</code> | <code>--gr-fg-primary</code> |
+| <code>--text-muted</code> | <code>--gr-fg-secondary</code> |
+| <code>--border</code> | <code>--gr-border-control</code> (inputs), <code>--gr-shadow-border</code> (buttons, panel), <code>--gr-border-separator</code> (side nav edge) |
+| <code>--bg</code> | <code>--gr-bg-page</code> |
+| <code>--danger</code> | <code>--gr-danger-text</code> / <code>--gr-danger-solid</code> |
+| <code>body.dark</code> overrides (4) | delete. The toggle will set <code>data-theme</code> on <code>&lt;html&gt;</code> instead of adding <code>.dark</code> |
+| <code>#fff</code> / <code>white</code> surfaces | <code>--gr-bg-surface</code>, and <code>--gr-bg-raised</code> for the modal |
+| <code>#dbeafe</code> (active nav item) | <code>--gr-bg-selected</code> |
+| <code>#e5e7eb</code> (secondary button, table rows) | default button style, <code>--gr-border-separator</code> |
+| alert and badge colors | <code>--gr-warning-*</code>, <code>--gr-success-*</code>, neutral <code>--gr-bg-sunken</code> / <code>--gr-fg-secondary</code> |
+| <code>rgba(0,0,0,.5)</code> modal backdrop | <code>--gr-scrim</code> |
+| shadows, <code>z-index: 1000</code> | <code>--gr-shadow-border</code>, <code>--gr-shadow-overlay</code>, <code>--gr-z-*</code> |
+| <code>CHART_COLORS</code> in <code>app.js</code> | read <code>--gr-series-1</code>, <code>--gr-border-separator</code> and <code>--gr-fg-secondary</code> with <code>getComputedStyle</code>, and redraw when the theme changes |
+
+<strong>Component map</strong>
+
+&quot;Port&quot; means the app keeps its class names and markup and only the CSS rules are replaced. &quot;Adopt&quot; means the HTML changes to the design system&#x27;s own markup.
+
+| App selector | Recipe | How |
+|---|---|---|
+| <code>.layout</code>, <code>.side-nav</code>, <code>.nav-link</code>, <code>.logo</code> | shell, <code>.sidebar</code> / <code>.nav-item</code> | port |
+| <code>.page-header</code> | <code>.page-head</code> | port |
+| <code>.btn</code> and its variants | <code>.btn</code> / <code>primary</code> / default / <code>danger</code> | port. Adds a press state and limits transitions to color and shadow |
+| <code>.alert-warning</code> | <code>.notice</code> warning | port |
+| <code>.stats</code>, <code>.stat</code> | <code>.stats</code>, <code>.stat</code> | port |
+| <code>.panel</code> | <code>.card</code> | port |
+| <code>.data-table</code> | <code>.table-wrap</code> + <code>.table</code> | port. The Kg column gets right-aligned numbers |
+| <code>.badge-*</code> in the Status column | <code>.status</code> (dot plus word) | adopt: class change only |
+| <code>.form-group</code>, <code>.form-control</code> | <code>.field</code>, <code>.input</code> | port |
+| <code>.modal</code>, <code>.modal-box</code> | native <code>&lt;dialog class=&quot;dialog&quot;&gt;</code> | adopt: the markup changes, and the JS opens and closes it with <code>showModal()</code> / <code>close()</code> |
+| <code>#chart</code> canvas | chart notes | sized from its CSS width × <code>devicePixelRatio</code>, so it isn&#x27;t blurry |
+
+<strong>Things to decide</strong>
+1. <strong>Modal → <code>&lt;dialog&gt;</code>:</strong> this changes the HTML and the JS. It brings proper focus handling, Esc to close, and a bottom sheet on phones. The other option is to keep the current <code>div</code> and only restyle it.
+2. <strong>Badges → <code>.status</code>:</strong> the guidelines use status (dot plus word) for an order&#x27;s state. The other option is to keep badges and only restyle them.
+3. <strong>Theme toggle:</strong> the button switches between light and dark, as it does now, but starts by following the OS theme.
+
+My recommendation is yes to all three. Approve the plan, or tell me what to change.</div></div><details class="card-foot tools-foot"><summary class="text-caption">7 tool calls</summary><div class="tools"><div><strong>Skill</strong> <code>graphite-ui</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-plan-waits-bd0mfvyj; find . -path ./.claude -prune -o -path ./node_modules -prune -o -type f -prin</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-plan-waits-bd0mfvyj; cat index.html style.css app.js; node .claude/skills/graphite-ui/scripts/audi</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-plan-waits-bd0mfvyj; G=.claude/skills/graphite-ui; sed -n 85,200p style.css; echo ----; cat app.js</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-plan-waits-bd0mfvyj/.claude/skills/graphite-ui; sed -n 70,84p ../../../style.css; cat references/s</code></div><div><strong>Read</strong> <code>/tmp/eval-graphite-plan-waits-bd0mfvyj/style.css</code></div><div><strong>Bash</strong> <code>cd /tmp/eval-graphite-plan-waits-bd0mfvyj; node .claude/skills/graphite-ui/scripts/contrast.mjs --hue 263 --chroma 0.95 </code></div></div></details></div></div></section></main></body></html>

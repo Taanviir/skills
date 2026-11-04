@@ -1,1 +1,24 @@
-{"run": "20261104-111416", "passed": 52, "runs": 54, "cases": 18, "cost": 28.45}
+{
+ "run": "20261104-111416",
+ "passed": 52,
+ "runs": 54,
+ "cases": 18,
+ "cost": 28.45,
+ "skills": {
+  "create-info-cards": {
+   "passed": 19,
+   "runs": 21,
+   "cases": 7
+  },
+  "graphite-ui": {
+   "passed": 24,
+   "runs": 24,
+   "cases": 8
+  },
+  "project-presentation": {
+   "passed": 9,
+   "runs": 9,
+   "cases": 3
+  }
+ }
+}
