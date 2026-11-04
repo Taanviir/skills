@@ -120,6 +120,27 @@ test('audit: Tailwind palette and arbitrary classes are flagged, token arbitrari
   ]);
 });
 
+test('audit: colors in scripts and SVG paint attributes are flagged, selector strings are not', () => {
+  const r = audit({
+    'chart.js': "const c = { line: '#ff0000', grid: 'rgba(0,0,0,.1)' };\ndocument.querySelector('#add');\nconst t = 'Room #12';\n// '#ffffff'\n",
+    'page.html': '<svg><path fill="#123456"/></svg>\n<script>ctx.fillStyle = "#abcdef";</script>\n',
+  });
+  assert.deepEqual(r.json.findings.map((f) => `${f.rule}:${f.file}:${f.line}`).sort(), [
+    'script-color:chart.js:1', 'script-color:page.html:1', 'script-color:page.html:2',
+  ]);
+});
+
+test('audit: a hex color inside an SVG data URL is flagged', () => {
+  const r = audit({ 'a.css': `.a { background: url("data:image/svg+xml,%3Csvg fill='%23ff0000'/%3E"); }\n` });
+  assert.deepEqual(r.json.findings.map((f) => f.rule), ['color-literal']);
+});
+
+test('audit: every Tailwind class on a line is its own finding', () => {
+  const r = audit({ 'App.tsx': 'const c = <div className="bg-red-500 text-gray-700 p-[13px] m-[7px]" />;\n' });
+  assert.equal(r.json.findings.filter((f) => f.rule === 'tw-palette').length, 2);
+  assert.equal(r.json.findings.filter((f) => f.rule === 'tw-arbitrary').length, 2);
+});
+
 test("audit: the system's recipe files have no findings", () => {
   const r = run('audit.mjs', ['assets/components.css', 'assets/base.css', 'assets/shadcn.css', 'assets/bootstrap.css', '--json']);
   assert.equal(r.code, 0, r.out);

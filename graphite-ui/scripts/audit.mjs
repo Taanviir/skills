@@ -42,6 +42,7 @@ const RULES = {
   'tw-arbitrary': 'Tailwind arbitrary value. Use a scale step or add a token.',
   'hover-no-press': 'Hover state with no press state. On touch it shows nothing when tapped. Add :is(:active, [data-pressed]), or gr-allow if it is not tappable.',
   'native-dialog': 'Browser confirm/prompt/alert. Use <dialog class="dialog">, or act at once and offer Undo in a toast.',
+  'script-color': 'Color literal in a script or an SVG attribute. In the page, read the --gr-* variable with getComputedStyle; elsewhere import the exported tokens.',
 };
 
 function walk(p, out) {
@@ -62,8 +63,9 @@ for (const r of roots) walk(r, files);
 
 const findings = [];
 const seen = new Set();
-const add = (rule, file, line, text) => {
-  const key = `${rule}:${file}:${line}`;
+// One finding per rule per line, except where a line can hold several distinct values (class lists).
+const add = (rule, file, line, text, distinct = false) => {
+  const key = `${rule}:${file}:${line}${distinct ? `:${text}` : ''}`;
   if (seen.has(key)) return;
   seen.add(key);
   findings.push({ rule, file: relative(process.cwd(), file), line, text: text.trim().slice(0, 140) });
@@ -146,7 +148,19 @@ function scanCss(file, src, offsetLine = 0) {
       if (prop === 'z-index' && /^\s*-?\d+\s*$/.test(literal) && Math.abs(+literal) > 1) add('raw-z-index', file, n, line);
     }
     if (/!important/.test(line)) add('important', file, n, line);
+    if (/url\(\s*["']?data:image\/svg/.test(line) && /(?:%23|#)[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|oklch)\(/.test(line.replace(/^[^:]*:/, ''))) add('color-literal', file, n, line);
   }
+}
+
+// Hex and color functions inside string literals, and SVG paint attributes. Selector strings like '#add' are skipped.
+const SCRIPT_COLOR_RE = /(["'`])\s*(?:#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})|(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch)\([^"'`]*\))\s*\1/;
+const PAINT_ATTR_RE = /\b(?:fill|stroke|stop-color|flood-color|color)\s*=\s*["'{]\s*["']?(?:#[0-9a-fA-F]{3,8}\b|(?:rgba?|hsla?|oklch)\()/;
+const SELECTOR_CALL_RE = /querySelector|closest|matches|getElementById|href|location|hash/;
+function scanScriptColors(file, src, offsetLine = 0, paintOnly = false) {
+  src.split('\n').forEach((line, i) => {
+    if (/^\s*(?:\/\/|\*|\/\*)/.test(line) || /gr-allow/.test(line)) return;
+    if (PAINT_ATTR_RE.test(line) || (!paintOnly && SCRIPT_COLOR_RE.test(line) && !SELECTOR_CALL_RE.test(line))) add('script-color', file, i + 1 + offsetLine, line);
+  });
 }
 
 // Yields { selector, line, props } for each style rule, nested ones included. At-rules are containers, not rules.
@@ -240,13 +254,11 @@ function scanClasses(file, src) {
   const lines = src.split('\n');
   lines.forEach((line, i) => {
     if (!/class(?:Name)?\s*=|\bclsx?\(|\bcn\(|\bcva\(|\btw`|@apply/.test(line) && !/^\s*["'`][^"'`]*["'`],?\s*$/.test(line)) return;
-    for (const m of line.matchAll(TW_PALETTE_RE)) {
-      add('tw-palette', file, i + 1, m[0]);
-    }
+    for (const m of line.matchAll(TW_PALETTE_RE)) add('tw-palette', file, i + 1, m[0], true);
     if (/(?<![\w-])hover:/.test(line) && !/(?<![\w-])(?:active:|tap\b|press\b)/.test(line)) add('hover-no-press', file, i + 1, line);
     for (const m of line.matchAll(TW_ARBITRARY_RE)) {
       if (/\[(?:--gr-|var\(--gr-)/.test(m[0])) continue;
-      add('tw-arbitrary', file, i + 1, m[0]);
+      add('tw-arbitrary', file, i + 1, m[0], true);
     }
   });
 }
@@ -284,11 +296,17 @@ for (const file of files) {
     }
     scanInlineStyles(file, src, false);
     scanClasses(file, src);
-    for (const m of src.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)) scanNativeDialogs(file, m[1], src.slice(0, m.index).split('\n').length - 1);
+    scanScriptColors(file, src.replace(/<(style|script)[^>]*>[\s\S]*?<\/\1>/g, (b) => b.replace(/[^\n]/g, ' ')), 0, true);
+    for (const m of src.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)) {
+      const off = src.slice(0, m.index).split('\n').length - 1;
+      scanNativeDialogs(file, m[1], off);
+      scanScriptColors(file, m[1], off);
+    }
   } else {
     scanInlineStyles(file, src, /\.(?:jsx|tsx)$/.test(ext));
     scanClasses(file, src);
     scanNativeDialogs(file, src);
+    scanScriptColors(file, src);
   }
 }
 
